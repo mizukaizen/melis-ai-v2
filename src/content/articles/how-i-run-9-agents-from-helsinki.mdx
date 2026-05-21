@@ -1,0 +1,21 @@
+---
+title: "How I Run 9 Agents from Helsinki"
+titleHtml: "How I Run 9 Agents from <em>Helsinki</em>"
+eyebrow: "Article · Tear-down · [draft]"
+byline: "Sean Melis · 14 March 2026 · 12 min read"
+lede: "A full architecture write-up — Hetzner VPS, OpenClaw runtime, custom L1/L2/L3 tier system, Telegram as a transport layer, and the operational pattern that lets it run unattended."
+tags: []
+draft: false
+---
+
+<p>People ask me how the agents work. The short answer is: one cheap VPS, OpenClaw, and a discipline about tiers. The long answer is below.</p>
+
+<h2>The <em>architecture</em></h2>
+
+<ul>
+  <li><strong>Helsinki VPS (Hetzner CCX23, 16GB).</strong> Total monthly cost: €30.</li>
+  <li><strong>OpenClaw runtime</strong> — the multi-agent runtime that handles channels, memory, MCP and orchestration.</li>
+  <li><strong>L1 orchestrators</strong> — Marcus and KV. These are the ones I talk to.</li>
+  <li><strong>L2 senior managers</strong> — 9 of them. One per life pillar.</li>
+</ul>
+
