@@ -1,0 +1,29 @@
+---
+const path = Astro.url.pathname;
+const isSean = path.startsWith('/about/sean');
+const isStudio = path.startsWith('/about/melis-ai');
+---
+
+<aside class="sidebar-2" transition:persist="sb2-about">
+  <div class="sb2-pane active" data-pane="about">
+    <div class="sb2-header">
+      <div class="sb2-title"><em>About</em></div>
+    </div>
+    <div class="sb2-list">
+      <a class="sb2-item" class:list={[{ active: isSean }]} href="/about/sean/">
+        <div class="sb2-row">
+          <div class="sb2-name">Sean</div>
+          <div class="sb2-count">the operator</div>
+        </div>
+        <div class="sb2-desc">A decade with AI, mostly artificial</div>
+      </a>
+      <a class="sb2-item" class:list={[{ active: isStudio }]} href="/about/melis-ai/">
+        <div class="sb2-row">
+          <div class="sb2-name">melis.ai</div>
+          <div class="sb2-count">the studio</div>
+        </div>
+        <div class="sb2-desc">Studio behind it all</div>
+      </a>
+    </div>
+  </div>
+</aside>

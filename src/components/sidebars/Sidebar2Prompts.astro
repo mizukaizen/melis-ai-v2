@@ -1,0 +1,58 @@
+---
+import { getCollection } from 'astro:content';
+
+const all = (await getCollection('prompts')).filter((p) => !p.data.draft);
+const byCategory = new Map<string, typeof all>();
+for (const p of all) {
+  const c = p.data.category;
+  if (!byCategory.has(c)) byCategory.set(c, [] as never);
+  byCategory.get(c)!.push(p);
+}
+const currentSlug = Astro.url.pathname.match(/\/prompts\/([^/]+)/)?.[1];
+const currentCategory = currentSlug
+  ? all.find((p) => p.slug === currentSlug)?.data.category
+  : undefined;
+const categoryEntries = Array.from(byCategory.entries());
+---
+
+<aside class="sidebar-2" transition:persist="sb2-prompts">
+  <div class="sb2-pane active" data-pane="prompts">
+    <div class="sb2-header">
+      <div class="sb2-title"><em>Prompt Library</em></div>
+    </div>
+    <div class="panel-list">
+      <a class="panel-item" class:list={[{ active: !currentSlug }]} href="/prompts/">
+        <i class="ph ph-chat-dots pi-icon" style="color:#5eead4;opacity:0.85"></i>
+        <div class="pi-body">
+          <div class="pi-title">All Prompts</div>
+          <div class="pi-meta">{all.length} · {categoryEntries.length} cats</div>
+        </div>
+        <div class="pi-dot" style="background:rgba(94,234,212,0.15);color:#5eead4">{all.length}</div>
+      </a>
+      {categoryEntries.map(([category, items], idx) => {
+        const isOpen = currentCategory === category || (!currentCategory && idx === 0);
+        return (
+          <div class:list={['panel-group', { open: isOpen }]}>
+            <div class="panel-group-header">
+              <span class="pgh-label">{category}</span>
+              <svg class="pgh-chevron" viewBox="0 0 10 6" fill="none">
+                <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="panel-group-items">
+              {items.map((p) => (
+                <a class="panel-item" class:list={[{ active: p.slug === currentSlug }]} href={`/prompts/${p.slug}/`}>
+                  <i class="ph ph-sparkle pi-icon"></i>
+                  <div class="pi-body">
+                    <div class="pi-title">{p.data.title}</div>
+                    {p.data.lede && <div class="pi-meta">{p.data.lede.slice(0, 48)}{p.data.lede.length > 48 ? '…' : ''}</div>}
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</aside>

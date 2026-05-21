@@ -1,0 +1,32 @@
+---
+import { getCollection } from 'astro:content';
+
+const items = (await getCollection('ventures')).filter((a) => !a.data.draft);
+const currentSlug = Astro.url.pathname.match(/\/ventures\/([^/]+)/)?.[1];
+---
+
+<aside class="sidebar-2" transition:persist="sb2-ventures">
+  <div class="sb2-pane active" data-pane="projects">
+    <div class="sb2-header">
+      <div class="sb2-title"><em>Ventures</em></div>
+    </div>
+    <div class="sb2-list">
+      <a class="sb2-item" class:list={[{ active: !currentSlug }]} href="/ventures/">
+        <div class="sb2-row">
+          <div class="sb2-name">All Ventures</div>
+          <div class="sb2-count">{items.length}</div>
+        </div>
+        <div class="sb2-desc">Live builds and sub-brands</div>
+      </a>
+      {items.map((v) => (
+        <a class="sb2-item" class:list={[{ active: v.slug === currentSlug }]} href={`/ventures/${v.slug}/`}>
+          <div class="sb2-row">
+            <div class="sb2-name">{v.data.title.replace(/<[^>]+>/g, '')}</div>
+            {v.data.stage && <div class={`sb2-count ${v.data.stage === 'live' ? 'badge-live' : ''}`}>{v.data.stage.toUpperCase()}</div>}
+          </div>
+          {v.data.eyebrow && <div class="sb2-desc">{v.data.eyebrow}</div>}
+        </a>
+      ))}
+    </div>
+  </div>
+</aside>

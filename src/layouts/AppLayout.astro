@@ -2,8 +2,10 @@
 import { ClientRouter } from 'astro:transitions';
 import Sidebar1 from '../components/Sidebar1.astro';
 import Sidebar2 from '../components/Sidebar2.astro';
-import '../styles/global.css';
+// Order matters: mockup.css first (it's the design source-of-truth),
+// global.css last (its post-mockup overrides win).
 import '../styles/mockup.css';
+import '../styles/global.css';
 
 interface Props {
   title: string;
@@ -25,7 +27,13 @@ const {
 
 const fullTitle = title === 'melis.ai' ? title : `${title} · melis.ai`;
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
-const paneClass = ['pane', 'active', inRoom ? 'in-room' : ''].filter(Boolean).join(' ');
+const paneClass = ['pane', 'active', inRoom ? 'in-room' : 'is-direct-view'].filter(Boolean).join(' ');
+const appClass = [
+  'app',
+  'has-sb2',
+  pane === 'home' ? 'is-home' : '',
+  inRoom ? 'in-room-mode' : 'is-landing-mode',
+].filter(Boolean).join(' ');
 ---
 
 <!doctype html>
@@ -61,7 +69,7 @@ const paneClass = ['pane', 'active', inRoom ? 'in-room' : ''].filter(Boolean).jo
     <ClientRouter />
   </head>
   <body data-pane={pane}>
-    <div class="app">
+    <div class={appClass}>
       <Sidebar1 pane={pane} />
       <Sidebar2 pane={pane} />
       <main class="content">

@@ -1,0 +1,40 @@
+---
+import { getCollection } from 'astro:content';
+import { EXHIBITS_ORDER } from '../../data/exhibits-order';
+
+const all = (await getCollection('exhibits')).filter((a) => !a.data.draft);
+const byTitle = new Map(all.map((e) => [e.data.title, e]));
+const ordered = EXHIBITS_ORDER.map((t) => byTitle.get(t)).filter((e): e is NonNullable<typeof e> => Boolean(e));
+const currentSlug = Astro.url.pathname.match(/\/lab\/exhibits\/([^/]+)/)?.[1];
+---
+
+<aside class="sidebar-2" transition:persist="sb2-exhibits">
+  <div class="sb2-pane active" data-pane="exhibits">
+    <div class="sb2-header">
+      <div class="sb2-title"><em>The Lab</em></div>
+    </div>
+    <div class="sb2-list">
+      <a class="sb2-item" href="/lab/">
+        <div class="sb2-row">
+          <div class="sb2-name">Lab overview</div>
+        </div>
+        <div class="sb2-desc">Ventures + Exhibits</div>
+      </a>
+      <a class="sb2-item" class:list={[{ active: !currentSlug }]} href="/lab/exhibits/">
+        <div class="sb2-row">
+          <div class="sb2-name">All Exhibits</div>
+          <div class="sb2-count">{ordered.length}</div>
+        </div>
+        <div class="sb2-desc">10 assembled — paper-craft, scroll-stories</div>
+      </a>
+      {ordered.map((e, i) => (
+        <a class="sb2-item" class:list={[{ active: e.slug === currentSlug }]} href={`/lab/exhibits/${e.slug}/`}>
+          <div class="sb2-row">
+            <div class="sb2-name">No. {String(i + 1).padStart(2, '0')} — {e.data.title}</div>
+            {e.data.status === 'live' && <div class="sb2-count badge-live">LIVE</div>}
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</aside>

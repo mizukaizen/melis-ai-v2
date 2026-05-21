@@ -1,0 +1,34 @@
+---
+import { getCollection } from 'astro:content';
+
+const items = (await getCollection('articles'))
+  .filter((a) => !a.data.draft)
+  .sort((a, b) => (b.data.publishedAt || '').localeCompare(a.data.publishedAt || ''));
+const currentSlug = Astro.url.pathname.match(/\/articles\/([^/]+)/)?.[1];
+---
+
+<aside class="sidebar-2" transition:persist="sb2-articles">
+  <div class="sb2-pane active" data-pane="articles">
+    <div class="sb2-header">
+      <div class="sb2-title"><em>Articles</em></div>
+    </div>
+    <div class="sb2-list">
+      <a class="sb2-item" class:list={[{ active: !currentSlug }]} href="/articles/">
+        <div class="sb2-row">
+          <div class="sb2-name">All Articles</div>
+          <div class="sb2-count">{items.length}</div>
+        </div>
+        <div class="sb2-desc">Essays, field notes, tear-downs</div>
+      </a>
+      {items.map((a) => (
+        <a class="sb2-item" class:list={[{ active: a.slug === currentSlug }]} href={`/articles/${a.slug}/`}>
+          <div class="sb2-row">
+            <div class="sb2-name">{a.data.title}</div>
+            {a.data.category && <div class="sb2-count">{a.data.category}</div>}
+          </div>
+          {a.data.byline && <div class="sb2-desc">{a.data.byline}</div>}
+        </a>
+      ))}
+    </div>
+  </div>
+</aside>

@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+
+const items = (await getCollection('recos')).filter((a) => !a.data.draft);
+const currentSlug = Astro.url.pathname.match(/\/recos\/([^/]+)/)?.[1];
+---
+
+<aside class="sidebar-2" transition:persist="sb2-recos">
+  <div class="sb2-pane active" data-pane="recos">
+    <div class="sb2-header">
+      <div class="sb2-title"><em>Sean's Recos</em></div>
+    </div>
+    <div class="sb2-list">
+      <a class="sb2-item" class:list={[{ active: !currentSlug }]} href="/recos/">
+        <div class="sb2-row">
+          <div class="sb2-name">All Recos</div>
+          <div class="sb2-count">{items.length}</div>
+        </div>
+        <div class="sb2-desc">Tools, books, and operators worth your time</div>
+      </a>
+      {items.map((r) => (
+        <a class="sb2-item" class:list={[{ active: r.slug === currentSlug }]} href={`/recos/${r.slug}/`}>
+          <div class="sb2-row">
+            <div class="sb2-name">{r.data.title}</div>
+          </div>
+          {r.data.eyebrow && <div class="sb2-desc">{r.data.eyebrow}</div>}
+        </a>
+      ))}
+    </div>
+  </div>
+</aside>

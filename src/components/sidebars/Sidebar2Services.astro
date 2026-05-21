@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+
+const items = (await getCollection('services')).filter((a) => !a.data.draft);
+const currentSlug = Astro.url.pathname.match(/\/services\/([^/]+)/)?.[1];
+---
+
+<aside class="sidebar-2" transition:persist="sb2-services">
+  <div class="sb2-pane active" data-pane="services">
+    <div class="sb2-header">
+      <div class="sb2-title"><em>Services</em></div>
+    </div>
+    <div class="sb2-list">
+      <a class="sb2-item" class:list={[{ active: !currentSlug }]} href="/services/">
+        <div class="sb2-row">
+          <div class="sb2-name">All Services</div>
+          <div class="sb2-count">{items.length}</div>
+        </div>
+        <div class="sb2-desc">How to work with me</div>
+      </a>
+      {items.map((s) => (
+        <a class="sb2-item" class:list={[{ active: s.slug === currentSlug }]} href={`/services/${s.slug}/`}>
+          <div class="sb2-row">
+            <div class="sb2-name">{s.data.title}</div>
+          </div>
+          {s.data.eyebrow && <div class="sb2-desc">{s.data.eyebrow}</div>}
+        </a>
+      ))}
+    </div>
+  </div>
+</aside>

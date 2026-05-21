@@ -1,55 +1,44 @@
 ---
-// Contextual secondary sidebar (280px). One HTML fragment per pane,
-// loaded verbatim from src/_html/sb2-<pane>.html.
-//
-// If no sb2 exists for the current pane, the slot is empty and the
-// parent layout collapses the column.
-import courses from '../_html/sb2-courses.html?raw';
-import articles from '../_html/sb2-articles.html?raw';
-import newsletter from '../_html/sb2-newsletter.html?raw';
-import library from '../_html/sb2-library.html?raw';
-import products from '../_html/sb2-products.html?raw';
-import prompts from '../_html/sb2-prompts.html?raw';
-import recos from '../_html/sb2-recos.html?raw';
-import projects from '../_html/sb2-projects.html?raw';
-import exhibits from '../_html/sb2-exhibits.html?raw';
-import services from '../_html/sb2-services.html?raw';
-import about from '../_html/sb2-about.html?raw';
-import aboutStudio from '../_html/sb2-about-studio.html?raw';
+// Contextual secondary sidebar. Dispatches to a per-section component
+// based on the current `pane`. Each per-section component pulls its
+// items from the relevant content collection at build time.
+
+import Articles from './sidebars/Sidebar2Articles.astro';
+import Newsletter from './sidebars/Sidebar2Newsletter.astro';
+import Recos from './sidebars/Sidebar2Recos.astro';
+import Services from './sidebars/Sidebar2Services.astro';
+import Ventures from './sidebars/Sidebar2Ventures.astro';
+import Courses from './sidebars/Sidebar2Courses.astro';
+import Exhibits from './sidebars/Sidebar2Exhibits.astro';
+import About from './sidebars/Sidebar2About.astro';
+import Products from './sidebars/Sidebar2Products.astro';
+import Prompts from './sidebars/Sidebar2Prompts.astro';
+import Dossiers from './sidebars/Sidebar2Dossiers.astro';
+import Home from './sidebars/Sidebar2Home.astro';
 
 interface Props {
   pane: string;
 }
 
 const { pane } = Astro.props;
-
-const PANES: Record<string, string> = {
-  courses,
-  articles,
-  newsletter,
-  library,
-  products,
-  prompts,
-  recos,
-  projects,
-  exhibits,
-  services,
-  about,
-  'about-studio': aboutStudio,
-};
-
-const html = PANES[pane] ?? '';
 ---
 
-{html && (
-  <aside class="sidebar-2" transition:persist={`sb2-${pane}`}>
-    <div class="sb2-pane active" data-pane={pane} set:html={html} />
-  </aside>
-)}
+{pane === 'home' && <Home />}
+{pane === 'articles' && <Articles />}
+{pane === 'newsletter' && <Newsletter />}
+{pane === 'recos' && <Recos />}
+{pane === 'services' && <Services />}
+{(pane === 'projects' || pane === 'ventures') && <Ventures />}
+{pane === 'courses' && <Courses />}
+{pane === 'exhibits' && <Exhibits />}
+{(pane === 'about' || pane === 'about-studio') && <About />}
+{pane === 'products' && <Products />}
+{pane === 'prompts' && <Prompts />}
+{pane === 'library' && <Dossiers />}
 
 <script>
-  // Panel-group expand/collapse — the mockup uses inline `onclick`
-  // attributes which Astro strips when bundling. Re-wire here.
+  // Panel-group expand/collapse — the mockup uses inline onclick which
+  // Astro strips when bundling. Re-wire here.
   function wirePanelGroups() {
     document.querySelectorAll<HTMLElement>('aside.sidebar-2 .panel-group-header').forEach((header) => {
       if (header.dataset.wired === '1') return;

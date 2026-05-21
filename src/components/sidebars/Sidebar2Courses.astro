@@ -1,0 +1,43 @@
+---
+import { getCollection } from 'astro:content';
+
+const items = (await getCollection('courses')).filter((a) => !a.data.draft);
+const live = items.filter((c) => c.data.status === 'live');
+const soon = items.filter((c) => c.data.status === 'coming-soon');
+const currentSlug = Astro.url.pathname.match(/\/courses\/([^/]+)/)?.[1];
+---
+
+<aside class="sidebar-2" transition:persist="sb2-courses">
+  <div class="sb2-pane active" data-pane="courses">
+    <div class="sb2-header">
+      <div class="sb2-title"><em>Courses</em></div>
+    </div>
+    <div class="sb2-list">
+      <a class="sb2-item" class:list={[{ active: !currentSlug }]} href="/courses/">
+        <div class="sb2-row">
+          <div class="sb2-name">All Courses</div>
+          <div class="sb2-count">{items.length}</div>
+        </div>
+        <div class="sb2-desc">The full catalogue</div>
+      </a>
+      {live.map((c) => (
+        <a class="sb2-item" class:list={[{ active: c.slug === currentSlug }]} href={`/courses/${c.slug}/`}>
+          <div class="sb2-row">
+            <div class="sb2-name">{c.data.title.replace(/<[^>]+>/g, '')}</div>
+            <div class="sb2-count badge-live">LIVE</div>
+          </div>
+          {c.data.subtitle1 && <div class="sb2-desc">{c.data.subtitle1}</div>}
+        </a>
+      ))}
+      {soon.map((c) => (
+        <a class="sb2-item" class:list={[{ active: c.slug === currentSlug }]} href={`/courses/${c.slug}/`}>
+          <div class="sb2-row">
+            <div class="sb2-name">{c.data.title.replace(/<[^>]+>/g, '')}</div>
+            <div class="sb2-count">SOON</div>
+          </div>
+          {c.data.subtitle1 && <div class="sb2-desc">{c.data.subtitle1}</div>}
+        </a>
+      ))}
+    </div>
+  </div>
+</aside>
