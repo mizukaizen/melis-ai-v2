@@ -159,3 +159,19 @@ Set these in **Vercel project settings → Environment Variables** before the fi
 - `data/orders.jsonl` is gitignored — Stripe webhook writes appended orders here. On Vercel serverless, the filesystem write may fail silently (logs warning); migrate to Vercel KV or Postgres when traffic warrants it.
 - The legacy Next.js repo at `mizukaizen/melis-ai` is **not** touched. The melis-ai-astro and melis-ai-website Vercel projects are **not** touched. The mockup file at `_cowork/outputs/website-rebrand/melis-ai-spa-v6-astro-content.html` is **not** touched (it stays as source-of-truth).
 - All commits on `feat/initial-port` are co-authored by Claude (Opus 4.7, 1M context).
+
+---
+
+## Pass 4 lessons learned
+
+1. **The "visible on every route" override from pass 2 was wrong.** Sean's instruction applied to non-home routes only. Home is sb1-only per the mockup. Fix: conditional render in `AppLayout.astro` (no `<Sidebar2>` on `/`) + `.app.is-home > sb2 { display:none }` + `.app.no-sb2 > main.content { margin-left: var(--sidebar-w) }`.
+
+2. **Landing vs. detail hero tier.** Pass 3 made all heroes 560px+ which pushed body cards below the 900px fold. Pass 4 split into two tiers: landing 360px / detail 560px / dossier-detail 600px. Title clamps follow: landing `clamp(52, 6vw, 88)`, detail `clamp(72, 9vw, 132)`.
+
+3. **mock copy precedence.** The mockup HTML is the gold standard. When pass 3 paraphrased ("An apprenticeship for the AI-native operator…"), the audit caught it. Pass 4 forces exact mockup strings. Lesson: when in doubt, `grep` the mockup HTML for the section's pane HTML and lift verbatim — don't invent.
+
+4. **MDX frontmatter wins over resolver.** Setting `cover:` in the MDX short-circuits `hero-image.ts` overrides. If you want a special-case override, edit the frontmatter directly.
+
+5. **Products sb2 must switch behaviour by route.** Landing = panel-group categories; detail = flat alphabetical list. Detected via `Astro.url.pathname` match.
+
+6. **Pass-3 "cathedral" misread.** Sean's pass-3 audit described the Complete Arsenal mockup hero as a "candlelit altar scene with figures." I read that as the hive.jpg cathedral, but the actual mockup uses products-bundles.png (a figure standing inside an open gift box with a glowing violet flower) — also altar-like. Mockup canonical wins; restore bundles.png. Use the actual mockup file as the visual reference, not the prose description.
