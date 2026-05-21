@@ -1,8 +1,10 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro';
+import SectionHero from '../../components/SectionHero.astro';
 import StripeBuyButton from '../../components/StripeBuyButton.astro';
 import NewsletterForm from '../../components/NewsletterForm.astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { itemHero, landingHero } from '../../lib/hero-image';
 
 export const prerender = true;
 
@@ -18,29 +20,20 @@ type Props = { item: CollectionEntry<'courses'> };
 const { item } = Astro.props as Props;
 const { Content } = await item.render();
 const data = item.data;
-const cover = data.cover || '/card-courses-v1.png';
+const cover = (data.cover && data.cover.startsWith('/'))
+  ? data.cover
+  : itemHero('courses', data.title.replace(/<[^>]+>/g, ''), item.slug) || landingHero('courses');
 const isLive = data.status === 'live';
 ---
 
 <AppLayout title={data.title} pane="courses" inRoom description={data.lede}>
-  <section class="section-header">
-    <div class="section-hero-bg" style={`background-image: url('${cover}');`}></div>
-    <div class="section-hero-veil"></div>
-    <div class="section-header-inner">
-      <a class="back-link" href="/courses/" data-pane="courses">← back to Courses</a>
-      <div class="section-title-block">
-        {data.eyebrow && <div class="section-eyebrow">{data.eyebrow}</div>}
-        <h1 class="section-title" set:html={data.titleHtml || data.title}></h1>
-        {data.subtitle1 && (
-          <p class="section-subtitle">
-            {data.subtitle1}
-            {data.subtitle2 && (<><br/><span set:html={data.subtitle2}></span></>)}
-          </p>
-        )}
-        {data.lede && <p class="section-lead">{data.lede}</p>}
-      </div>
-    </div>
-  </section>
+  <SectionHero
+    cover={cover}
+    eyebrow={data.eyebrow}
+    title={data.title}
+    titleHtml={data.titleHtml}
+    lede={data.lede}
+  />
 
   <section class="section-body">
     {data.stats && data.stats.length > 0 && (
@@ -77,58 +70,14 @@ const isLive = data.status === 'live';
   </div>
 
   <style>
-    .section-subtitle {
-      font-family: var(--font-display);
-      font-size: 22px;
-      font-style: italic;
-      color: var(--text-2);
-      margin: 12px 0 16px;
-    }
-    .course-stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 16px;
-      max-width: 920px;
-      margin: 0 auto 3em;
-      padding: 24px;
-      background: rgba(20, 20, 24, 0.45);
-      border: 1px solid var(--border-2);
-      border-radius: 12px;
-    }
+    .course-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; max-width: 920px; margin: 0 auto 3em; padding: 24px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 12px; }
     .cs-stat { text-align: center; }
-    .cs-stat i {
-      font-size: 20px;
-      color: var(--accent);
-      opacity: 0.6;
-    }
-    .cs-val {
-      font-family: var(--font-display);
-      font-size: 28px;
-      color: var(--text-1);
-    }
-    .cs-lbl {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-3);
-      letter-spacing: 0.06em;
-    }
-    .course-content {
-      max-width: 68ch;
-      margin: 0 auto;
-    }
-    .course-content :global(p) {
-      font-family: var(--font-body);
-      font-size: 17px;
-      line-height: 1.7;
-      color: var(--text-1);
-      margin: 0 0 1.4em;
-    }
+    .cs-stat i { font-size: 20px; color: var(--accent); opacity: 0.6; }
+    .cs-val { font-family: var(--font-display); font-size: 28px; color: var(--text-1); }
+    .cs-lbl { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); letter-spacing: 0.06em; }
+    .course-content { max-width: 720px; margin: 0 auto; }
+    .course-content :global(p) { font-family: var(--font-body); font-size: 17px; line-height: 1.7; color: var(--text-1); margin: 0 0 1.4em; }
     .course-cta { margin-top: 3em; max-width: 540px; }
-    .course-waitlist h3 {
-      font-family: var(--font-display);
-      font-size: 22px;
-      color: var(--text-1);
-      margin: 0 0 12px;
-    }
+    .course-waitlist h3 { font-family: var(--font-display); font-size: 22px; color: var(--text-1); margin: 0 0 12px; }
   </style>
 </AppLayout>

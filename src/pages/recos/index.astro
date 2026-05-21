@@ -1,7 +1,8 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro';
-import html from '../../_html/pane-recos.html?raw';
+import SectionHero from '../../components/SectionHero.astro';
 import { getCollection } from 'astro:content';
+import { landingHero } from '../../lib/hero-image';
 
 export const prerender = true;
 
@@ -13,9 +14,15 @@ const recos = (await getCollection('recos')).filter((r) => !r.data.draft);
   pane="recos"
   description="The actual stack — AI tools, infrastructure and SaaS Sean uses daily."
 >
-  <Fragment set:html={html} />
+  <SectionHero
+    cover={landingHero('recos')}
+    eyebrow={`Recommendations · ${recos.length} lists`}
+    title="Sean's Recos"
+    titleHtml="Sean's <em>Recos</em>"
+    lede="What's actually on my machine, in my browser, and on my shelf. Some links are affiliate (you pay the same; I earn a small commission). Only things I use myself."
+  />
 
-  <section class="section-body" style="padding-top:48px;">
+  <section class="section-body">
     <div class="recos-grid">
       {recos.map((r) => (
         <a class="reco-card" href={`/recos/${r.slug}/`}>
@@ -33,43 +40,11 @@ const recos = (await getCollection('recos')).filter((r) => !r.data.draft);
   </div>
 
   <style>
-    .recos-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 16px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    .reco-card {
-      display: flex;
-      flex-direction: column;
-      padding: 22px 24px;
-      background: rgba(20, 20, 24, 0.45);
-      border: 1px solid var(--border-2);
-      border-radius: 12px;
-      text-decoration: none;
-      color: inherit;
-      transition: border-color 0.2s var(--ease);
-    }
+    .recos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; max-width: 1100px; margin: 0 auto; }
+    .reco-card { display: flex; flex-direction: column; padding: 22px 24px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 12px; text-decoration: none; color: inherit; transition: border-color 0.2s var(--ease); }
     .reco-card:hover { border-color: rgba(168, 85, 247, 0.3); }
-    .rc-eyebrow {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-3);
-      letter-spacing: 0.06em;
-      margin-bottom: 10px;
-    }
-    .rc-title {
-      font-family: var(--font-display);
-      font-size: 24px;
-      color: var(--text-1);
-      margin: 0 0 8px;
-    }
-    .rc-lede {
-      font-family: var(--font-body);
-      font-size: 14px;
-      color: var(--text-2);
-      line-height: 1.55;
-    }
+    .rc-eyebrow { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); letter-spacing: 0.06em; margin-bottom: 10px; }
+    .rc-title { font-family: var(--font-display); font-size: 24px; color: var(--text-1); margin: 0 0 8px; }
+    .rc-lede { font-family: var(--font-body); font-size: 14px; color: var(--text-2); line-height: 1.55; }
   </style>
 </AppLayout>

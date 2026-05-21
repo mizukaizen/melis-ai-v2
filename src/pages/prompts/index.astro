@@ -1,7 +1,8 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro';
-import html from '../../_html/pane-prompts.html?raw';
+import SectionHero from '../../components/SectionHero.astro';
 import { getCollection } from 'astro:content';
+import { landingHero } from '../../lib/hero-image';
 
 export const prerender = true;
 
@@ -19,9 +20,15 @@ for (const p of prompts) {
   pane="prompts"
   description="A working operator's prompt library — categorised, tested, and ready to copy."
 >
-  <Fragment set:html={html} />
+  <SectionHero
+    cover={landingHero('prompts')}
+    eyebrow={`Prompt Library · ${prompts.length} prompts · ${byCategory.size} categories`}
+    title="Prompts"
+    titleHtml="<em>Prompts</em>"
+    lede="A working operator's prompt library — tested, categorised, ready to copy. Edge prompts at the top; tactical libraries below."
+  />
 
-  <section class="section-body" style="padding-top:48px;">
+  <section class="section-body">
     {Array.from(byCategory.entries()).map(([category, items]) => (
       <section class="prompt-category">
         <h2 class="h2">{category}</h2>
@@ -43,41 +50,12 @@ for (const p of prompts) {
   </div>
 
   <style>
-    .prompt-category { margin-bottom: 3em; max-width: 1100px; margin-left: auto; margin-right: auto; }
-    .prompt-category .h2 {
-      font-family: var(--font-display);
-      font-size: 28px;
-      color: var(--text-1);
-      margin: 0 0 1em;
-    }
-    .prompt-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 12px;
-    }
-    .prompt-card {
-      display: flex;
-      flex-direction: column;
-      padding: 18px 22px;
-      background: rgba(20, 20, 24, 0.45);
-      border: 1px solid var(--border-2);
-      border-radius: 10px;
-      text-decoration: none;
-      color: inherit;
-      transition: border-color 0.2s var(--ease);
-    }
+    .prompt-category { margin-bottom: 3em; }
+    .prompt-category .h2 { font-family: var(--font-display); font-size: 28px; color: var(--text-1); margin: 0 0 1em; }
+    .prompt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+    .prompt-card { display: flex; flex-direction: column; padding: 18px 22px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 10px; text-decoration: none; color: inherit; transition: border-color 0.2s var(--ease); }
     .prompt-card:hover { border-color: rgba(168, 85, 247, 0.3); }
-    .pc-title {
-      font-family: var(--font-display);
-      font-size: 18px;
-      color: var(--text-1);
-      margin-bottom: 6px;
-    }
-    .pc-line {
-      font-family: var(--font-body);
-      font-size: 13px;
-      color: var(--text-2);
-      line-height: 1.55;
-    }
+    .pc-title { font-family: var(--font-display); font-size: 18px; color: var(--text-1); margin-bottom: 6px; }
+    .pc-line { font-family: var(--font-body); font-size: 13px; color: var(--text-2); line-height: 1.55; }
   </style>
 </AppLayout>

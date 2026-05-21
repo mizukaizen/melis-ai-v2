@@ -1,9 +1,15 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro';
+import SectionHero from '../../components/SectionHero.astro';
 import NewsletterForm from '../../components/NewsletterForm.astro';
-import html from '../../_html/pane-newsletter.html?raw';
+import { getCollection } from 'astro:content';
+import { landingHero } from '../../lib/hero-image';
 
 export const prerender = true;
+
+const issues = (await getCollection('newsletter'))
+  .filter((n) => !n.data.draft)
+  .sort((a, b) => (b.data.publishedAt || '').localeCompare(a.data.publishedAt || ''));
 ---
 
 <AppLayout
@@ -11,8 +17,40 @@ export const prerender = true;
   pane="newsletter"
   description="Soul of the Machine — sent at dawn, six days a week. 23,000+ readers."
 >
-  <Fragment set:html={html} />
-  <div class="newsletter-subscribe-block" style="max-width:1280px;margin:48px auto 80px;padding:0 clamp(24px,3vw,56px);">
-    <NewsletterForm />
+  <SectionHero
+    cover={landingHero('newsletter')}
+    eyebrow="Newsletter · daily dispatch · 23,000+ readers"
+    title="Newsletter"
+    titleHtml="Soul of the <em>Machine</em>"
+    lede="The daily dispatch. Sent at dawn, six days a week. No marketing chrome, no unsubscribe-bait."
+  />
+
+  <section class="section-body">
+    <div class="newsletter-subscribe-block">
+      <NewsletterForm />
+    </div>
+
+    <h2 class="h2" style="margin-top:4em;">Recent <em>issues</em></h2>
+    <div class="item-list">
+      {issues.map((n, i) => (
+        <a class="item-row" href={`/newsletter/${n.slug}/`}>
+          <div class="num">No. {String(i + 1).padStart(2, '0')}</div>
+          <div class="col-main">
+            <h4>{n.data.title}</h4>
+            {n.data.lede && <p>{n.data.lede}</p>}
+          </div>
+          <div class="col-meta">{n.data.publishedAt || ''}{n.data.byline ? ` · ${n.data.byline.split('·')[1]?.trim() || ''}` : ''}</div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
   </div>
+
+  <style>
+    .newsletter-subscribe-block { max-width: 540px; margin-top: 12px; }
+  </style>
 </AppLayout>

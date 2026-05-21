@@ -1,24 +1,19 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro';
+import SectionHero from '../../components/SectionHero.astro';
+import { landingHero } from '../../lib/hero-image';
 
 export const prerender = true;
 ---
 
-<AppLayout
-  title="The Lab"
-  pane="exhibits"
-  description="Live builds, exhibits, and experiments from melis.ai."
->
-  <section class="section-header">
-    <div class="section-header-inner">
-      <a class="back-link" href="/" data-pane="home">← back to studio</a>
-      <div class="section-title-block">
-        <div class="section-eyebrow">The Lab</div>
-        <h1 class="section-title">The <em>Lab</em>.</h1>
-        <p class="section-lead">Where the experiments live. Ventures in flight, exhibits assembled, and the occasional thing-just-shipped.</p>
-      </div>
-    </div>
-  </section>
+<AppLayout title="The Lab" pane="exhibits" description="Live builds, exhibits, and experiments from melis.ai.">
+  <SectionHero
+    cover={landingHero('exhibits')}
+    eyebrow="The Lab"
+    title="The Lab"
+    titleHtml="The <em>Lab</em>"
+    lede="Where the experiments live. Ventures in flight, exhibits assembled, and the occasional thing-just-shipped."
+  />
 
   <section class="section-body">
     <div class="lab-grid">
@@ -41,44 +36,11 @@ export const prerender = true;
   </div>
 
   <style>
-    .lab-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 16px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    .lab-card {
-      display: flex;
-      flex-direction: column;
-      padding: 32px 36px;
-      background: rgba(20, 20, 24, 0.45);
-      border: 1px solid var(--border-2);
-      border-radius: 12px;
-      text-decoration: none;
-      color: inherit;
-      transition: border-color 0.2s var(--ease);
-    }
+    .lab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; max-width: 1100px; margin: 0 auto; }
+    .lab-card { display: flex; flex-direction: column; padding: 32px 36px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 12px; text-decoration: none; color: inherit; transition: border-color 0.2s var(--ease); }
     .lab-card:hover { border-color: rgba(168, 85, 247, 0.3); }
-    .lc-eyebrow {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-3);
-      letter-spacing: 0.06em;
-      margin-bottom: 8px;
-    }
-    .lc-title {
-      font-family: var(--font-display);
-      font-size: 32px;
-      color: var(--text-1);
-      margin: 0 0 10px;
-    }
-    .lc-lede {
-      font-family: var(--font-body);
-      font-size: 15px;
-      color: var(--text-2);
-      line-height: 1.55;
-      margin: 0;
-    }
+    .lc-eyebrow { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); letter-spacing: 0.06em; margin-bottom: 8px; }
+    .lc-title { font-family: var(--font-display); font-size: 32px; color: var(--text-1); margin: 0 0 10px; }
+    .lc-lede { font-family: var(--font-body); font-size: 15px; color: var(--text-2); line-height: 1.55; margin: 0; }
   </style>
 </AppLayout>

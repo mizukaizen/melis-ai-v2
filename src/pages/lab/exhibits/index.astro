@@ -1,7 +1,9 @@
 ---
 import AppLayout from '../../../layouts/AppLayout.astro';
+import SectionHero from '../../../components/SectionHero.astro';
 import { getCollection } from 'astro:content';
 import { EXHIBITS_ORDER } from '../../../data/exhibits-order';
+import { landingHero } from '../../../lib/hero-image';
 
 export const prerender = true;
 
@@ -15,18 +17,15 @@ const ordered = EXHIBITS_ORDER
 <AppLayout
   title="Exhibits"
   pane="exhibits"
-  description="Ten exhibits — paper-craft cinematography, immersive scroll stories, the occasional manifesto."
+  description="Paper-craft cinematography, immersive scroll stories, one-off pieces."
 >
-  <section class="section-header">
-    <div class="section-header-inner">
-      <a class="back-link" href="/lab/" data-pane="exhibits">← back to The Lab</a>
-      <div class="section-title-block">
-        <div class="section-eyebrow">The Lab · Exhibits · 10 assembled</div>
-        <h1 class="section-title">The <em>Exhibits</em></h1>
-        <p class="section-lead">Paper-craft cinematography, immersive scroll stories, one-off pieces. Each one stands alone; together they're the closest thing to a manifesto melis.ai has.</p>
-      </div>
-    </div>
-  </section>
+  <SectionHero
+    cover={landingHero('exhibits')}
+    eyebrow="The Lab · Exhibits · 10 assembled"
+    title="Exhibits"
+    titleHtml="The <em>Exhibits</em>"
+    lede="Paper-craft cinematography, immersive scroll stories, one-off pieces. Each one stands alone; together they're the closest thing to a manifesto melis.ai has."
+  />
 
   <section class="section-body">
     <div class="exhibit-grid">
@@ -47,57 +46,12 @@ const ordered = EXHIBITS_ORDER
   </div>
 
   <style>
-    .exhibit-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 16px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    .exhibit-card {
-      display: flex;
-      flex-direction: column;
-      padding: 26px 28px;
-      background: rgba(20, 20, 24, 0.45);
-      border: 1px solid var(--border-2);
-      border-radius: 12px;
-      text-decoration: none;
-      color: inherit;
-      position: relative;
-      transition: border-color 0.2s var(--ease);
-    }
+    .exhibit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; max-width: 1100px; margin: 0 auto; }
+    .exhibit-card { display: flex; flex-direction: column; padding: 26px 28px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 12px; text-decoration: none; color: inherit; position: relative; transition: border-color 0.2s var(--ease); }
     .exhibit-card:hover { border-color: rgba(168, 85, 247, 0.3); }
-    .ec-num {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-3);
-      letter-spacing: 0.06em;
-      margin-bottom: 10px;
-    }
-    .ec-title {
-      font-family: var(--font-display);
-      font-size: 24px;
-      color: var(--text-1);
-      margin: 0 0 10px;
-    }
-    .ec-lede {
-      font-family: var(--font-body);
-      font-size: 14px;
-      color: var(--text-2);
-      line-height: 1.55;
-      margin: 0;
-    }
-    .ec-status {
-      position: absolute;
-      top: 24px;
-      right: 28px;
-      padding: 2px 8px;
-      font-family: var(--font-mono);
-      font-size: 9px;
-      color: #5eead4;
-      background: rgba(94, 234, 212, 0.12);
-      border-radius: 4px;
-      letter-spacing: 0.10em;
-    }
+    .ec-num { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); letter-spacing: 0.06em; margin-bottom: 10px; }
+    .ec-title { font-family: var(--font-display); font-size: 24px; color: var(--text-1); margin: 0 0 10px; }
+    .ec-lede { font-family: var(--font-body); font-size: 14px; color: var(--text-2); line-height: 1.55; margin: 0; }
+    .ec-status { position: absolute; top: 24px; right: 28px; padding: 2px 8px; font-family: var(--font-mono); font-size: 9px; color: #5eead4; background: rgba(94, 234, 212, 0.12); border-radius: 4px; letter-spacing: 0.10em; }
   </style>
 </AppLayout>

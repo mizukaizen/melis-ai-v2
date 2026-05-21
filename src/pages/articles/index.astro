@@ -1,8 +1,14 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro';
-import html from '../../_html/pane-articles.html?raw';
+import SectionHero from '../../components/SectionHero.astro';
+import { getCollection } from 'astro:content';
+import { landingHero } from '../../lib/hero-image';
 
 export const prerender = true;
+
+const articles = (await getCollection('articles'))
+  .filter((a) => !a.data.draft)
+  .sort((a, b) => (b.data.publishedAt || '').localeCompare(a.data.publishedAt || ''));
 ---
 
 <AppLayout
@@ -10,5 +16,35 @@ export const prerender = true;
   pane="articles"
   description="Essays and field notes from inside the operation. Honest, slow, sometimes unfinished."
 >
-  <Fragment set:html={html} />
+  <SectionHero
+    cover={landingHero('articles')}
+    eyebrow={`Read · ${articles.length} · this season`}
+    title="Articles"
+    titleHtml="<em>Articles</em>"
+    lede="Essays and field notes from inside the operation. Honest, slow, sometimes unfinished."
+  />
+
+  <section class="section-body">
+    <div class="section-eyebrow-small">{articles.length} articles · essays + field notes</div>
+    <h2 class="h2">Operator's notes from <em>inside</em> the work.</h2>
+    <p class="body-lead">No tutorials. No "10 prompts that…" listicles. Just essays, observations, and field notes from someone using AI as a daily tool — sometimes thinking, sometimes ranting, always honest. Newsletter sends fresh ones every morning at dawn.</p>
+
+    <div class="item-list">
+      {articles.map((a, i) => (
+        <a class="item-row" href={`/articles/${a.slug}/`}>
+          <div class="num">No. {String(i + 1).padStart(2, '0')}</div>
+          <div class="col-main">
+            <h4>{a.data.title}</h4>
+            {a.data.lede && <p>{a.data.lede}</p>}
+          </div>
+          <div class="col-meta">{a.data.category || '—'}{a.data.byline ? ` · ${a.data.byline}` : ''}</div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
 </AppLayout>

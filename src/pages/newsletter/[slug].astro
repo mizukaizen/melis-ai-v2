@@ -1,6 +1,8 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
 import AppLayout from '../../layouts/AppLayout.astro';
+import SectionHero from '../../components/SectionHero.astro';
+import { landingHero } from '../../lib/hero-image';
 
 export const prerender = true;
 
@@ -16,23 +18,20 @@ type Props = { item: CollectionEntry<'newsletter'> };
 const { item } = Astro.props as Props;
 const { Content } = await item.render();
 const data = item.data;
-const cover = data.cover || '/hero-newsletter.png';
+const cover = (data.cover && data.cover.startsWith('/'))
+  ? data.cover
+  : (data.cover ? `/${data.cover}` : landingHero('newsletter'));
 ---
 
 <AppLayout title={data.title} pane="newsletter" inRoom description={data.lede}>
-  <section class="section-header">
-    <div class="section-hero-bg" style={`background-image: url('${cover}');`}></div>
-    <div class="section-hero-veil"></div>
-    <div class="section-header-inner">
-      <a class="back-link" href="/newsletter/" data-pane="newsletter">← back to Newsletter</a>
-      <div class="section-title-block">
-        {data.eyebrow && <div class="section-eyebrow">{data.eyebrow}</div>}
-        <h1 class="section-title" set:html={data.titleHtml || data.title}></h1>
-        {data.lede && <p class="section-lead">{data.lede}</p>}
-        {data.byline && <p class="section-byline" style="margin-top:8px;font-family:var(--font-mono);font-size:11px;color:var(--text-3);letter-spacing:0.06em;">{data.byline}</p>}
-      </div>
-    </div>
-  </section>
+  <SectionHero
+    cover={cover}
+    eyebrow={data.eyebrow}
+    title={data.title}
+    titleHtml={data.titleHtml}
+    byline={data.byline}
+    lede={data.lede}
+  />
 
   <section class="section-body">
     <article class="article-content">
@@ -44,4 +43,10 @@ const cover = data.cover || '/hero-newsletter.png';
     <div>melis.ai · 2026</div>
     <div>Operator-built · Australia</div>
   </div>
+
+  <style>
+    .article-content { max-width: 720px; margin: 0 auto; }
+    .article-content :global(p) { font-family: var(--font-body); font-size: 17px; line-height: 1.7; color: var(--text-1); margin: 0 0 1.4em; max-width: 680px; }
+    .article-content :global(em) { color: var(--accent); font-style: italic; }
+  </style>
 </AppLayout>

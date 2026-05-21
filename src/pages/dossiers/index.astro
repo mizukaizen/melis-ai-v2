@@ -1,10 +1,11 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro';
+import SectionHero from '../../components/SectionHero.astro';
 import { DOSSIER_CATEGORIES } from '../../data/dossier-categories';
+import { landingHero } from '../../lib/hero-image';
 
 export const prerender = true;
 
-// Ordered list — preserves the mockup's display order.
 const ORDER = [
   'books', 'essays', 'mental-models', 'thought-experiments',
   'remarkable-people', 'letters', 'speeches', 'poems',
@@ -21,24 +22,16 @@ const cats = ORDER
   pane="library"
   description="A small archive of the world's most important ideas — books, essays, mental models, and concepts worth remembering."
 >
-  <section class="section-header">
-    <div class="section-hero-bg" style="background-image: url('/library-rooms/lib-landing.png');"></div>
-    <div class="section-hero-veil"></div>
-    <div class="section-header-inner">
-      <a class="back-link" href="/" data-pane="home">← back to studio</a>
-      <div class="section-title-block">
-        <div class="section-eyebrow">Reference · Dossiers</div>
-        <h1 class="section-title"><em>Dossiers</em></h1>
-        <p class="section-lead">A small archive of the world's most important ideas — books, essays, mental models, and concepts worth remembering. Each entry is an AI-led breakdown: the work, why it matters, the key concepts, and how to take them forward. Built as a daily-return shelf, kept open for anyone who wants a calm space to read one idea at a time.</p>
-      </div>
-    </div>
-  </section>
+  <SectionHero
+    cover={landingHero('library')}
+    eyebrow="Reference · Dossiers · 51 fleshed · 242 catalogued"
+    title="Dossiers"
+    titleHtml="<em>Dossiers</em>"
+    lede="A small archive of the world's most important ideas — books, essays, mental models, and concepts worth remembering. Each entry is an AI-led breakdown: the work, why it matters, the key concepts, and how to take them forward. Built as a daily-return shelf, kept open for anyone who wants a calm space to read one idea at a time."
+  />
 
   <section class="section-body">
     <div class="library-landing">
-      <h2 class="h2">A small archive of <em>dossiers for operators</em>.</h2>
-      <p class="body-lead">A small archive of the world's most important ideas. AI-led breakdowns of books, essays, mental models, and concepts worth remembering — 242 entries across twelve categories. Each one gets a brief: the work, why it matters, the key concepts, and how to take them forward. Built as a daily-return shelf, kept open for anyone who wants a calm space to read one idea at a time.</p>
-
       <div class="room-grid">
         {cats.map((c) => (
           <a class="room-card" href={`/dossiers/${c.slug}/`}>

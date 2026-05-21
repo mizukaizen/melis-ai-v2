@@ -1,7 +1,8 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro';
-import html from '../../_html/pane-projects.html?raw';
+import SectionHero from '../../components/SectionHero.astro';
 import { getCollection } from 'astro:content';
+import { landingHero } from '../../lib/hero-image';
 
 export const prerender = true;
 
@@ -13,9 +14,15 @@ const ventures = (await getCollection('ventures')).filter((v) => !v.data.draft);
   pane="projects"
   description="Live builds and sub-brands in flight from melis.ai."
 >
-  <Fragment set:html={html} />
+  <SectionHero
+    cover={landingHero('ventures')}
+    eyebrow={`The Lab · ${ventures.length} in flight`}
+    title="Ventures"
+    titleHtml="<em>Ventures</em>"
+    lede="Live builds and sub-brands in flight. Some are live and paying their way; some are still in the workshop."
+  />
 
-  <section class="section-body" style="padding-top:48px;">
+  <section class="section-body">
     <div class="ventures-grid">
       {ventures.map((v) => (
         <a class="venture-card" href={`/ventures/${v.slug}/`}>
@@ -36,58 +43,14 @@ const ventures = (await getCollection('ventures')).filter((v) => !v.data.draft);
   </div>
 
   <style>
-    .ventures-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 16px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    .venture-card {
-      display: flex;
-      flex-direction: column;
-      padding: 26px 28px;
-      background: rgba(20, 20, 24, 0.45);
-      border: 1px solid var(--border-2);
-      border-radius: 12px;
-      text-decoration: none;
-      color: inherit;
-      position: relative;
-      transition: border-color 0.2s var(--ease);
-    }
+    .ventures-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; max-width: 1100px; margin: 0 auto; }
+    .venture-card { display: flex; flex-direction: column; padding: 26px 28px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 12px; text-decoration: none; color: inherit; position: relative; transition: border-color 0.2s var(--ease); }
     .venture-card:hover { border-color: rgba(168, 85, 247, 0.3); }
-    .vc-pill {
-      align-self: flex-start;
-      padding: 4px 10px;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 0.10em;
-      border-radius: 4px;
-      margin-bottom: 12px;
-      background: rgba(94, 234, 212, 0.12);
-      color: #5eead4;
-    }
+    .vc-pill { align-self: flex-start; padding: 4px 10px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.10em; border-radius: 4px; margin-bottom: 12px; background: rgba(94, 234, 212, 0.12); color: #5eead4; }
     .vc-pill.is-signal { background: rgba(94, 234, 212, 0.18); color: #5eead4; }
-    .vc-eyebrow {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-3);
-      letter-spacing: 0.06em;
-      margin-bottom: 8px;
-    }
-    .vc-title {
-      font-family: var(--font-display);
-      font-size: 26px;
-      color: var(--text-1);
-      margin: 0 0 8px;
-    }
+    .vc-eyebrow { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); letter-spacing: 0.06em; margin-bottom: 8px; }
+    .vc-title { font-family: var(--font-display); font-size: 26px; color: var(--text-1); margin: 0 0 8px; }
     .vc-title :global(em) { color: var(--accent); font-style: italic; }
-    .vc-lede {
-      font-family: var(--font-body);
-      font-size: 14px;
-      color: var(--text-2);
-      line-height: 1.55;
-      margin: 0;
-    }
+    .vc-lede { font-family: var(--font-body); font-size: 14px; color: var(--text-2); line-height: 1.55; margin: 0; }
   </style>
 </AppLayout>
