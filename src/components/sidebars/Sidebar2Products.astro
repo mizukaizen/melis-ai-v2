@@ -9,10 +9,20 @@ for (const p of all) {
   if (!byCategory.has(c)) byCategory.set(c, [] as never);
   byCategory.get(c)!.push(p);
 }
+
 const currentSlug = Astro.url.pathname.match(/\/products\/([^/]+)/)?.[1];
 const currentCategory = currentSlug
   ? all.find((p) => p.slug === currentSlug)?.data.category
   : undefined;
+
+// Detail view = flat list of all products with current highlighted.
+// Landing view = panel groups by category.
+const isDetail = Boolean(currentSlug);
+
+// Sort products alphabetically for the flat view
+const flatSorted = [...all].sort((a, b) =>
+  a.data.title.replace(/<[^>]+>/g, '').localeCompare(b.data.title.replace(/<[^>]+>/g, '')),
+);
 ---
 
 <aside class="sidebar-2" transition:persist="sb2-products">
@@ -20,46 +30,67 @@ const currentCategory = currentSlug
     <div class="sb2-header">
       <div class="sb2-title"><em>Products</em></div>
     </div>
-    <div class="panel-list">
-      <a class="panel-item" class:list={[{ active: !currentSlug }]} href="/products/">
-        <i class="ph ph-package pi-icon"></i>
-        <div class="pi-body">
-          <div class="pi-title">All Products</div>
-          <div class="pi-meta">{all.length} items · {byCategory.size} categories</div>
-        </div>
-        <div class="pi-dot">{all.length}</div>
-      </a>
-      {PRODUCTS_CATEGORIES.map((cat) => {
-        const items = byCategory.get(cat.title) ?? [];
-        const isOpen = currentCategory === cat.title;
-        return (
-          <div class:list={['panel-group', { open: isOpen }]}>
-            <div class="panel-group-header">
-              <span class="pgh-label">{cat.title}</span>
-              <svg class="pgh-chevron" viewBox="0 0 10 6" fill="none">
-                <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <div class="panel-group-items">
-              {items.map((p) => (
-                <a class="panel-item" class:list={[{ active: p.slug === currentSlug }]} href={`/products/${p.slug}/`}>
-                  <div class="pi-body">
-                    <div class="pi-title">{p.data.title}</div>
-                    <div class="pi-meta">${(p.data.price / 100).toFixed(0)}</div>
-                  </div>
-                </a>
-              ))}
-              {items.length === 0 && (
-                <div class="panel-item" style="opacity:0.4;cursor:default;">
-                  <div class="pi-body">
-                    <div class="pi-title" style="font-style:italic;">Coming soon</div>
-                  </div>
-                </div>
-              )}
-            </div>
+
+    {isDetail ? (
+      <div class="panel-list">
+        <a class="panel-item" href="/products/">
+          <i class="ph ph-arrow-left pi-icon"></i>
+          <div class="pi-body">
+            <div class="pi-title">All Products</div>
+            <div class="pi-meta">{all.length} items</div>
           </div>
-        );
-      })}
-    </div>
+        </a>
+        {flatSorted.map((p) => (
+          <a class="panel-item" class:list={[{ active: p.slug === currentSlug }]} href={`/products/${p.slug}/`}>
+            <div class="pi-body">
+              <div class="pi-title">{p.data.title.replace(/<[^>]+>/g, '')}</div>
+              <div class="pi-meta">{p.data.category} · ${(p.data.price / 100).toFixed(0)}</div>
+            </div>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <div class="panel-list">
+        <a class="panel-item active" href="/products/">
+          <i class="ph ph-package pi-icon"></i>
+          <div class="pi-body">
+            <div class="pi-title">All Products</div>
+            <div class="pi-meta">{all.length} items · {byCategory.size} categories</div>
+          </div>
+          <div class="pi-dot">{all.length}</div>
+        </a>
+        {PRODUCTS_CATEGORIES.map((cat) => {
+          const items = byCategory.get(cat.title) ?? [];
+          const isOpen = currentCategory === cat.title;
+          return (
+            <div class:list={['panel-group', { open: isOpen }]}>
+              <div class="panel-group-header">
+                <span class="pgh-label">{cat.title}</span>
+                <svg class="pgh-chevron" viewBox="0 0 10 6" fill="none">
+                  <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+              <div class="panel-group-items">
+                {items.map((p) => (
+                  <a class="panel-item" class:list={[{ active: p.slug === currentSlug }]} href={`/products/${p.slug}/`}>
+                    <div class="pi-body">
+                      <div class="pi-title">{p.data.title}</div>
+                      <div class="pi-meta">${(p.data.price / 100).toFixed(0)}</div>
+                    </div>
+                  </a>
+                ))}
+                {items.length === 0 && (
+                  <div class="panel-item" style="opacity:0.4;cursor:default;">
+                    <div class="pi-body">
+                      <div class="pi-title" style="font-style:italic;">Coming soon</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    )}
   </div>
 </aside>

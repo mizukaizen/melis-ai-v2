@@ -28,9 +28,11 @@ const {
 const fullTitle = title === 'melis.ai' ? title : `${title} · melis.ai`;
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 const paneClass = ['pane', 'active', inRoom ? 'in-room' : 'is-direct-view'].filter(Boolean).join(' ');
+// Home is sb1-only per the mockup. Every other route gets the contextual sb2.
+const hasSb2 = pane !== 'home';
 const appClass = [
   'app',
-  'has-sb2',
+  hasSb2 ? 'has-sb2' : 'no-sb2',
   pane === 'home' ? 'is-home' : '',
   inRoom ? 'in-room-mode' : 'is-landing-mode',
 ].filter(Boolean).join(' ');
@@ -71,7 +73,7 @@ const appClass = [
   <body data-pane={pane}>
     <div class={appClass}>
       <Sidebar1 pane={pane} />
-      <Sidebar2 pane={pane} />
+      {hasSb2 && <Sidebar2 pane={pane} />}
       <main class="content">
         <div class={paneClass} data-pane={pane}>
           <slot />

@@ -43,17 +43,23 @@ body::-webkit-scrollbar,
 }
 
 /* ──────────────────────────────────────────────────────────────
- * Post-mockup overrides — keep sb2 visible on every route per
- * Sean's request. The mockup hid sb2 on home + landing modes;
- * we want the SPA-like contextual sub-nav always present.
+ * Post-mockup overrides — sb2 is visible on every NON-home route.
+ * Home is sb1-only per mockup; AppLayout omits the Sidebar2
+ * component on /, so no CSS-side hide needed there.
  * Loaded AFTER mockup.css via AppLayout import order.
  * ────────────────────────────────────────────────────────────── */
-.app > aside.sidebar-2,
-.app.is-home > aside.sidebar-2,
-.app.is-landing-mode > aside.sidebar-2,
+.app:not(.is-home) > aside.sidebar-2,
+.app.has-sb2 > aside.sidebar-2,
+.app.is-landing-mode:not(.is-home) > aside.sidebar-2,
 .app.is-flat-list-mode > aside.sidebar-2,
 .app.is-library-landing > aside.sidebar-2 {
   display: flex !important;
+}
+/* Explicitly hide sb2 on home (defence-in-depth in case mockup
+   rules somehow inject one). */
+.app.is-home > aside.sidebar-2,
+.app.no-sb2 > aside.sidebar-2 {
+  display: none !important;
 }
 
 /* ──────────────────────────────────────────────────────────────
@@ -65,6 +71,8 @@ body::-webkit-scrollbar,
  * `height:auto`, and `mask-image` overrides so the section-hero-base
  * overlay can do its job.
  * ────────────────────────────────────────────────────────────── */
+/* Landing heroes are SHORT (340-380px) so the cards lift into the fold
+   at 900px viewport. Detail/in-room heroes stay tall for cinematic effect. */
 .pane .section-header,
 main.content .section-header {
   position: relative !important;
@@ -73,15 +81,15 @@ main.content .section-header {
   top: auto !important;
   width: auto !important;
   height: auto !important;
-  min-height: 560px !important;
+  min-height: 360px !important;
   overflow: hidden !important;
 }
 .pane.in-room .section-header,
 main.content .pane.in-room .section-header {
-  min-height: 600px !important;
+  min-height: 560px !important;
 }
 .pane[data-pane="library"].in-room .section-header {
-  min-height: 640px !important;
+  min-height: 600px !important;
 }
 
 .pane .section-header-inner {
@@ -90,17 +98,20 @@ main.content .pane.in-room .section-header {
   display: flex !important;
   flex-direction: column !important;
   justify-content: flex-end !important;
-  padding: 80px clamp(24px, 3vw, 56px) 60px !important;
+  padding: 64px clamp(24px, 3vw, 56px) 40px !important;
   max-width: 1280px !important;
   margin: 0 auto !important;
-  min-height: 560px !important;
+  min-height: 360px !important;
   width: 100% !important;
   height: auto !important;
   text-align: left !important;
   box-sizing: border-box !important;
 }
-.pane.in-room .section-header-inner { min-height: 600px !important; }
-.pane[data-pane="library"].in-room .section-header-inner { min-height: 640px !important; }
+.pane.in-room .section-header-inner {
+  min-height: 560px !important;
+  padding: 80px clamp(24px, 3vw, 56px) 60px !important;
+}
+.pane[data-pane="library"].in-room .section-header-inner { min-height: 600px !important; }
 
 .pane .section-title-block {
   text-align: left !important;
@@ -154,22 +165,41 @@ main.content .pane.in-room .section-header {
 /* Hide the back-link (per mockup) */
 .pane .back-link { display: none !important; }
 
-/* Section title overrides for landings + detail */
+/* Section title — landing tier (smaller). Detail/in-room tier bumps it up. */
 .pane .section-title {
   font-family: var(--font-display) !important;
-  font-size: clamp(64px, 7.5vw, 108px) !important;
+  font-size: clamp(52px, 6vw, 88px) !important;
   font-weight: 500 !important;
   line-height: 0.98 !important;
   letter-spacing: -0.02em !important;
   color: var(--text-1) !important;
   margin: 0 !important;
+  list-style: none !important;
 }
-.pane[data-pane="library"].in-room .section-title {
+.pane.in-room .section-title {
+  font-size: clamp(72px, 9vw, 132px) !important;
+}
+.pane[data-pane="library"].in-room .section-title,
+.pane[data-pane="products"].in-room .section-title,
+.pane[data-pane="courses"].in-room .section-title {
   font-size: clamp(72px, 9vw, 132px) !important;
 }
 .pane .section-title em {
   font-style: italic !important;
   color: var(--accent) !important;
+  /* Strip any inherited decoration that could create a stray glint. */
+  text-decoration: none !important;
+  background: none !important;
+  list-style: none !important;
+}
+/* Defence-in-depth: explicitly squash any stray pseudo on title em that
+   the mockup CSS or a UA stylesheet might inject. */
+.pane .section-title em::before,
+.pane .section-title em::after,
+.pane .section-title::before,
+.pane .section-title::after {
+  content: none !important;
+  display: none !important;
 }
 .pane .section-eyebrow {
   font-family: var(--font-mono) !important;
@@ -204,9 +234,13 @@ main.content .pane.in-room .section-header {
   color: var(--accent) !important;
 }
 
-/* When sb2 is present, give content room. */
-.app > main.content {
+/* Content shift: home is sb1-only (192px); every other route also clears sb2 (+280px). */
+.app.has-sb2 > main.content {
   margin-left: calc(var(--sidebar-w) + var(--sidebar-w2)) !important;
+}
+.app.no-sb2 > main.content,
+.app.is-home > main.content {
+  margin-left: var(--sidebar-w) !important;
 }
 @media (max-width: 1024px) {
   .app > main.content { margin-left: 0 !important; }

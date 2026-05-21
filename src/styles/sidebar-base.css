@@ -107,7 +107,7 @@
   font-size: 9px;
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.22em;
   color: var(--text-3);
   padding: 12px 10px 4px;
 }
@@ -116,9 +116,10 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 5px 10px;
+  padding: 4px 10px;
+  min-height: 28px;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.04em;
   font-weight: 400;
   color: var(--text-1);
@@ -173,10 +174,12 @@
 }
 .sb-item .count {
   margin-left: auto;
+  padding-left: 8px;
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 10px;
   color: var(--text-3);
   letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Constrain any stray inline SVGs in sb-item (legacy from the mockup) */
