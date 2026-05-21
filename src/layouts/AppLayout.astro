@@ -1,23 +1,31 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import Sidebar1 from '../components/Sidebar1.astro';
+import Sidebar2 from '../components/Sidebar2.astro';
 import '../styles/global.css';
+import '../styles/mockup.css';
 
 interface Props {
   title: string;
   description?: string;
   ogImage?: string;
-  pane?: string; // e.g. "home" | "articles" | "library" — drives sb1 active state
+  /** Maps to mockup's `data-pane` — drives sb1 active state + sb2 selection */
+  pane: string;
+  /** Set to true on detail (in-room) views — adds `in-room` class to the .pane */
+  inRoom?: boolean;
 }
 
 const {
   title,
   description = 'Sean Melis builds at the frontier of AI. Articles, prompts, products, courses, and a public library of ideas.',
   ogImage = '/og-default.png',
-  pane = 'home',
+  pane,
+  inRoom = false,
 } = Astro.props;
 
 const fullTitle = title === 'melis.ai' ? title : `${title} · melis.ai`;
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const paneClass = ['pane', 'active', inRoom ? 'in-room' : ''].filter(Boolean).join(' ');
 ---
 
 <!doctype html>
@@ -44,44 +52,23 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap"
     />
+    <!-- Phosphor Icons (used by the mockup via <i class="ph ph-..."> markup) -->
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css" />
 
     <ClientRouter />
   </head>
   <body data-pane={pane}>
     <div class="app">
-      <slot name="sidebar1">
-        <!-- default sb1 injected by AppShell-using pages -->
-      </slot>
-      <slot name="sidebar2" />
-      <main class="pane" data-pane={pane}>
-        <slot />
+      <Sidebar1 pane={pane} />
+      <Sidebar2 pane={pane} />
+      <main class="content">
+        <div class={paneClass} data-pane={pane}>
+          <slot />
+        </div>
       </main>
     </div>
-
-    <style>
-      .app {
-        display: grid;
-        grid-template-columns: var(--sidebar-w) var(--sidebar-w2) 1fr;
-        min-height: 100vh;
-      }
-
-      /* When no sb2 slot is rendered, collapse the column */
-      .app:has(> [data-sb2-empty]) {
-        grid-template-columns: var(--sidebar-w) 1fr;
-      }
-
-      .pane {
-        min-width: 0;
-        padding: var(--pane-pad-y) var(--pane-pad-x);
-      }
-
-      @media (max-width: 1024px) {
-        .app {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
   </body>
 </html>

@@ -1,0 +1,34 @@
+---
+// Primary sidebar (192px, fixed left). The HTML is lifted verbatim from
+// the v6 mockup at src/_html/sidebar.html — onclick handlers have been
+// replaced with real hrefs by scripts/extract-mockup-html.mjs.
+//
+// `pane` prop drives the active state via an inline script after hydration.
+import html from '../_html/sidebar.html?raw';
+
+interface Props {
+  pane?: string;
+}
+
+const { pane = 'home' } = Astro.props;
+---
+
+<aside class="sidebar" transition:persist="sidebar" data-active-pane={pane}>
+  <Fragment set:html={html} />
+</aside>
+
+<script>
+  // Set active state on the sb-item whose data-pane matches the current pane.
+  // Runs both on initial load and after view-transition swaps.
+  function applyActive() {
+    const sidebar = document.querySelector<HTMLElement>('aside.sidebar');
+    if (!sidebar) return;
+    const pane = document.body.dataset.pane || sidebar.dataset.activePane || 'home';
+    sidebar.querySelectorAll('.sb-item.active').forEach((el) => el.classList.remove('active'));
+    const match = sidebar.querySelector(`.sb-item[data-pane="${pane}"]`);
+    if (match) match.classList.add('active');
+  }
+  document.addEventListener('astro:page-load', applyActive);
+  document.addEventListener('astro:after-swap', applyActive);
+  applyActive();
+</script>
