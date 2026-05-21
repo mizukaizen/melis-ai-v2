@@ -5,6 +5,58 @@
 
 ---
 
+## ✅ Phase 1 complete — 2026-05-21
+
+**Verdict:** Visual identity overhaul landed. Mockup-vs-Astro parity verified at 1440×900 across all 8 critical pages. Plumbing scaffolded. Build green. Merge-ready.
+
+### What shipped
+
+- **8 pages parity-verified at 1440×900** via the side-by-side comparison HTML at `~/Documents/_cowork/outputs/website-rebrand/comparison-mockup-vs-astro.html`. Refreshed live captures in `comparison-screenshots/live-*.png`. Home, Articles landing, Products landing, Product detail (Complete Arsenal), Courses landing, Dossiers landing, Dossiers — Books, Dossier detail (Atomic Habits).
+- **Four passes total:**
+  1. **Initial scaffold + lift-and-shift** — Astro 5 + TS + Tailwind 4 + MDX. Vendored the v6 mockup's 14 `<style>` blocks (6,293 lines, 200 KB) into `mockup.css` verbatim. Extracted 21 named data arrays from the mockup HTML into JSON, converted to MDX content collections. 111 MDX files across 10 collections.
+  2. **Sidebar fixes** — Phosphor icons via CDN, `sidebar-base.css` for the missing-base layer the mockup assumed. 12 per-section `<Sidebar2>` components (plain list + panel-group variants). Lotus sigil on home wordmark. Imported the 30 dossier files Sean drafted in parallel.
+  3. **Visual identity overhaul** — overlay hero scaffold (`section-hero-base.css` + global.css overrides), hero image resolver (`lib/hero-image.ts`) using mockup-canonical `card-<section>-v1.png` images, `<FeaturedProductCard>` + `<FeaturedCourseCard>` for flagships, dossier detail Key Concept Table on category pages, dossier hero title sized up to `clamp(72, 9vw, 132)`.
+  4. **Final polish** — sb2 off on home (sb1-only per mockup), two-tier hero sizing (landing 360px / detail 560px / dossier-detail 600px), copy drift cleanup (mockup verbatim on Articles + Products + Courses), eyebrow restores on Dossiers, byline field fix verified, Products sb2 switches to flat list on detail routes, sb1 polish (28px row, 0.22em group-label letter-spacing, count badge tabular-nums).
+- **Total dossier count: 51** (21 original from the mockup `LIBRARY_DOSSIERS` extraction + 30 from Sean's May parallel batch in `~/Documents/_obsidian/01-PROJECTS/melis-ai/dossiers/`).
+- **All four API endpoints scaffolded with graceful env-missing fallbacks:**
+  - `POST /api/checkout/[productSlug]` — Stripe Checkout Session, 303 redirect. 503 with friendly message if `STRIPE_SECRET_KEY` or per-product `STRIPE_PRICE_*` env unset.
+  - `POST /api/webhooks/stripe` — `checkout.session.completed` handler, signature-verified, JSONL log, Resend trigger. 503 if signing secret unset.
+  - `POST /api/subscribe` — BeeHiiv subscriptions API, Zod-validated, 10/min/IP rate-limit. 503 if BeeHiiv env unset.
+  - `POST /api/lead` — Service inquiry → Resend → `LEAD_FORM_RECIPIENT`. 5/min/IP rate-limit. 503 if Resend env unset.
+
+### Build state at handoff
+
+- 164 prerendered routes + ~5 SSR endpoints.
+- `pnpm build`: 0 errors.
+- `pnpm exec astro check`: 0 errors, 0 warnings, 2 hints (unused imports in `scripts/` — not shipped).
+- Vercel preview: https://melis-ai-v2.vercel.app (production alias of the `ephesian/melis-ai-v2` Vercel project — non-prod for `melis.ai`).
+
+---
+
+## Phase 2 follow-ups (tracked for after merge — DO NOT start before Sean's go-ahead)
+
+| # | Item | Notes |
+|---|---|---|
+| 1 | **Tailwind 4 refactor of vendored `mockup.css`** | Biggest single chunk of tech debt — ~6,293 lines / 200 KB of cascade-heavy CSS. Strategy: section-by-section conversion to Tailwind utility classes, one PR per section (sidebar, section-hero, room-card, panel-group, etc.) so each is reviewable. Keep `mockup.css` in place until everything is migrated, then delete in a final PR. |
+| 2 | **cmdk modal implementation** | The `<button class="sb-search-btn">` with ⌘K kbd hints is in place on sb1 (visible on every route). The modal itself is a stub. Build as a React component (Astro+React already wired) keyed off ⌘K + click on the trigger. Search across articles + newsletter + products + courses + dossiers. |
+| 3 | **Sb2 dossier panel alphabetisation** | `Sidebar2Dossiers` currently lists dossiers within each category in content-collection insertion order. Should call `libraryNormalise()` (strip leading the/a/an, lowercase) inside the sb2 builder like the KCT does. The category page is already correct. |
+| 4 | **Sb2 course module count badges** | Mockup shows e.g. `8 modules` next to course rows; live shows only `LIVE`/`SOON` status. Add a module-count derivation in `Sidebar2Courses` (either from frontmatter `modules` array length or a new frontmatter field). |
+| 5 | **Home portal card 5th-card right-edge clipping at exactly 1440px** | Box-sizing math against sb1 192px + 24px gap. Safe at real-world widths — visible only in the strict 1440×900 capture. Either tighten the gap to 16px or use `grid-template-columns: repeat(5, minmax(0, 1fr))` to allow shrink. |
+| 6 | **Second dossier batch** | README in `~/Documents/_obsidian/01-PROJECTS/melis-ai/dossiers/` lists ~30 prioritised candidates for batch 2. Current 51 → target 80+. Same drop-into-`src/content/dossiers/` + verify with `astro check` pattern as batch 1. |
+| 7 | **Real Stripe products in live mode** | All `STRIPE_PRICE_*` env vars currently empty → endpoints return 503 with friendly message. Sean creates products in Stripe dashboard, pastes Price IDs into Vercel env per-product. Convention is `STRIPE_PRICE_<UPPER_SNAKE_SLUG>` matching `stripePriceEnvKey` in each MDX frontmatter. |
+| 8 | **BeeHiiv production publication ID + Resend domain verify** | Same pattern as Stripe — env vars currently placeholders. Subscribe form returns 503 until populated. Verify `melis.ai` domain in Resend for transactional sends. |
+| 9 | **DNS cutover from `melis-ai-coming-soon` to `melis-ai-v2`** | Sean handles manually after final review. `melis-ai-v2.vercel.app` aliases the production deployment of the new project; the old `melis-ai-coming-soon` project still holds the `melis.ai` domain. Decision needed: rename Vercel projects, update DNS, retire the coming-soon project. |
+| 10 | **Image optimisation (PNG → WebP)** | 150 MB of paper-craft PNGs in `public/section-rooms/` + 13 MB in `public/library-rooms/`. Vercel CDN serves them fine; WebP at quality 82 would cut weight 50–70% and improve Lighthouse. Sharp script stub in `scripts/optimize-images.mjs` (TODO). |
+
+### What's deliberately NOT in Phase 2
+
+- DNS for `melis.ai` (Sean owns timing)
+- Deleting old `melis-ai-astro`, `melis-ai-website`, `melis-ai-coming-soon` Vercel projects (Sean retires when ready)
+- Touching the mockup file at `_cowork/outputs/website-rebrand/melis-ai-spa-v6-astro-content.html` (it's the visual-design source-of-truth)
+- Any content-side rewrites — copy is locked to the mockup
+
+---
+
 ## Status snapshot
 
 - **Branch:** `feat/initial-port`
