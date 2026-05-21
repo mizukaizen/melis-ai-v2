@@ -1,0 +1,174 @@
+---
+import AppLayout from '../../../layouts/AppLayout.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const items = await getCollection('dossiers');
+  return items.map((item) => ({
+    params: { category: item.data.category, slug: item.slug },
+    props: { item },
+  }));
+}
+
+type Props = { item: CollectionEntry<'dossiers'> };
+const { item } = Astro.props as Props;
+const { Content } = await item.render();
+const data = item.data;
+const cover = data.cover || `/library-rooms/lib-${data.category}.png`;
+---
+
+<AppLayout title={data.title} pane="library" inRoom description={data.lede}>
+  <section class="section-header">
+    <div class="section-hero-bg" style={`background-image: url('${cover}');`}></div>
+    <div class="section-hero-veil"></div>
+    <div class="section-header-inner">
+      <a class="back-link" href={`/dossiers/${data.category}/`} data-pane="library">← back to {data.category.replace(/-/g, ' ')}</a>
+      <div class="section-title-block">
+        <div class="section-eyebrow">{data.eyebrow}</div>
+        <h1 class="section-title" set:html={data.titleHtml || data.title}></h1>
+        <p class="section-lead">{data.lede}</p>
+        <p class="section-byline" style="margin-top:8px;font-family:var(--font-mono);font-size:11px;color:var(--text-3);letter-spacing:0.06em;">{data.byline}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-body">
+    <article class="dossier-content">
+      <Content />
+
+      {data.quote && (
+        <blockquote class="dossier-quote">
+          <p>{data.quote.text}</p>
+          <cite>{data.quote.cite}</cite>
+        </blockquote>
+      )}
+
+      {data.whyItMatters && (
+        <section class="dossier-section">
+          <h2 class="h2">Why it <em>matters</em></h2>
+          <p>{data.whyItMatters}</p>
+        </section>
+      )}
+
+      {data.keyIdeas && data.keyIdeas.length > 0 && (
+        <section class="dossier-section">
+          <h2 class="h2">Key <em>ideas</em></h2>
+          <ul class="dossier-list">
+            {data.keyIdeas.map((idea) => <li set:html={idea}></li>)}
+          </ul>
+        </section>
+      )}
+
+      {data.takeForward && (
+        <section class="dossier-section">
+          <h2 class="h2">Take it <em>forward</em></h2>
+          <p>{data.takeForward}</p>
+        </section>
+      )}
+
+      {data.keyConcept && (
+        <section class="dossier-section dossier-key-concept">
+          <h3>Key concept</h3>
+          <div class="kc-name">{data.keyConcept.name}</div>
+          <div class="kc-desc">{data.keyConcept.desc}</div>
+        </section>
+      )}
+    </article>
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
+
+  <style>
+    .dossier-content {
+      max-width: 68ch;
+      margin: 0 auto;
+    }
+    .dossier-content :global(p) {
+      font-family: var(--font-body);
+      font-size: 17px;
+      line-height: 1.7;
+      color: var(--text-1);
+      margin: 0 0 1.4em;
+    }
+    .dossier-content :global(em) { color: var(--accent); font-style: italic; }
+    .dossier-content :global(strong) { color: var(--text-1); font-weight: 600; }
+    .dossier-section { margin-top: 3em; }
+    .dossier-section .h2 {
+      font-family: var(--font-display);
+      font-size: 30px;
+      font-weight: 500;
+      line-height: 1.2;
+      color: var(--text-1);
+      margin: 0 0 0.6em;
+    }
+    .dossier-section .h2 em { color: var(--accent); font-style: italic; }
+    .dossier-quote {
+      border-left: 2px solid var(--accent);
+      padding: 0.5em 0 0.5em 1.5em;
+      margin: 2.4em 0;
+    }
+    .dossier-quote p {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-style: italic;
+      line-height: 1.4;
+      color: var(--text-1);
+      margin: 0 0 0.6em;
+    }
+    .dossier-quote cite {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-3);
+      letter-spacing: 0.06em;
+      font-style: normal;
+    }
+    .dossier-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .dossier-list :global(li) {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-1);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--text-2);
+    }
+    .dossier-list :global(li:last-child) { border-bottom: none; }
+    .dossier-list :global(li strong) { color: var(--text-1); display: block; margin-bottom: 4px; }
+    .dossier-key-concept {
+      margin-top: 4em;
+      padding: 24px 28px;
+      background: rgba(168, 85, 247, 0.04);
+      border: 1px solid rgba(168, 85, 247, 0.12);
+      border-radius: 12px;
+    }
+    .dossier-key-concept h3 {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 0 0 12px;
+    }
+    .kc-name {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-style: italic;
+      color: var(--text-1);
+      margin-bottom: 6px;
+    }
+    .kc-desc {
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--text-2);
+      line-height: 1.55;
+    }
+  </style>
+</AppLayout>

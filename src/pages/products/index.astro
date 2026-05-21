@@ -1,0 +1,197 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import { getCollection } from 'astro:content';
+import { PRODUCTS_HERO } from '../../data/products-hero';
+import { PRODUCTS_CATEGORIES } from '../../data/products-categories';
+
+export const prerender = true;
+
+const products = (await getCollection('products')).filter((p) => !p.data.draft);
+const byCategory = new Map<string, typeof products>();
+for (const p of products) {
+  const cat = p.data.category || 'Other';
+  if (!byCategory.has(cat)) byCategory.set(cat, [] as never);
+  byCategory.get(cat)!.push(p);
+}
+
+function priceLabel(cents: number) {
+  return `$${(cents / 100).toFixed(0)}`;
+}
+---
+
+<AppLayout
+  title="Products"
+  pane="products"
+  description="Starter kits, Claude skills, AI personas, spreadsheets, and more — the AI operator's toolbox."
+>
+  <section class="section-header">
+    <div class="section-hero-bg" style={`background-image: url('/${PRODUCTS_HERO.image}');`}></div>
+    <div class="section-hero-veil"></div>
+    <div class="section-header-inner">
+      <a class="back-link" href="/" data-pane="home">← back to studio</a>
+      <div class="section-title-block">
+        <div class="section-eyebrow">{PRODUCTS_HERO.eyebrow}</div>
+        <h1 class="section-title"><em>Products</em> &amp; Tools</h1>
+        <p class="section-lead">{PRODUCTS_HERO.longHook}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-body">
+    <!-- Hero bundle card -->
+    <div class="hero-bundle-card">
+      <div class="hbc-title">{PRODUCTS_HERO.title}</div>
+      <div class="hbc-line">{PRODUCTS_HERO.line}</div>
+      <div class="hbc-meta">
+        <div class="hbc-badge">{PRODUCTS_HERO.badge}</div>
+        <div class="hbc-save">{PRODUCTS_HERO.save}</div>
+      </div>
+      <a class="hbc-cta" href={`/products/${PRODUCTS_HERO.id}/`}>View bundle →</a>
+    </div>
+
+    {PRODUCTS_CATEGORIES.map((cat) => {
+      const items = byCategory.get(cat.title) ?? [];
+      return (
+        <section class="product-category-section">
+          <header class="product-category-header">
+            <div class="pch-sigil">{cat.sigil}</div>
+            <h2 class="pch-title">{cat.title}</h2>
+            <p class="pch-line">{cat.line}</p>
+          </header>
+          <div class="product-grid">
+            {items.map((p) => (
+              <a class="product-card" href={`/products/${p.slug}/`}>
+                <div class="pc-title">{p.data.title}</div>
+                <div class="pc-hook">{p.data.lede}</div>
+                <div class="pc-price">{priceLabel(p.data.price)}</div>
+              </a>
+            ))}
+            {items.length === 0 && (
+              <div class="product-card product-card-empty">
+                <div class="pc-title">Coming soon</div>
+                <div class="pc-hook">{cat.line}</div>
+              </div>
+            )}
+          </div>
+        </section>
+      );
+    })}
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
+
+  <style>
+    .hero-bundle-card {
+      max-width: 920px;
+      margin: 0 auto 4em;
+      padding: 32px 36px;
+      background: linear-gradient(180deg, rgba(168,85,247,0.08), rgba(168,85,247,0.02));
+      border: 1px solid rgba(168, 85, 247, 0.2);
+      border-radius: 16px;
+    }
+    .hbc-title {
+      font-family: var(--font-display);
+      font-size: 32px;
+      color: var(--text-1);
+      margin-bottom: 8px;
+    }
+    .hbc-line {
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: var(--text-2);
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    .hbc-meta { display: flex; gap: 16px; align-items: center; margin-bottom: 20px; }
+    .hbc-badge {
+      font-family: var(--font-display);
+      font-size: 22px;
+      color: var(--accent);
+    }
+    .hbc-save {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-3);
+      letter-spacing: 0.06em;
+    }
+    .hbc-cta {
+      display: inline-block;
+      padding: 12px 22px;
+      background: var(--accent);
+      color: white;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+    }
+    .product-category-section { margin-bottom: 4em; }
+    .product-category-header { margin-bottom: 1.5em; }
+    .pch-sigil {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .pch-title {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 500;
+      color: var(--text-1);
+      margin: 0 0 4px;
+    }
+    .pch-line {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-3);
+      letter-spacing: 0.04em;
+      margin: 0;
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .product-card {
+      display: flex;
+      flex-direction: column;
+      padding: 20px 22px;
+      background: rgba(20, 20, 24, 0.45);
+      border: 1px solid var(--border-2);
+      border-radius: 12px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
+    }
+    .product-card:hover {
+      border-color: rgba(168, 85, 247, 0.3);
+      transform: translateY(-2px);
+    }
+    .pc-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      color: var(--text-1);
+      margin-bottom: 8px;
+    }
+    .pc-hook {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-2);
+      line-height: 1.55;
+      flex: 1;
+      margin-bottom: 14px;
+    }
+    .pc-price {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+    }
+    .product-card-empty { opacity: 0.5; pointer-events: none; }
+  </style>
+</AppLayout>

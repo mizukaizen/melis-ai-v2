@@ -1,0 +1,41 @@
+---
+interface Props {
+  productSlug: string;
+  label?: string;
+}
+
+const { productSlug, label = 'Buy now →' } = Astro.props;
+---
+
+<form method="POST" action={`/api/checkout/${productSlug}`} class="stripe-buy-form">
+  <button type="submit" class="stripe-buy-button">{label}</button>
+  <noscript>
+    <p class="stripe-noscript">Stripe Checkout requires the form post above; no JS needed.</p>
+  </noscript>
+</form>
+
+<style>
+  .stripe-buy-form { margin: 0; }
+  .stripe-buy-button {
+    display: inline-block;
+    padding: 16px 28px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s var(--ease), transform 0.1s var(--ease);
+  }
+  .stripe-buy-button:hover { background: #9333ea; }
+  .stripe-buy-button:active { transform: scale(0.98); }
+  .stripe-noscript {
+    margin-top: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-3);
+  }
+</style>

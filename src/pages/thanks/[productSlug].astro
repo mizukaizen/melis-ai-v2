@@ -1,0 +1,65 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import { getEntry } from 'astro:content';
+import Stripe from 'stripe';
+
+const productSlug = Astro.params.productSlug!;
+const sessionId = Astro.url.searchParams.get('session_id');
+const product = await getEntry('products', productSlug);
+
+let amount: string | null = null;
+let customerEmail: string | null = null;
+
+if (sessionId && import.meta.env.STRIPE_SECRET_KEY && import.meta.env.STRIPE_SECRET_KEY !== 'sk_test_xxx') {
+  try {
+    const stripe = new Stripe(import.meta.env.STRIPE_SECRET_KEY);
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    if (session.amount_total) {
+      amount = `${(session.amount_total / 100).toFixed(2)} ${(session.currency || 'usd').toUpperCase()}`;
+    }
+    customerEmail = session.customer_details?.email || null;
+  } catch (err) {
+    // ignore — fall back to generic thanks message
+  }
+}
+---
+
+<AppLayout title="Thank you" pane="products" inRoom>
+  <section class="section-header">
+    <div class="section-header-inner">
+      <a class="back-link" href={`/products/${productSlug}/`} data-pane="products">← back to product</a>
+      <div class="section-title-block">
+        <div class="section-eyebrow">Receipt</div>
+        <h1 class="section-title"><em>Thank you.</em></h1>
+        <p class="section-lead">Your order is in. A receipt has been emailed to {customerEmail || 'your inbox'}.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-body">
+    <article class="thanks-content">
+      <p>You purchased <strong>{product?.data.title || productSlug}</strong>{amount && ` — ${amount}`}.</p>
+      <p>
+        Delivery: digital products land in your inbox within a few minutes.
+        If anything is unclear, reply to the receipt email — it comes from
+        a real human.
+      </p>
+      <p>
+        <a href="/" data-pane="home">← back to studio</a>
+      </p>
+    </article>
+  </section>
+
+  <style>
+    .thanks-content {
+      max-width: 60ch;
+      margin: 0 auto;
+      font-family: var(--font-body);
+      font-size: 17px;
+      line-height: 1.7;
+      color: var(--text-1);
+    }
+    .thanks-content p { margin: 0 0 1.2em; }
+    .thanks-content a { color: var(--accent); text-decoration: none; }
+  </style>
+</AppLayout>

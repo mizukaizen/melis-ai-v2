@@ -1,0 +1,162 @@
+---
+import AppLayout from '../../../layouts/AppLayout.astro';
+import { getCollection } from 'astro:content';
+import { DOSSIER_CATEGORIES } from '../../../data/dossier-categories';
+import { DOSSIER_CATALOG } from '../../../data/dossier-catalog';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  return Object.keys(DOSSIER_CATEGORIES).map((category) => ({
+    params: { category },
+    props: { category },
+  }));
+}
+
+const { category } = Astro.props as { category: keyof typeof DOSSIER_CATEGORIES };
+const cat = DOSSIER_CATEGORIES[category];
+if (!cat) {
+  throw new Error(`Unknown category: ${category}`);
+}
+
+// Fleshed dossiers in this category — by reading the collection and
+// matching the data.category field.
+const allDossiers = await getCollection('dossiers');
+const fleshedByTitle = new Map<string, (typeof allDossiers)[number]>();
+for (const d of allDossiers) {
+  if (d.data.category === category) {
+    fleshedByTitle.set(d.data.title.replace(/<[^>]+>/g, ''), d);
+  }
+}
+
+// Full catalog list for this category (the alphabetical 242).
+const catalog = (DOSSIER_CATALOG as Record<string, string[]>)[category] ?? [];
+
+function slugify(s: string) {
+  return s
+    .normalize('NFKD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/['']/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+---
+
+<AppLayout
+  title={cat.title}
+  pane="library"
+  inRoom
+  description={cat.line}
+>
+  <section class="section-header">
+    <div class="section-hero-bg" style={`background-image: url('/${cat.image}');`}></div>
+    <div class="section-hero-veil"></div>
+    <div class="section-header-inner">
+      <a class="back-link" href="/dossiers/" data-pane="library">← back to Dossiers</a>
+      <div class="section-title-block">
+        <div class="section-eyebrow">Dossiers · {cat.count}</div>
+        <h1 class="section-title"><em>{cat.title}</em></h1>
+        <p class="section-lead">{cat.line}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-body">
+    <div class="library-room">
+      <div class="key-concept-table">
+        {catalog.map((title, i) => {
+          const fleshed = fleshedByTitle.get(title);
+          const num = String(i + 1).padStart(2, '0');
+          if (fleshed) {
+            return (
+              <a class="kct-row kct-row-live" href={`/dossiers/${category}/${fleshed.slug}/`}>
+                <div class="kct-num">No. {num}</div>
+                <div class="kct-main">
+                  <h4 class="kct-title">{title}</h4>
+                  <p class="kct-byline">{fleshed.data.byline}</p>
+                </div>
+                <div class="kct-cta">Read →</div>
+              </a>
+            );
+          }
+          return (
+            <div class="kct-row kct-row-stub">
+              <div class="kct-num">No. {num}</div>
+              <div class="kct-main">
+                <h4 class="kct-title">{title}</h4>
+                <p class="kct-byline">Brief forthcoming.</p>
+              </div>
+              <div class="kct-cta kct-cta-muted">Soon</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
+
+  <style>
+    .key-concept-table {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .kct-row {
+      display: grid;
+      grid-template-columns: 80px 1fr auto;
+      gap: 24px;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border-1);
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.2s var(--ease);
+    }
+    .kct-row-live:hover {
+      background: rgba(168, 85, 247, 0.04);
+    }
+    .kct-num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-3);
+      letter-spacing: 0.06em;
+    }
+    .kct-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--text-1);
+      margin: 0 0 4px;
+    }
+    .kct-byline {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-3);
+      letter-spacing: 0.04em;
+      margin: 0;
+    }
+    .kct-cta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      padding: 8px 14px;
+      border: 1px solid rgba(168, 85, 247, 0.2);
+      border-radius: 6px;
+    }
+    .kct-row-live:hover .kct-cta {
+      background: rgba(168, 85, 247, 0.12);
+    }
+    .kct-cta-muted {
+      color: var(--text-3);
+      border-color: var(--border-1);
+    }
+  </style>
+</AppLayout>

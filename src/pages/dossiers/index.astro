@@ -1,0 +1,63 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import { DOSSIER_CATEGORIES } from '../../data/dossier-categories';
+
+export const prerender = true;
+
+// Ordered list — preserves the mockup's display order.
+const ORDER = [
+  'books', 'essays', 'mental-models', 'thought-experiments',
+  'remarkable-people', 'letters', 'speeches', 'poems',
+  'manifestos', 'scientific-papers', 'ai-concepts', 'vocabulary',
+] as const;
+
+const cats = ORDER
+  .map((slug) => ({ slug, ...DOSSIER_CATEGORIES[slug] }))
+  .filter((c) => c.title);
+---
+
+<AppLayout
+  title="Dossiers"
+  pane="library"
+  description="A small archive of the world's most important ideas — books, essays, mental models, and concepts worth remembering."
+>
+  <section class="section-header">
+    <div class="section-hero-bg" style="background-image: url('/library-rooms/lib-landing.png');"></div>
+    <div class="section-hero-veil"></div>
+    <div class="section-header-inner">
+      <a class="back-link" href="/" data-pane="home">← back to studio</a>
+      <div class="section-title-block">
+        <div class="section-eyebrow">Reference · Dossiers</div>
+        <h1 class="section-title"><em>Dossiers</em></h1>
+        <p class="section-lead">A small archive of the world's most important ideas — books, essays, mental models, and concepts worth remembering. Each entry is an AI-led breakdown: the work, why it matters, the key concepts, and how to take them forward. Built as a daily-return shelf, kept open for anyone who wants a calm space to read one idea at a time.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-body">
+    <div class="library-landing">
+      <h2 class="h2">A small archive of <em>dossiers for operators</em>.</h2>
+      <p class="body-lead">A small archive of the world's most important ideas. AI-led breakdowns of books, essays, mental models, and concepts worth remembering — 242 entries across twelve categories. Each one gets a brief: the work, why it matters, the key concepts, and how to take them forward. Built as a daily-return shelf, kept open for anyone who wants a calm space to read one idea at a time.</p>
+
+      <div class="room-grid">
+        {cats.map((c) => (
+          <a class="room-card" href={`/dossiers/${c.slug}/`}>
+            <div class="room-card-img" style={`background-image: url('/${c.image}');`}></div>
+            <div class="room-card-veil"></div>
+            <div class="room-card-arrow">↗</div>
+            <div class="room-card-meta">
+              <div class="room-card-eyebrow">Dossiers · {c.count}</div>
+              <div class="room-card-title">{c.title}</div>
+              <div class="room-card-line">{c.line}</div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
+</AppLayout>

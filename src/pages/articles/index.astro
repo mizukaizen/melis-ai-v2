@@ -1,0 +1,14 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import html from '../../_html/pane-articles.html?raw';
+
+export const prerender = true;
+---
+
+<AppLayout
+  title="Articles"
+  pane="articles"
+  description="Essays and field notes from inside the operation. Honest, slow, sometimes unfinished."
+>
+  <Fragment set:html={html} />
+</AppLayout>

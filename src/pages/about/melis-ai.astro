@@ -1,0 +1,12 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import html from '../../_html/pane-about-studio.html?raw';
+---
+
+<AppLayout
+  title="About melis.ai"
+  pane="about-studio"
+  description="The studio behind it all — what melis.ai is, why it exists, and how the pieces fit."
+>
+  <Fragment set:html={html} />
+</AppLayout>
