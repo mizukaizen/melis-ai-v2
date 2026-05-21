@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@import "./tokens.css";
+
+/* ── Felt background ── */
+html, body {
+  background: #050505;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' /><feColorMatrix values='0 0 0 0 0.075  0 0 0 0 0.075  0 0 0 0 0.08  0 0 0 0.42 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  color: var(--text-1);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Invisible scrollbar (per mockup) ── */
+html, body, * {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar { display: none; }
+
+/* ── Selection ── */
+::selection {
+  background: var(--accent-subtle);
+  color: var(--text-1);
+}
+
+/* ── View transitions (cross-fade) ── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+}
+
+/* ── Section spacing tokens ── */
+:root {
+  --pane-pad-x: clamp(24px, 4vw, 64px);
+  --pane-pad-y: clamp(32px, 5vh, 80px);
+  --section-max-w: 1240px;
+}
