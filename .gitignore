@@ -40,3 +40,4 @@ public/library-rooms-webp/
 
 # Order log (local dev artifact)
 data/orders.jsonl
+.vercel
