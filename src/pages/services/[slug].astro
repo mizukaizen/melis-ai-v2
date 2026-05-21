@@ -1,0 +1,102 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import LeadForm from '../../components/LeadForm.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const items = await getCollection('services');
+  return items.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
+}
+
+type Props = { item: CollectionEntry<'services'> };
+const { item } = Astro.props as Props;
+const data = item.data;
+const cover = data.cover || '/card-services-v1.png';
+---
+
+<AppLayout title={data.title} pane="services" inRoom description={data.lede}>
+  <section class="section-header">
+    <div class="section-hero-bg" style={`background-image: url('${cover}');`}></div>
+    <div class="section-hero-veil"></div>
+    <div class="section-header-inner">
+      <a class="back-link" href="/services/" data-pane="services">← back to Services</a>
+      <div class="section-title-block">
+        <div class="section-eyebrow">{data.eyebrow}</div>
+        <h1 class="section-title" set:html={data.titleHtml || data.title}></h1>
+        {data.lede && <p class="section-lead">{data.lede}</p>}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-body">
+    {data.strip && data.strip.length > 0 && (
+      <div class="service-strip">
+        {data.strip.map((s) => (
+          <div class="ss-cell">
+            <div class="ss-lbl">{s.lbl}</div>
+            <div class="ss-val">{s.val}</div>
+          </div>
+        ))}
+      </div>
+    )}
+
+    <div class="service-lead-form">
+      <h3>Get in touch.</h3>
+      <p>Tell Sean what you're trying to ship. He responds personally within a working day.</p>
+      <LeadForm service={data.title} />
+    </div>
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
+
+  <style>
+    .service-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 16px;
+      max-width: 920px;
+      margin: 0 auto 3em;
+      padding: 20px 24px;
+      background: rgba(20, 20, 24, 0.45);
+      border: 1px solid var(--border-2);
+      border-radius: 12px;
+    }
+    .ss-lbl {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-3);
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+    .ss-val {
+      font-family: var(--font-display);
+      font-size: 18px;
+      color: var(--text-1);
+    }
+    .service-lead-form {
+      max-width: 540px;
+      margin: 0 auto;
+    }
+    .service-lead-form h3 {
+      font-family: var(--font-display);
+      font-size: 28px;
+      color: var(--text-1);
+      margin: 0 0 8px;
+    }
+    .service-lead-form p {
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--text-2);
+      margin: 0 0 24px;
+      line-height: 1.55;
+    }
+  </style>
+</AppLayout>

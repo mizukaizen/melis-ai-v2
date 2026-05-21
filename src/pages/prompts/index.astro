@@ -1,0 +1,83 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import html from '../../_html/pane-prompts.html?raw';
+import { getCollection } from 'astro:content';
+
+export const prerender = true;
+
+const prompts = (await getCollection('prompts')).filter((p) => !p.data.draft);
+const byCategory = new Map<string, typeof prompts>();
+for (const p of prompts) {
+  const c = p.data.category;
+  if (!byCategory.has(c)) byCategory.set(c, [] as never);
+  byCategory.get(c)!.push(p);
+}
+---
+
+<AppLayout
+  title="Prompts"
+  pane="prompts"
+  description="A working operator's prompt library — categorised, tested, and ready to copy."
+>
+  <Fragment set:html={html} />
+
+  <section class="section-body" style="padding-top:48px;">
+    {Array.from(byCategory.entries()).map(([category, items]) => (
+      <section class="prompt-category">
+        <h2 class="h2">{category}</h2>
+        <div class="prompt-grid">
+          {items.map((p) => (
+            <a class="prompt-card" href={`/prompts/${p.slug}/`}>
+              <div class="pc-title">{p.data.title}</div>
+              <div class="pc-line">{p.data.lede}</div>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))}
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
+
+  <style>
+    .prompt-category { margin-bottom: 3em; max-width: 1100px; margin-left: auto; margin-right: auto; }
+    .prompt-category .h2 {
+      font-family: var(--font-display);
+      font-size: 28px;
+      color: var(--text-1);
+      margin: 0 0 1em;
+    }
+    .prompt-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 12px;
+    }
+    .prompt-card {
+      display: flex;
+      flex-direction: column;
+      padding: 18px 22px;
+      background: rgba(20, 20, 24, 0.45);
+      border: 1px solid var(--border-2);
+      border-radius: 10px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s var(--ease);
+    }
+    .prompt-card:hover { border-color: rgba(168, 85, 247, 0.3); }
+    .pc-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      color: var(--text-1);
+      margin-bottom: 6px;
+    }
+    .pc-line {
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: var(--text-2);
+      line-height: 1.55;
+    }
+  </style>
+</AppLayout>

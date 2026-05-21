@@ -1,0 +1,116 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const items = await getCollection('prompts');
+  return items.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
+}
+
+type Props = { item: CollectionEntry<'prompts'> };
+const { item } = Astro.props as Props;
+const data = item.data;
+const cover = data.cover || '/card-products-v1.png';
+---
+
+<AppLayout title={data.title} pane="prompts" inRoom description={data.lede}>
+  <section class="section-header">
+    <div class="section-hero-bg" style={`background-image: url('${cover}');`}></div>
+    <div class="section-hero-veil"></div>
+    <div class="section-header-inner">
+      <a class="back-link" href="/prompts/" data-pane="prompts">← back to Prompts</a>
+      <div class="section-title-block">
+        <div class="section-eyebrow">{data.eyebrow}</div>
+        <h1 class="section-title">{data.title}</h1>
+        {data.lede && <p class="section-lead">{data.lede}</p>}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-body">
+    <div class="prompt-detail">
+      <div class="prompt-toolbar">
+        <button class="copy-btn" id="copy-btn" data-text={data.prompt}>Copy prompt</button>
+        <span class="copy-status" id="copy-status"></span>
+      </div>
+      <pre class="prompt-body"><code set:html={data.prompt.replace(/</g, '&lt;')}></code></pre>
+    </div>
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
+
+  <style>
+    .prompt-detail { max-width: 900px; margin: 0 auto; }
+    .prompt-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .copy-btn {
+      padding: 10px 18px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: background 0.2s var(--ease);
+    }
+    .copy-btn:hover { background: #9333ea; }
+    .copy-status {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #5eead4;
+    }
+    .prompt-body {
+      padding: 24px 28px;
+      background: rgba(20, 20, 24, 0.65);
+      border: 1px solid var(--border-2);
+      border-radius: 10px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text-1);
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+    .prompt-body :global(.pv-var) {
+      color: var(--accent);
+      background: var(--accent-subtle);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+  </style>
+
+  <script>
+    function wire() {
+      const btn = document.getElementById('copy-btn') as HTMLButtonElement | null;
+      const status = document.getElementById('copy-status');
+      if (!btn || !status || btn.dataset.wired === '1') return;
+      btn.dataset.wired = '1';
+      btn.addEventListener('click', async () => {
+        const text = btn.dataset.text || '';
+        try {
+          await navigator.clipboard.writeText(text);
+          status.textContent = 'Copied.';
+          setTimeout(() => (status.textContent = ''), 1800);
+        } catch {
+          status.textContent = 'Copy failed — select manually.';
+        }
+      });
+    }
+    document.addEventListener('astro:page-load', wire);
+    wire();
+  </script>
+</AppLayout>

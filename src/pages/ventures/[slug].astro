@@ -1,0 +1,78 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const items = await getCollection('ventures');
+  return items.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
+}
+
+type Props = { item: CollectionEntry<'ventures'> };
+const { item } = Astro.props as Props;
+const data = item.data;
+const cover = data.cover || '/card-projects-v1.png';
+---
+
+<AppLayout title={data.title} pane="projects" inRoom description={data.lede}>
+  <section class="section-header">
+    <div class="section-hero-bg" style={`background-image: url('${cover}');`}></div>
+    <div class="section-hero-veil"></div>
+    <div class="section-header-inner">
+      <a class="back-link" href="/ventures/" data-pane="projects">← back to Ventures</a>
+      <div class="section-title-block">
+        <div class="section-eyebrow">{data.eyebrow}</div>
+        <h1 class="section-title" set:html={data.titleHtml || data.title}></h1>
+        {data.lede && <p class="section-lead">{data.lede}</p>}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-body">
+    {data.strip && data.strip.length > 0 && (
+      <div class="venture-strip">
+        {data.strip.map((s) => (
+          <div class="vs-cell">
+            <div class="vs-lbl">{s.lbl}</div>
+            <div class="vs-val">{s.val}</div>
+          </div>
+        ))}
+      </div>
+    )}
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
+
+  <style>
+    .venture-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 16px;
+      max-width: 920px;
+      margin: 0 auto 3em;
+      padding: 20px 24px;
+      background: rgba(20, 20, 24, 0.45);
+      border: 1px solid var(--border-2);
+      border-radius: 12px;
+    }
+    .vs-lbl {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-3);
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+    .vs-val {
+      font-family: var(--font-display);
+      font-size: 18px;
+      color: var(--text-1);
+    }
+  </style>
+</AppLayout>

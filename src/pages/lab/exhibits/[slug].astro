@@ -1,0 +1,63 @@
+---
+import AppLayout from '../../../layouts/AppLayout.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const items = await getCollection('exhibits');
+  return items.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
+}
+
+type Props = { item: CollectionEntry<'exhibits'> };
+const { item } = Astro.props as Props;
+const data = item.data;
+const cover = data.cover || '/card-projects-v1.png';
+---
+
+<AppLayout title={data.title} pane="exhibits" inRoom description={data.lede}>
+  <section class="section-header">
+    <div class="section-hero-bg" style={`background-image: url('${cover}');`}></div>
+    <div class="section-hero-veil"></div>
+    <div class="section-header-inner">
+      <a class="back-link" href="/lab/exhibits/" data-pane="exhibits">← back to Exhibits</a>
+      <div class="section-title-block">
+        <div class="section-eyebrow">{data.eyebrow}</div>
+        <h1 class="section-title">{data.title}</h1>
+        {data.lede && <p class="section-lead">{data.lede}</p>}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-body">
+    {data.liveUrl && (
+      <div class="exhibit-cta">
+        <a class="ec-link" href={data.liveUrl} target="_blank" rel="noopener">View the exhibit ↗</a>
+      </div>
+    )}
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
+
+  <style>
+    .exhibit-cta { text-align: center; margin: 3em 0; }
+    .ec-link {
+      display: inline-block;
+      padding: 14px 28px;
+      background: var(--accent);
+      color: white;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+    }
+    .ec-link:hover { background: #9333ea; }
+  </style>
+</AppLayout>

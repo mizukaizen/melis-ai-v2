@@ -22,8 +22,9 @@ export const POST: APIRoute = async ({ params, url }) => {
   }
 
   const priceEnvKey = entry.data.stripePriceEnvKey;
-  // @ts-expect-error — dynamic env lookup
-  const priceId = priceEnvKey ? import.meta.env[priceEnvKey] : undefined;
+  const priceId = priceEnvKey
+    ? (import.meta.env as Record<string, string | undefined>)[priceEnvKey]
+    : undefined;
   if (!priceId || priceId === 'price_xxx') {
     return new Response(
       `No Stripe Price ID configured for this product. Set ${priceEnvKey} in env.`,

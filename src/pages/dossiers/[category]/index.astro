@@ -30,17 +30,7 @@ for (const d of allDossiers) {
 }
 
 // Full catalog list for this category (the alphabetical 242).
-const catalog = (DOSSIER_CATALOG as Record<string, string[]>)[category] ?? [];
-
-function slugify(s: string) {
-  return s
-    .normalize('NFKD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/['']/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
+const catalog = (DOSSIER_CATALOG as unknown as Record<string, readonly string[]>)[category] ?? [];
 ---
 
 <AppLayout

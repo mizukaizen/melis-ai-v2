@@ -1,0 +1,174 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import { getCollection } from 'astro:content';
+
+export const prerender = true;
+
+const courses = (await getCollection('courses')).filter((c) => !c.data.draft);
+const live = courses.filter((c) => c.data.status === 'live');
+const comingSoon = courses.filter((c) => c.data.status === 'coming-soon');
+const flagship = live.find((c) => c.slug === 'claude-cowork-for-professionals') || live[0];
+const otherLive = live.filter((c) => c !== flagship);
+---
+
+<AppLayout
+  title="Courses"
+  pane="courses"
+  description="Future-proof your career, income & decisions with practical AI training built by an operator who's been in the work since before it was the work."
+>
+  <section class="section-header">
+    <div class="section-hero-bg" style="background-image: url('/card-courses-v1.png');"></div>
+    <div class="section-hero-veil"></div>
+    <div class="section-header-inner">
+      <a class="back-link" href="/" data-pane="home">← back to studio</a>
+      <div class="section-title-block">
+        <div class="section-eyebrow">Learn · 9 modules · 1 live</div>
+        <h1 class="section-title"><em>Courses</em></h1>
+        <p class="section-lead">Future-proof your career, income, and decisions. Hands-on AI training built by an operator who's been doing this work since before it was the work.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-body">
+    {flagship && (
+      <a class="course-flagship" href={`/courses/${flagship.slug}/`}>
+        <div class="cf-badge">FLAGSHIP · LIVE</div>
+        <h2 class="cf-title" set:html={flagship.data.titleHtml || flagship.data.title}></h2>
+        <p class="cf-lede">{flagship.data.lede}</p>
+        <div class="cf-cta">Enrol →</div>
+      </a>
+    )}
+
+    {otherLive.length > 0 && (
+      <section class="course-section">
+        <h2 class="h2">Other <em>live</em> courses</h2>
+        <div class="course-grid">
+          {otherLive.map((c) => (
+            <a class="course-card" href={`/courses/${c.slug}/`}>
+              <div class="cc-badge">LIVE</div>
+              <div class="cc-title">{c.data.title}</div>
+              <div class="cc-lede">{c.data.lede}</div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {comingSoon.length > 0 && (
+      <section class="course-section">
+        <h2 class="h2"><em>Coming soon</em></h2>
+        <div class="course-grid">
+          {comingSoon.map((c) => (
+            <a class="course-card course-card-soon" href={`/courses/${c.slug}/`}>
+              <div class="cc-badge">SOON</div>
+              <div class="cc-title">{c.data.title}</div>
+              <div class="cc-lede">{c.data.lede}</div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
+
+  <style>
+    .course-flagship {
+      display: block;
+      max-width: 920px;
+      margin: 0 auto 4em;
+      padding: 36px 40px;
+      background: linear-gradient(180deg, rgba(168,85,247,0.10), rgba(168,85,247,0.02));
+      border: 1px solid rgba(168, 85, 247, 0.25);
+      border-radius: 16px;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.2s var(--ease);
+    }
+    .course-flagship:hover { transform: translateY(-2px); }
+    .cf-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .cf-title {
+      font-family: var(--font-display);
+      font-size: 40px;
+      font-weight: 500;
+      color: var(--text-1);
+      margin: 0 0 12px;
+    }
+    .cf-title :global(em) { color: var(--accent); font-style: italic; }
+    .cf-lede {
+      font-family: var(--font-body);
+      font-size: 17px;
+      color: var(--text-2);
+      line-height: 1.55;
+      margin: 0 0 20px;
+    }
+    .cf-cta {
+      display: inline-block;
+      padding: 12px 22px;
+      background: var(--accent);
+      color: white;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+    }
+    .course-section { margin-bottom: 4em; }
+    .course-section .h2 {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 500;
+      color: var(--text-1);
+      margin: 0 0 1.2em;
+    }
+    .course-section .h2 :global(em) { color: var(--accent); font-style: italic; }
+    .course-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+    .course-card {
+      display: flex;
+      flex-direction: column;
+      padding: 24px 26px;
+      background: rgba(20, 20, 24, 0.45);
+      border: 1px solid var(--border-2);
+      border-radius: 12px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
+    }
+    .course-card:hover { border-color: rgba(168, 85, 247, 0.3); transform: translateY(-2px); }
+    .course-card-soon { filter: grayscale(0.7); opacity: 0.85; }
+    .course-card-soon:hover { filter: none; opacity: 1; }
+    .cc-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .course-card-soon .cc-badge { color: var(--text-3); }
+    .cc-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      color: var(--text-1);
+      margin: 0 0 8px;
+    }
+    .cc-lede {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-2);
+      line-height: 1.55;
+      margin: 0;
+    }
+  </style>
+</AppLayout>
