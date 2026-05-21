@@ -56,50 +56,152 @@ body::-webkit-scrollbar,
   display: flex !important;
 }
 
-/* The mockup's .section-header was position:fixed for the SPA's
-   "header doesn't move during pane swaps" trick. Astro doesn't
-   need that — section-hero-base.css supplies the static layout.
-   We just need to win against the mockup's `!important` rules
-   that forced fixed positioning. */
-.pane .section-header {
+/* ──────────────────────────────────────────────────────────────
+ * Section hero overlay — force the title-OVER-image pattern.
+ *
+ * The mockup's CSS was calibrated for an SPA where the hero was
+ * position:fixed and stayed across pane swaps. Astro does per-route,
+ * so we need to win against the mockup's `position:fixed !important`,
+ * `height:auto`, and `mask-image` overrides so the section-hero-base
+ * overlay can do its job.
+ * ────────────────────────────────────────────────────────────── */
+.pane .section-header,
+main.content .section-header {
   position: relative !important;
   left: auto !important;
+  right: auto !important;
+  top: auto !important;
   width: auto !important;
   height: auto !important;
-  min-height: 420px !important;
+  min-height: 560px !important;
   overflow: hidden !important;
 }
+.pane.in-room .section-header,
+main.content .pane.in-room .section-header {
+  min-height: 600px !important;
+}
+.pane[data-pane="library"].in-room .section-header {
+  min-height: 640px !important;
+}
+
+.pane .section-header-inner {
+  position: relative !important;
+  z-index: 3 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+  padding: 80px clamp(24px, 3vw, 56px) 60px !important;
+  max-width: 1280px !important;
+  margin: 0 auto !important;
+  min-height: 560px !important;
+  width: 100% !important;
+  height: auto !important;
+  text-align: left !important;
+  box-sizing: border-box !important;
+}
+.pane.in-room .section-header-inner { min-height: 600px !important; }
+.pane[data-pane="library"].in-room .section-header-inner { min-height: 640px !important; }
+
+.pane .section-title-block {
+  text-align: left !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  align-self: flex-start !important;
+}
+
 .pane .section-body {
   padding-top: clamp(48px, 6vh, 96px) !important;
   max-width: 1280px !important;
   margin: 0 auto !important;
 }
-/* The mockup's mask-image fades the bg to transparent in its bottom
-   half — but for a fresh port with no SPA pane-swap context, that
-   just looks broken. Disable the mask so the paper-craft image
-   shows in full. The veil + ::after gradient still soften the bottom. */
+
 .pane .section-hero-bg {
+  position: absolute !important;
+  inset: 0 !important;
   -webkit-mask-image: none !important;
           mask-image: none !important;
+  background-size: cover !important;
+  background-position: center !important;
+  z-index: 0 !important;
 }
-/* The mockup's ::after gradient is calibrated for a fixed hero with
-   pane-swap behind. With our static per-route headers, we want a
-   gentler felt fade — just a soft bottom shadow into the body. */
+.pane .section-hero-veil {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  background: linear-gradient(180deg,
+    rgba(5, 5, 5, 0.35) 0%,
+    rgba(5, 5, 5, 0.08) 20%,
+    transparent 45%,
+    transparent 100%) !important;
+  pointer-events: none !important;
+}
 .pane .section-header::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 120px;
-  background: linear-gradient(
-    to bottom,
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  bottom: 0 !important;
+  height: auto !important;
+  background: linear-gradient(180deg,
     transparent 0%,
-    rgba(5, 5, 5, 0.45) 60%,
-    #050505 100%
-  );
-  pointer-events: none;
-  z-index: 2;
+    transparent 55%,
+    rgba(5, 5, 5, 0.55) 85%,
+    var(--bg) 100%) !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+}
+
+/* Hide the back-link (per mockup) */
+.pane .back-link { display: none !important; }
+
+/* Section title overrides for landings + detail */
+.pane .section-title {
+  font-family: var(--font-display) !important;
+  font-size: clamp(64px, 7.5vw, 108px) !important;
+  font-weight: 500 !important;
+  line-height: 0.98 !important;
+  letter-spacing: -0.02em !important;
+  color: var(--text-1) !important;
+  margin: 0 !important;
+}
+.pane[data-pane="library"].in-room .section-title {
+  font-size: clamp(72px, 9vw, 132px) !important;
+}
+.pane .section-title em {
+  font-style: italic !important;
+  color: var(--accent) !important;
+}
+.pane .section-eyebrow {
+  font-family: var(--font-mono) !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.22em !important;
+  text-transform: uppercase !important;
+  color: var(--text-2) !important;
+  margin: 0 !important;
+}
+.pane .section-byline {
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.18em !important;
+  text-transform: uppercase !important;
+  color: var(--text-2) !important;
+  margin: 4px 0 0 !important;
+  display: block !important;
+}
+.pane .section-lead {
+  display: block !important;
+  font-family: var(--font-body) !important;
+  font-size: clamp(15px, 1.2vw, 19px) !important;
+  line-height: 1.55 !important;
+  color: var(--text-1) !important;
+  max-width: 720px !important;
+  margin: 8px 0 0 !important;
+}
+.pane .section-lead em {
+  font-style: italic !important;
+  color: var(--accent) !important;
 }
 
 /* When sb2 is present, give content room. */
@@ -121,4 +223,112 @@ body::-webkit-scrollbar,
   position: relative !important;
   min-height: 70vh;
   height: auto !important;
+}
+
+/* Lotus sigil on home hero eyebrow */
+.pane[data-pane="home"] .hero-eyebrow {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+.pane[data-pane="home"] .lotus-sigil {
+  width: 14px;
+  height: 14px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+/* Home portal cards — make sure they render at a proper size + show
+   eyebrow/title/tagline/arrow. The mockup CSS targets these but the
+   styled clamp height was set for an SPA viewport; with sb2 visible,
+   the cards looked tiny. */
+.pane[data-pane="home"] .cards {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important;
+  gap: 12px !important;
+  padding: 24px clamp(16px, 2vw, 32px) 36px !important;
+  margin: 0 !important;
+}
+@media (max-width: 1100px) {
+  .pane[data-pane="home"] .cards { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 600px) {
+  .pane[data-pane="home"] .cards { grid-template-columns: 1fr !important; }
+}
+.pane[data-pane="home"] .card {
+  position: relative !important;
+  display: block !important;
+  min-height: 240px !important;
+  height: auto !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  text-decoration: none !important;
+  color: inherit !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  isolation: isolate !important;
+  transition: transform 0.2s var(--ease), border-color 0.2s var(--ease) !important;
+}
+.pane[data-pane="home"] .card:hover {
+  transform: translateY(-2px) !important;
+  border-color: rgba(168, 85, 247, 0.35) !important;
+}
+.pane[data-pane="home"] .card .card-img {
+  position: absolute !important;
+  inset: 0 !important;
+  background-size: cover !important;
+  background-position: center !important;
+  z-index: 0 !important;
+}
+.pane[data-pane="home"] .card .card-veil {
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(180deg, transparent 30%, rgba(5, 5, 5, 0.75) 100%) !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+}
+.pane[data-pane="home"] .card .card-arrow {
+  position: absolute !important;
+  top: 12px !important;
+  right: 14px !important;
+  z-index: 2 !important;
+  font-family: var(--font-mono);
+  font-size: 14px !important;
+  color: var(--text-1) !important;
+  background: rgba(5, 5, 5, 0.5) !important;
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.pane[data-pane="home"] .card .card-meta {
+  position: absolute !important;
+  left: 16px !important;
+  right: 16px !important;
+  bottom: 14px !important;
+  z-index: 2 !important;
+}
+.pane[data-pane="home"] .card .card-eyebrow {
+  font-family: var(--font-mono) !important;
+  font-size: 9px !important;
+  letter-spacing: 0.18em !important;
+  text-transform: uppercase !important;
+  color: var(--accent) !important;
+  margin-bottom: 4px !important;
+}
+.pane[data-pane="home"] .card .card-title {
+  font-family: var(--font-display) !important;
+  font-size: 22px !important;
+  font-weight: 500 !important;
+  color: var(--text-1) !important;
+  margin: 0 0 4px !important;
+  line-height: 1.1 !important;
+}
+.pane[data-pane="home"] .card .card-line {
+  font-family: var(--font-body) !important;
+  font-size: 12px !important;
+  color: var(--text-2) !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
 }

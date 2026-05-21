@@ -1,6 +1,7 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro';
 import SectionHero from '../../components/SectionHero.astro';
+import FeaturedCourseCard from '../../components/FeaturedCourseCard.astro';
 import { getCollection } from 'astro:content';
 import { landingHero } from '../../lib/hero-image';
 
@@ -9,8 +10,9 @@ export const prerender = true;
 const courses = (await getCollection('courses')).filter((c) => !c.data.draft);
 const live = courses.filter((c) => c.data.status === 'live');
 const comingSoon = courses.filter((c) => c.data.status === 'coming-soon');
-const flagship = live.find((c) => c.slug === 'claude-cowork-for-professionals')
-  || live.find((c) => c.slug === 'ai-mastery-2026')
+// AI Mastery 2026 is the flagship per the mockup
+const flagship = live.find((c) => c.slug === 'ai-mastery-2026')
+  || live.find((c) => c.slug === 'claude-cowork-for-professionals')
   || live[0];
 const otherLive = live.filter((c) => c !== flagship);
 ---
@@ -18,25 +20,21 @@ const otherLive = live.filter((c) => c !== flagship);
 <AppLayout
   title="Courses"
   pane="courses"
-  description="Future-proof your career, income & decisions with practical AI training."
+  description="An apprenticeship for the AI-native operator. The Cowork Course is the flagship; eight more in flight or coming."
 >
   <SectionHero
     cover={landingHero('courses')}
-    eyebrow="Learn · 9 modules · 1 live"
+    eyebrow="Learn · the catalogue"
     title="Courses"
     titleHtml="<em>Courses</em>"
-    lede="Future-proof your career, income, and decisions. Hands-on AI training built by an operator who's been doing this work since before it was the work."
+    lede="An apprenticeship for the AI-native operator. The Cowork Course is the flagship; eight more in flight or coming."
   />
 
   <section class="section-body">
-    {flagship && (
-      <a class="course-flagship" href={`/courses/${flagship.slug}/`}>
-        <div class="cf-badge">FLAGSHIP · LIVE</div>
-        <h2 class="cf-title" set:html={flagship.data.titleHtml || flagship.data.title}></h2>
-        <p class="cf-lede">{flagship.data.lede}</p>
-        <div class="cf-cta">Enrol →</div>
-      </a>
-    )}
+    <h2 class="h2">For operators already in the work — <em>not</em> beginners.</h2>
+    <p class="body-lead">Each course is built from a real workflow that ships against a real client. The Cowork Course is the flagship — six modules + an opening story. Everything else is born from teaching 25,000+ students on Udemy and watching what actually moves the needle.</p>
+
+    {flagship && <FeaturedCourseCard item={flagship} />}
 
     {otherLive.length > 0 && (
       <section class="course-section">
@@ -75,13 +73,6 @@ const otherLive = live.filter((c) => c !== flagship);
   </div>
 
   <style>
-    .course-flagship { display: block; max-width: 920px; margin: 0 auto 4em; padding: 36px 40px; background: linear-gradient(180deg, rgba(168,85,247,0.10), rgba(168,85,247,0.02)); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 16px; text-decoration: none; color: inherit; transition: transform 0.2s var(--ease); }
-    .course-flagship:hover { transform: translateY(-2px); }
-    .cf-badge { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; color: var(--accent); margin-bottom: 12px; }
-    .cf-title { font-family: var(--font-display); font-size: 40px; font-weight: 500; color: var(--text-1); margin: 0 0 12px; }
-    .cf-title :global(em) { color: var(--accent); font-style: italic; }
-    .cf-lede { font-family: var(--font-body); font-size: 17px; color: var(--text-2); line-height: 1.55; margin: 0 0 20px; }
-    .cf-cta { display: inline-block; padding: 12px 22px; background: var(--accent); color: white; border-radius: 6px; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; }
     .course-section { margin-bottom: 4em; }
     .course-section .h2 { font-family: var(--font-display); font-size: 32px; font-weight: 500; color: var(--text-1); margin: 0 0 1.2em; }
     .course-section .h2 :global(em) { color: var(--accent); font-style: italic; }

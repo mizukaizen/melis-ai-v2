@@ -1,21 +1,31 @@
 /* ──────────────────────────────────────────────────────────────
- * section-hero-base.css — base layout that the mockup's
- * incremental overrides assumed but never declared.
+ * section-hero-base.css — canonical OVERLAY hero pattern.
  *
- * Same pattern as sidebar-base.css: the original Astro starter
- * had these rules, the mockup was iterated on top, and a fresh
- * port loses them unless we re-supply.
+ * Image as full-bleed background filling the hero region.
+ * Header text positioned absolutely on top of it with a gentle
+ * mask-to-felt fade at the bottom. Title sits bottom-left.
  *
- * Loaded BEFORE mockup.css so mockup overrides (mask-image,
- * gradient overlays, padding tweaks) win.
+ * This file loads BEFORE mockup.css; global.css then re-asserts
+ * key overlay rules with !important to win against the mockup's
+ * SPA-era position:fixed overrides.
  * ────────────────────────────────────────────────────────────── */
 
 .section-header {
   position: relative;
   width: 100%;
-  min-height: 420px;
+  min-height: 560px;
   overflow: hidden;
   isolation: isolate;
+}
+/* Detail-page heroes (when the .pane is in-room) get a taller hero
+   so the cinematic feel lands. */
+.pane.in-room .section-header {
+  min-height: 600px;
+}
+/* Dossier detail hero is biggest of all — the title is the moment. */
+.pane[data-pane="library"].in-room .section-header,
+.dossier-hero {
+  min-height: 640px;
 }
 
 .section-hero-bg {
@@ -27,35 +37,56 @@
   z-index: 0;
 }
 
+/* Veil — gentle top tint so eyebrow stays legible against bright skies
+   in the paper-craft, without dulling the warm midtones. */
 .section-hero-veil {
   position: absolute;
   inset: 0;
   z-index: 1;
   background: linear-gradient(180deg,
-    rgba(5, 5, 5, 0.45) 0%,
-    rgba(5, 5, 5, 0.05) 30%,
+    rgba(5, 5, 5, 0.35) 0%,
+    rgba(5, 5, 5, 0.08) 20%,
+    transparent 45%,
     transparent 100%);
+  pointer-events: none;
+}
+
+/* Fade-to-felt at the bottom so the image dissolves into the page
+   instead of ending in a hard edge. */
+.section-header::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    transparent 55%,
+    rgba(5, 5, 5, 0.55) 85%,
+    var(--bg) 100%);
   pointer-events: none;
 }
 
 .section-header-inner {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   padding: 80px clamp(24px, 3vw, 56px) 60px;
   max-width: 1280px;
   margin: 0 auto;
-  min-height: 420px;
+  min-height: 560px;
   width: 100%;
   box-sizing: border-box;
 }
+.pane.in-room .section-header-inner { min-height: 600px; }
+.pane[data-pane="library"].in-room .section-header-inner,
+.dossier-hero .section-header-inner { min-height: 640px; }
 
 .section-title-block {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   max-width: 880px;
 }
 
@@ -71,10 +102,10 @@
 
 .section-title {
   font-family: var(--font-display);
-  font-size: clamp(48px, 6vw, 84px);
+  font-size: clamp(64px, 7.5vw, 108px);
   font-weight: 500;
-  line-height: 1.0;
-  letter-spacing: -0.015em;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
   color: var(--text-1);
   margin: 0;
 }
@@ -83,30 +114,44 @@
   color: var(--accent);
 }
 
+/* Dossier detail title is bigger still — fills nearly half the hero
+   width per Sean's spec. */
+.pane[data-pane="library"].in-room .section-title,
+.dossier-hero .section-title {
+  font-size: clamp(72px, 9vw, 132px);
+  line-height: 1;
+}
+
 .section-byline {
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.06em;
-  color: var(--text-3);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-2);
   margin: 4px 0 0;
 }
 
 .section-lead {
   font-family: var(--font-body);
-  font-size: clamp(15px, 1.2vw, 18px);
+  font-size: clamp(15px, 1.2vw, 19px);
   line-height: 1.55;
-  color: var(--text-2);
+  color: var(--text-1);
   max-width: 720px;
   margin: 8px 0 0;
 }
+.section-lead em {
+  font-style: italic;
+  color: var(--accent);
+}
 
-/* Back link (mockup explicitly hides it via .back-link { display: none },
-   but kept positioned correctly in case it returns) */
+/* Back link — mockup hides it explicitly; keep positioning correct
+   in case it's needed. */
 .back-link {
   position: absolute;
   top: 24px;
   left: clamp(24px, 3vw, 56px);
-  z-index: 3;
+  z-index: 4;
   font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.08em;
@@ -155,6 +200,63 @@
   color: var(--text-2);
   max-width: 68ch;
   margin: 0 0 32px;
+}
+
+/* ── Item list (mockup pattern: numbered rows with title + sub + meta) ── */
+.item-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  max-width: 1100px;
+}
+.item-row {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 24px;
+  align-items: start;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--border-1);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s var(--ease);
+}
+.item-row:hover {
+  background: rgba(168, 85, 247, 0.04);
+  padding-left: 12px;
+  padding-right: 12px;
+  border-radius: 4px;
+}
+.item-row .num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+  padding-top: 4px;
+}
+.item-row .col-main h4 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text-1);
+  margin: 0 0 6px;
+  line-height: 1.25;
+}
+.item-row .col-main p {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.55;
+  margin: 0;
+  max-width: 60ch;
+}
+.item-row .col-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+  text-align: right;
+  padding-top: 6px;
+  text-transform: uppercase;
 }
 
 /* ── Footer ── */

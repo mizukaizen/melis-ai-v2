@@ -28,6 +28,12 @@ for (const d of allDossiers) {
 }
 
 const catalog = (DOSSIER_CATALOG as unknown as Record<string, readonly string[]>)[category] ?? [];
+
+// libraryNormalise — strip leading "the/a/an" for alphabetical sort
+function libraryNormalise(s: string): string {
+  return s.replace(/^(the|a|an)\s+/i, '').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '');
+}
+const sortedCatalog = [...catalog].sort((a, b) => libraryNormalise(a).localeCompare(libraryNormalise(b)));
 ---
 
 <AppLayout title={cat.title} pane="library" inRoom description={cat.line}>
@@ -40,35 +46,46 @@ const catalog = (DOSSIER_CATALOG as unknown as Record<string, readonly string[]>
   />
 
   <section class="section-body">
-    <div class="library-room">
-      <div class="key-concept-table">
-        {catalog.map((title, i) => {
-          const fleshed = fleshedByTitle.get(title);
-          const num = String(i + 1).padStart(2, '0');
-          if (fleshed) {
-            return (
-              <a class="kct-row kct-row-live" href={`/dossiers/${category}/${fleshed.slug}/`}>
-                <div class="kct-num">No. {num}</div>
-                <div class="kct-main">
-                  <h4 class="kct-title">{title}</h4>
-                  <p class="kct-byline">{fleshed.data.byline}</p>
-                </div>
-                <div class="kct-cta">Read →</div>
-              </a>
-            );
-          }
-          return (
-            <div class="kct-row kct-row-stub">
-              <div class="kct-num">No. {num}</div>
-              <div class="kct-main">
-                <h4 class="kct-title">{title}</h4>
-                <p class="kct-byline">Brief forthcoming.</p>
-              </div>
-              <div class="kct-cta kct-cta-muted">Soon</div>
-            </div>
-          );
-        })}
+    <div class="kct-headstrip">
+      <div class="section-eyebrow-small">{cat.title.toLowerCase()} · {cat.count} · key concepts</div>
+      <h2 class="h2">A working operator's <em>{cat.title.toLowerCase()}</em>.</h2>
+      <p class="body-lead">Every entry is an AI-led breakdown — the work, why it matters, the key concepts, and how to take them forward. Fleshed dossiers link through; the rest are catalogued for future passes.</p>
+    </div>
+
+    <div class="key-concept-table">
+      <div class="kct-header">
+        <div class="kct-h-title">Title · Author</div>
+        <div class="kct-h-concept">Key concept</div>
+        <div class="kct-h-cta">Read</div>
       </div>
+      {sortedCatalog.map((title) => {
+        const fleshed = fleshedByTitle.get(title);
+        return (
+          <div class:list={['kct-row', fleshed ? 'kct-row-live' : 'kct-row-stub']}>
+            <div class="kct-title-col">
+              <h4 class="kct-title">{title}</h4>
+              {fleshed?.data.byline && <div class="kct-byline">{fleshed.data.byline}</div>}
+            </div>
+            <div class="kct-concept-col">
+              {fleshed?.data.keyConcept ? (
+                <>
+                  <div class="kct-concept-name">{fleshed.data.keyConcept.name}</div>
+                  <div class="kct-concept-desc">{fleshed.data.keyConcept.desc}</div>
+                </>
+              ) : (
+                <div class="kct-concept-pending">Concept extraction pending.</div>
+              )}
+            </div>
+            <div class="kct-cta-col">
+              {fleshed ? (
+                <a class="kct-cta" href={`/dossiers/${category}/${fleshed.slug}/`}>Read dossier →</a>
+              ) : (
+                <span class="kct-cta kct-cta-muted">Soon</span>
+              )}
+            </div>
+          </div>
+        );
+      })}
     </div>
   </section>
 
@@ -78,49 +95,98 @@ const catalog = (DOSSIER_CATALOG as unknown as Record<string, readonly string[]>
   </div>
 
   <style>
-    .key-concept-table { display: flex; flex-direction: column; max-width: 1100px; margin: 0 auto; }
+    .kct-headstrip { max-width: 1100px; margin: 0 auto 32px; }
+    .key-concept-table {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .kct-header {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) minmax(260px, 1.5fr) 120px;
+      gap: 32px;
+      padding: 0 0 12px;
+      border-bottom: 1px solid var(--border-1);
+    }
+    .kct-header > div {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+    .kct-h-cta { text-align: right; }
     .kct-row {
       display: grid;
-      grid-template-columns: 80px 1fr auto;
-      gap: 24px;
-      align-items: center;
-      padding: 20px 0;
+      grid-template-columns: minmax(220px, 1fr) minmax(260px, 1.5fr) 120px;
+      gap: 32px;
+      padding: 22px 0;
+      align-items: start;
       border-bottom: 1px solid var(--border-1);
-      text-decoration: none;
-      color: inherit;
-      transition: background 0.2s var(--ease);
     }
-    .kct-row-live:hover { background: rgba(168, 85, 247, 0.04); }
-    .kct-num {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-3);
-      letter-spacing: 0.06em;
+    .kct-row-live:hover {
+      background: rgba(168, 85, 247, 0.04);
     }
+    .kct-row-stub { opacity: 0.55; }
     .kct-title {
       font-family: var(--font-display);
       font-size: 22px;
       font-weight: 500;
       color: var(--text-1);
       margin: 0 0 4px;
+      line-height: 1.25;
     }
     .kct-byline {
       font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      color: var(--text-3);
+      text-transform: uppercase;
+    }
+    .kct-concept-name {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-style: italic;
+      color: var(--accent);
+      margin: 0 0 4px;
+    }
+    .kct-concept-desc {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-2);
+      line-height: 1.55;
+    }
+    .kct-concept-pending {
+      font-family: var(--font-mono);
       font-size: 11px;
       color: var(--text-3);
-      letter-spacing: 0.04em;
-      margin: 0;
+      letter-spacing: 0.06em;
+      font-style: italic;
     }
+    .kct-cta-col { text-align: right; align-self: center; }
     .kct-cta {
       font-family: var(--font-mono);
       font-size: 11px;
+      letter-spacing: 0.06em;
       color: var(--accent);
-      letter-spacing: 0.04em;
-      padding: 8px 14px;
-      border: 1px solid rgba(168, 85, 247, 0.2);
-      border-radius: 6px;
+      text-decoration: none;
+      padding: 6px 12px;
+      border: 1px solid rgba(168, 85, 247, 0.25);
+      border-radius: 5px;
+      display: inline-block;
     }
-    .kct-row-live:hover .kct-cta { background: rgba(168, 85, 247, 0.12); }
-    .kct-cta-muted { color: var(--text-3); border-color: var(--border-1); }
+    .kct-row-live:hover .kct-cta { background: rgba(168, 85, 247, 0.10); }
+    .kct-cta-muted {
+      color: var(--text-3);
+      border-color: var(--border-1);
+    }
+    @media (max-width: 720px) {
+      .kct-header, .kct-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .kct-cta-col { text-align: left; }
+    }
   </style>
 </AppLayout>

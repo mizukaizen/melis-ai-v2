@@ -38,8 +38,8 @@ const cover = dossierHero(data.category);
 
       {data.quote && (
         <blockquote class="dossier-quote">
-          <p>{data.quote.text}</p>
-          <cite>{data.quote.cite}</cite>
+          <span class="dossier-quote-text">{data.quote.text}</span>
+          <span class="dossier-quote-cite">{data.quote.cite}</span>
         </blockquote>
       )}
 
@@ -81,43 +81,44 @@ const cover = dossierHero(data.category);
   </section>
 
   <style>
-    .dossier-content {
-      max-width: 720px;
-      margin: 0 auto;
-    }
-    /* Lede — large serif, restrained-italic feel via Cormorant 500 */
+    .dossier-content { max-width: 720px; margin: 0 auto; }
+    /* Lede — large serif, restrained */
     .dossier-lede {
       font-family: var(--font-display);
-      font-size: 24px;
-      line-height: 1.45;
+      font-size: 26px;
+      line-height: 1.4;
       color: var(--text-1);
-      margin: 0 0 32px;
+      margin: 0 0 28px;
       max-width: 720px;
       font-weight: 400;
     }
-    /* Pull quote — left rule, italic Cormorant */
+    /* Pull quote — left rule, italic Cormorant. Positioned IMMEDIATELY after lede. */
     .dossier-quote {
+      display: block;
       border-left: 2px solid var(--accent);
-      padding: 0.6em 0 0.6em 1.4em;
-      margin: 0 0 36px;
-      max-width: 640px;
-    }
-    .dossier-quote p {
+      padding: 4px 0 4px 22px;
+      max-width: 720px;
+      margin: 28px 0;
       font-family: var(--font-display);
-      font-size: 24px;
       font-style: italic;
-      line-height: 1.4;
+      font-size: 22px;
+      line-height: 1.35;
       color: var(--text-1);
-      margin: 0 0 8px;
     }
-    .dossier-quote cite {
+    .dossier-quote-text {
+      display: block;
+    }
+    .dossier-quote-cite {
+      display: block;
+      margin-top: 8px;
       font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-3);
-      letter-spacing: 0.06em;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-2);
       font-style: normal;
     }
-    /* Body paragraphs — Inter 17px, max 680px wide */
+    /* Body paragraphs */
     .dossier-body :global(p) {
       font-family: var(--font-body);
       font-size: 17px;
@@ -149,7 +150,6 @@ const cover = dossierHero(data.category);
       max-width: 680px;
     }
 
-    /* Key ideas list */
     .dossier-list {
       list-style: none;
       padding: 0;
@@ -172,7 +172,6 @@ const cover = dossierHero(data.category);
       font-weight: 600;
     }
 
-    /* Key concept callout — bordered card at the end */
     .dossier-keyconcept {
       margin-top: 64px;
       padding: 28px 32px;
@@ -192,7 +191,7 @@ const cover = dossierHero(data.category);
     }
     .kc-name {
       font-family: var(--font-display);
-      font-size: 26px;
+      font-size: 28px;
       font-style: italic;
       color: var(--text-1);
       margin-bottom: 8px;

@@ -1,6 +1,7 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro';
 import SectionHero from '../../components/SectionHero.astro';
+import FeaturedProductCard from '../../components/FeaturedProductCard.astro';
 import { getCollection } from 'astro:content';
 import { PRODUCTS_HERO } from '../../data/products-hero';
 import { PRODUCTS_CATEGORIES } from '../../data/products-categories';
@@ -26,22 +27,17 @@ function priceLabel(cents: number) { return `$${(cents / 100).toFixed(0)}`; }
 >
   <SectionHero
     cover={landingHero('products')}
-    eyebrow={PRODUCTS_HERO.eyebrow || 'Resources · 73 items'}
+    eyebrow="Resources · the shop"
     title="Products & Tools"
-    titleHtml="<em>Products</em> &amp; Tools"
-    lede={PRODUCTS_HERO.longHook}
+    titleHtml="Products &amp; <em>Tools</em>"
+    lede="Templates, prompt packs, frameworks, scripts, recipes. Things I made because I needed them, then packaged."
   />
 
   <section class="section-body">
-    <a class="hero-bundle-card" href={`/products/${PRODUCTS_HERO.id}/`}>
-      <div class="hbc-title">{PRODUCTS_HERO.title}</div>
-      <div class="hbc-line">{PRODUCTS_HERO.line}</div>
-      <div class="hbc-meta">
-        <div class="hbc-badge">{PRODUCTS_HERO.badge}</div>
-        <div class="hbc-save">{PRODUCTS_HERO.save}</div>
-      </div>
-      <div class="hbc-cta">View bundle →</div>
-    </a>
+    <h2 class="h2">Things I made because I needed them — <em>then</em> packaged so you can use them too.</h2>
+    <p class="body-lead">Every product on this page started as a tool I built for a real piece of client work, then refined enough times that it became reusable. Nothing here is theoretical. If it's listed, it's been used in production by me or someone I know.</p>
+
+    <FeaturedProductCard slug={PRODUCTS_HERO.id} hero={PRODUCTS_HERO} />
 
     {PRODUCTS_CATEGORIES.map((cat) => {
       const items = byCategory.get(cat.title) ?? [];
@@ -78,25 +74,6 @@ function priceLabel(cents: number) { return `$${(cents / 100).toFixed(0)}`; }
   </div>
 
   <style>
-    .hero-bundle-card {
-      display: block;
-      max-width: 920px;
-      margin: 0 auto 4em;
-      padding: 32px 36px;
-      background: linear-gradient(180deg, rgba(168,85,247,0.10), rgba(168,85,247,0.02));
-      border: 1px solid rgba(168, 85, 247, 0.22);
-      border-radius: 16px;
-      text-decoration: none;
-      color: inherit;
-      transition: transform 0.2s var(--ease);
-    }
-    .hero-bundle-card:hover { transform: translateY(-2px); }
-    .hbc-title { font-family: var(--font-display); font-size: 32px; color: var(--text-1); margin-bottom: 8px; }
-    .hbc-line { font-family: var(--font-body); font-size: 16px; color: var(--text-2); line-height: 1.5; margin-bottom: 20px; }
-    .hbc-meta { display: flex; gap: 16px; align-items: center; margin-bottom: 20px; }
-    .hbc-badge { font-family: var(--font-display); font-size: 22px; color: var(--accent); }
-    .hbc-save { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); letter-spacing: 0.06em; }
-    .hbc-cta { display: inline-block; padding: 10px 20px; background: var(--accent); color: white; border-radius: 6px; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; }
     .product-category-section { margin-bottom: 4em; }
     .product-category-header { margin-bottom: 1.5em; }
     .pch-sigil { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }

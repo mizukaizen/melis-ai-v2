@@ -1,0 +1,148 @@
+---
+// Featured-course card with full paper-craft scene as background.
+// Used by the Courses landing for AI Mastery 2026.
+import { itemHero } from '../lib/hero-image';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  item: CollectionEntry<'courses'>;
+}
+
+const { item } = Astro.props;
+const data = item.data;
+const cover = (data.cover && data.cover.startsWith('/'))
+  ? data.cover
+  : itemHero('courses', data.title.replace(/<[^>]+>/g, ''), item.slug);
+const titleHtml = data.titleHtml || data.title;
+const tags = (data.stats || []).slice(0, 4).map((s: any) => `${s.val} ${s.lbl || ''}`.trim());
+const price = data.price ? `$${(data.price / 100).toFixed(0)}` : '$29';
+---
+
+<a class="featured-course-card" href={`/courses/${item.slug}/`}>
+  <div class="fcc-bg" style={`background-image: url('${cover}');`}></div>
+  <div class="fcc-veil"></div>
+  <div class="fcc-content">
+    <div class="fcc-eyebrow">FLAGSHIP · NOW RECORDING</div>
+    <h3 class="fcc-title" set:html={titleHtml}></h3>
+    <p class="fcc-sub">{data.subtitle1 || data.lede}</p>
+    {tags.length > 0 && (
+      <div class="fcc-tags">
+        {tags.map((t) => <span class="fcc-tag">{t}</span>)}
+      </div>
+    )}
+    <div class="fcc-foot">
+      <div class="fcc-price">{price}</div>
+      <div class="fcc-cta">{data.ctas?.primary?.label || 'Enrol — be the first →'}</div>
+    </div>
+  </div>
+</a>
+
+<style>
+  .featured-course-card {
+    position: relative;
+    display: block;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto 4em;
+    min-height: 380px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(168, 85, 247, 0.22);
+    text-decoration: none;
+    color: inherit;
+    isolation: isolate;
+    transition: transform 0.2s var(--ease), border-color 0.2s var(--ease);
+  }
+  .featured-course-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(168, 85, 247, 0.45);
+  }
+  .fcc-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+  }
+  .fcc-veil {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(110deg,
+      rgba(5, 5, 5, 0.65) 0%,
+      rgba(5, 5, 5, 0.45) 35%,
+      rgba(5, 5, 5, 0.18) 70%,
+      transparent 100%);
+    pointer-events: none;
+  }
+  .fcc-content {
+    position: relative;
+    z-index: 2;
+    padding: 40px 44px;
+    max-width: 620px;
+  }
+  .fcc-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .fcc-title {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 5vw, 64px);
+    font-weight: 500;
+    line-height: 1;
+    color: var(--text-1);
+    margin: 0 0 14px;
+    letter-spacing: -0.015em;
+  }
+  .fcc-title :global(em) { font-style: italic; color: var(--accent); }
+  .fcc-sub {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--text-1);
+    margin: 0 0 20px;
+    max-width: 540px;
+  }
+  .fcc-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .fcc-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    padding: 4px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 4px;
+    color: var(--text-1);
+    background: rgba(5, 5, 5, 0.35);
+  }
+  .fcc-foot {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .fcc-price {
+    font-family: var(--font-display);
+    font-size: 32px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .fcc-cta {
+    padding: 12px 22px;
+    background: var(--accent);
+    color: white;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+  }
+</style>
