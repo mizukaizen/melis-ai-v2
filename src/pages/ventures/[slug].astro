@@ -3,6 +3,7 @@ import AppLayout from '../../layouts/AppLayout.astro';
 import SectionHero from '../../components/SectionHero.astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { itemHero, landingHero } from '../../lib/hero-image';
+import { VENTURES_DETAIL } from '../../data/ventures';
 
 export const prerender = true;
 
@@ -17,29 +18,61 @@ export async function getStaticPaths() {
 type Props = { item: CollectionEntry<'ventures'> };
 const { item } = Astro.props as Props;
 const data = item.data;
+const detail = VENTURES_DETAIL[item.slug];
+const eyebrow = detail?.eyebrow || data.eyebrow;
+const titleHtml = detail?.title || data.titleHtml || data.title;
+const lede = detail?.lede || data.lede;
+const strip = detail?.strip || data.strip || [];
+const sections = detail?.sections || [];
+const pill = detail?.pill;
+const cta = detail?.cta;
 const cover = (data.cover && data.cover.startsWith('/'))
   ? data.cover
   : itemHero('projects', data.title.replace(/<[^>]+>/g, ''), item.slug) || landingHero('ventures');
 ---
 
-<AppLayout title={data.title} pane="projects" inRoom description={data.lede}>
+<AppLayout title={data.title} pane="projects" inRoom description={lede}>
   <SectionHero
     cover={cover}
-    eyebrow={data.eyebrow}
+    eyebrow={eyebrow}
     title={data.title}
-    titleHtml={data.titleHtml}
-    lede={data.lede}
+    titleHtml={titleHtml}
+    lede={lede}
   />
 
   <section class="section-body">
-    {data.strip && data.strip.length > 0 && (
+    {pill && (
+      <div class="venture-pill-row">
+        <span class={`venture-pill ${pill.cls}`}>{pill.label}</span>
+      </div>
+    )}
+
+    {strip.length > 0 && (
       <div class="venture-strip">
-        {data.strip.map((s) => (
+        {strip.map((s) => (
           <div class="vs-cell">
             <div class="vs-lbl">{s.lbl}</div>
             <div class="vs-val">{s.val}</div>
           </div>
         ))}
+      </div>
+    )}
+
+    {sections.length > 0 && (
+      <div class="venture-body">
+        {sections.map((s) => (
+          <section class="venture-section">
+            <h2 class="h2" set:html={s.h}></h2>
+            <p>{s.body}</p>
+          </section>
+        ))}
+      </div>
+    )}
+
+    {cta && (
+      <div class="venture-cta">
+        <h3>{cta.title}</h3>
+        <p>{cta.line}</p>
       </div>
     )}
   </section>
@@ -50,8 +83,20 @@ const cover = (data.cover && data.cover.startsWith('/'))
   </div>
 
   <style>
+    .venture-pill-row { max-width: 920px; margin: 0 auto 16px; }
+    .venture-pill { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 999px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; }
+    .venture-pill.is-signal { background: rgba(94, 234, 212, 0.12); color: #5eead4; border: 1px solid rgba(94, 234, 212, 0.3); }
+    .venture-pill.is-orange { background: rgba(251, 146, 60, 0.12); color: #fb923c; border: 1px solid rgba(251, 146, 60, 0.3); }
     .venture-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; max-width: 920px; margin: 0 auto 3em; padding: 20px 24px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 12px; }
     .vs-lbl { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); letter-spacing: 0.06em; margin-bottom: 4px; }
     .vs-val { font-family: var(--font-display); font-size: 18px; color: var(--text-1); }
+    .venture-body { max-width: 720px; margin: 0 auto 3em; }
+    .venture-section { margin-bottom: 2em; }
+    .venture-section .h2 { font-family: var(--font-display); font-size: clamp(24px, 2.4vw, 32px); font-weight: 500; line-height: 1.2; letter-spacing: -0.01em; color: var(--text-1); margin: 0 0 12px; }
+    .venture-section .h2 :global(em) { font-style: italic; color: var(--accent); }
+    .venture-section p { font-family: var(--font-body); font-size: 16px; color: var(--text-2); line-height: 1.7; margin: 0; }
+    .venture-cta { max-width: 720px; margin: 0 auto 2em; padding: 24px 28px; background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 10px; }
+    .venture-cta h3 { font-family: var(--font-display); font-size: 22px; color: var(--text-1); margin: 0 0 6px; }
+    .venture-cta p { font-family: var(--font-body); font-size: 14px; color: var(--text-2); margin: 0; line-height: 1.55; }
   </style>
 </AppLayout>
