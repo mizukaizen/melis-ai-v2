@@ -2,6 +2,32 @@
 const path = Astro.url.pathname;
 const isSean = path.startsWith('/about/sean');
 const isStudio = path.startsWith('/about/melis-ai');
+
+// Chapter TOC for /about/sean/ — anchor IDs match the chapter divs in
+// src/_html/pane-about.html (ch01-ch09 + timeline + drives).
+const SEAN_CHAPTERS: { id: string; label: string; num?: string }[] = [
+  { id: 'top',      label: 'Opening' },
+  { id: 'ch01',     label: 'The Blueprint',          num: '01' },
+  { id: 'ch02',     label: 'Sharp End of the Spear', num: '02' },
+  { id: 'ch03',     label: 'The Machine Starts',     num: '03' },
+  { id: 'ch04',     label: 'The Great Unraveling',   num: '04' },
+  { id: 'ch05',     label: 'Zero to Agency',         num: '05' },
+  { id: 'ch06',     label: 'The Pivot',              num: '06' },
+  { id: 'ch07',     label: 'Back in the Room',       num: '07' },
+  { id: 'ch08',     label: 'The Edge',               num: '08' },
+  { id: 'ch09',     label: 'The Long Bet',           num: '09' },
+  { id: 'timeline', label: 'Career Timeline' },
+  { id: 'drives',   label: 'What Drives Me' },
+];
+
+// Chapter TOC for /about/melis-ai/ — anchor IDs match the section ids
+// in src/_html/pane-about-studio.html.
+const STUDIO_CHAPTERS: { id: string; label: string }[] = [
+  { id: 'what',      label: 'What is melis.ai' },
+  { id: 'mission',   label: 'The Mission' },
+  { id: 'inside',    label: "What's Live · Five Surfaces" },
+  { id: 'roadmap',   label: 'The Roadmap' },
+];
 ---
 
 <aside class="sidebar-2" transition:persist="sb2-about">
@@ -9,6 +35,7 @@ const isStudio = path.startsWith('/about/melis-ai');
     <div class="sb2-header">
       <div class="sb2-title"><em>About</em></div>
     </div>
+
     <div class="sb2-list">
       <a class="sb2-item" class:list={[{ active: isSean }]} href="/about/sean/">
         <div class="sb2-row">
@@ -25,5 +52,148 @@ const isStudio = path.startsWith('/about/melis-ai');
         <div class="sb2-desc">Studio behind it all</div>
       </a>
     </div>
+
+    {isSean && (
+      <nav class="about-toc" data-about-toc>
+        <div class="about-toc-label">Chapters</div>
+        {SEAN_CHAPTERS.map((c) => (
+          <a class="about-toc-item" href={`#${c.id}`} data-toc-target={c.id}>
+            {c.num && <span class="toc-num">{c.num}</span>}
+            <span class="toc-label">{c.label}</span>
+          </a>
+        ))}
+      </nav>
+    )}
+
+    {isStudio && (
+      <nav class="about-toc" data-about-toc>
+        <div class="about-toc-label">Chapters</div>
+        {STUDIO_CHAPTERS.map((c) => (
+          <a class="about-toc-item" href={`#${c.id}`} data-toc-target={c.id}>
+            <span class="toc-label">{c.label}</span>
+          </a>
+        ))}
+      </nav>
+    )}
   </div>
 </aside>
+
+<style>
+  .about-toc {
+    margin-top: 12px;
+    padding: 12px 0 8px;
+    border-top: 1px solid var(--border-1);
+    display: flex;
+    flex-direction: column;
+  }
+  .about-toc-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    padding: 0 16px 10px;
+  }
+  .about-toc-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 16px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--text-2);
+    text-decoration: none;
+    transition: color 0.15s var(--ease), background 0.15s var(--ease);
+    border-left: 2px solid transparent;
+  }
+  .about-toc-item:hover { color: var(--text-1); background: rgba(168, 85, 247, 0.04); }
+  .about-toc-item.is-current {
+    color: var(--accent);
+    background: rgba(168, 85, 247, 0.08);
+    border-left-color: var(--accent);
+  }
+  .toc-num {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    color: var(--text-3);
+    width: 16px;
+    flex-shrink: 0;
+  }
+  .about-toc-item.is-current .toc-num { color: var(--accent); }
+  .toc-label { flex: 1; }
+</style>
+
+<script>
+  // Scroll-spy: highlight the about-toc item whose target section is
+  // currently in view. Smooth-scroll on click. Runs on every page load
+  // and after Astro view-transitions.
+  function wireAboutScrollSpy() {
+    const toc = document.querySelector<HTMLElement>('[data-about-toc]');
+    if (!toc) return;
+    if (toc.dataset.wired === '1') return;
+    toc.dataset.wired = '1';
+
+    const items = toc.querySelectorAll<HTMLAnchorElement>('.about-toc-item');
+    const sectionById = new Map<string, Element>();
+    items.forEach((item) => {
+      const id = item.dataset.tocTarget;
+      if (!id) return;
+      const el = document.getElementById(id);
+      if (el) sectionById.set(id, el);
+    });
+
+    if (sectionById.size === 0) return;
+
+    const setActive = (id: string | null) => {
+      items.forEach((it) => {
+        it.classList.toggle('is-current', it.dataset.tocTarget === id);
+      });
+    };
+
+    // Smooth scroll on click.
+    items.forEach((item) => {
+      item.addEventListener('click', (e) => {
+        const id = item.dataset.tocTarget;
+        if (!id) return;
+        const el = sectionById.get(id);
+        if (!el) return;
+        e.preventDefault();
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setActive(id);
+        history.replaceState(null, '', `#${id}`);
+      });
+    });
+
+    // IntersectionObserver — fires when ≥30% of a section is in the
+    // upper-half of the viewport. Picks the topmost intersecting section.
+    const visible = new Set<string>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const id = (entry.target as HTMLElement).id;
+          if (!id) return;
+          if (entry.isIntersecting) visible.add(id);
+          else visible.delete(id);
+        });
+        // Pick the first section in document order that's visible.
+        const orderedIds = Array.from(items)
+          .map((it) => it.dataset.tocTarget!)
+          .filter((id) => visible.has(id));
+        setActive(orderedIds[0] || null);
+      },
+      {
+        rootMargin: '-15% 0px -55% 0px',
+        threshold: [0, 0.3, 0.6],
+      },
+    );
+    sectionById.forEach((el) => observer.observe(el));
+
+    // Initial state — light up the first section by default.
+    const first = items[0]?.dataset.tocTarget;
+    if (first) setActive(first);
+  }
+  document.addEventListener('DOMContentLoaded', wireAboutScrollSpy);
+  document.addEventListener('astro:after-swap', wireAboutScrollSpy);
+  if (document.readyState !== 'loading') wireAboutScrollSpy();
+</script>
