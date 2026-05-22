@@ -45,11 +45,15 @@
       </div>
     </section>
 
-    <!-- ─── TICKER ─── -->
+    <!-- ─── TICKER — continuous right-to-left marquee, list duplicated so
+         the -50% translate keyframe loops seamlessly. -->
     <section class="ticker">
       <div class="ticker-label">AI solutions built for</div>
       <div class="ticker-brands">
-        <span>JKL College · Mercedes · Kiehl's · Jetts · JustDigitalPeople · Brisbane Lions · Lyre's Spirits · Maybelline NY · Culture Amp · Snap Fitness</span>
+        <div class="ticker-track" aria-hidden="false">
+          <span>JKL College · Mercedes · Kiehl's · Jetts · JustDigitalPeople · Brisbane Lions · Lyre's Spirits · Maybelline NY · Culture Amp · Snap Fitness</span>
+          <span aria-hidden="true">JKL College · Mercedes · Kiehl's · Jetts · JustDigitalPeople · Brisbane Lions · Lyre's Spirits · Maybelline NY · Culture Amp · Snap Fitness</span>
+        </div>
       </div>
     </section>
 
