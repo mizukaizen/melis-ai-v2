@@ -47,6 +47,8 @@
 | 8 | **BeeHiiv production publication ID + Resend domain verify** | Same pattern as Stripe — env vars currently placeholders. Subscribe form returns 503 until populated. Verify `melis.ai` domain in Resend for transactional sends. |
 | 9 | **DNS cutover from `melis-ai-coming-soon` to `melis-ai-v2`** | Sean handles manually after final review. `melis-ai-v2.vercel.app` aliases the production deployment of the new project; the old `melis-ai-coming-soon` project still holds the `melis.ai` domain. Decision needed: rename Vercel projects, update DNS, retire the coming-soon project. |
 | 10 | **Image optimisation (PNG → WebP)** | 150 MB of paper-craft PNGs in `public/section-rooms/` + 13 MB in `public/library-rooms/`. Vercel CDN serves them fine; WebP at quality 82 would cut weight 50–70% and improve Lighthouse. Sharp script stub in `scripts/optimize-images.mjs` (TODO). |
+| 11 | **Recos affiliate-link schema (pass 10 deferral)** | Extend the `recos` content collection with affiliate fields: `partner`, `utm_source`, `utm_campaign`, `disclosure_text`. Update the recos detail component to render affiliate chips next to each tool link (mockup `Partner · UTM · DISCLOSURE` chip row) and add a "The list" subhead above the tool grid. Needs proper affiliate-tag + disclosure design (legal review on disclosure copy, partner-by-partner UTM scheme) before implementation. |
+| 12 | **Newsletter inline signup form — resolved as keep-live** (pass 10) | Mockup shows no inline `Subscribe — Free` form on `/newsletter/`; live shows one prominent above the fold. Pass-9 audit flagged the divergence; Sean's pass-10 decision is to **keep the live UX** (inline form) — mockup will diverge here permanently. No code change. Note for future audits: this is not a parity bug. |
 
 ### What's deliberately NOT in Phase 2
 
@@ -366,3 +368,34 @@ Worked through all 10 issues in the pass-9 white-glove audit. 8 closed, 1 partia
 2. **AI Mastery metadata chips ("28h LIVE · COURSE 2026 · PREMIUM LECTURE 1.2")** — pulled from where? COURSES_DETAIL doesn't have these fields. Add as new MDX frontmatter?
 3. **Recos affiliate chips + "The list" subhead** — same question: extend MDX schema, or treat as Phase 2?
 4. **Complete Arsenal hero image** — current is hive.jpg (cathedral, pass 4 user choice); mockup canonical is bundles.png. Stay or revert?
+
+---
+
+## Pass 10 — final pre-merge parity decisions (2026-05-23)
+
+Sean reviewed the 4 deferred items from pass 9. Decisions encoded in this pass:
+
+### Closed
+
+- **Newsletter landing inline subscribe form** → KEEP. Mockup will diverge here permanently. Logged as Phase 2 item #12 (no-op).
+- **Complete Arsenal hero** → KEEP hive.jpg cathedral. Pass-4 user choice stands.
+- **AI Mastery metadata chips** → ADDED. New optional fields in the `courses` zod schema (`duration`, `liveStatus`, `year`, `tier`, `lectureMarker`). AI Mastery 2026 populated with `"28h" / "LIVE" / "2026" / "PREMIUM" / "LECTURE 1.2"`. `FeaturedCourseCard` renders them between title and description as a mono-uppercase chip row with " · " separators — only shown when at least one field is set, so other coming-soon courses skip the row gracefully.
+- **Recos affiliate chips** → DEFERRED to Phase 2 (item #11). Needs legal-review on disclosure copy + per-partner UTM scheme before implementation.
+
+### Services IA reconciliation
+
+Pass 9 left a dead-click problem: sb2 listed 5 mockup-canonical entries (Strategy Session / Build Sprint / Fractional Operator / Speaking / Advisory) but only 3 had MDX detail pages. Closed in pass 10:
+
+- **Mapping decision** — 3 existing MDX kept their slugs, sb2 labels rewritten:
+  - "Strategy Session" → `/services/strategy-print-sprint/`
+  - "Build Sprint" → `/services/ai-builds-on-tap/`
+  - "Advisory" → `/services/business-ai-blueprint/`
+- **2 new coming-soon stubs** created:
+  - `src/content/services/fractional-operator.mdx`
+  - `src/content/services/speaking.mdx`
+- **`services/[slug].astro`** gained a `status === 'coming-soon'` branch that renders a "Coming soon" pill + short paragraph + `<NewsletterForm />` instead of the LeadForm. Schema extended with `status: z.enum(['live', 'coming-soon']).default('live')`.
+- **Services landing** COVER_MAP extended for the 2 new slugs (`services-fractional.png`, `services-speaking.png`) so the room-card grid renders 5 cards with paper-craft backgrounds.
+
+### Pre-merge sign-off
+
+Phase 1 → ready to merge. Every deferred item from pass 9 has an explicit Sean decision. Three items move to Phase 2 (recos affiliate schema, Tailwind 4 refactor, second dossier batch). Build + astro check both green. Branch state pushed to `origin/feat/initial-port`. Sean merges manually.
