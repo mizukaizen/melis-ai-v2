@@ -16,6 +16,11 @@ const cover = (data.cover && data.cover.startsWith('/'))
 const titleHtml = data.titleHtml || data.title;
 const tags = (data.stats || []).slice(0, 4).map((s: any) => `${s.val} ${s.lbl || ''}`.trim());
 const price = data.price ? `$${(data.price / 100).toFixed(0)}` : '$29';
+
+// Mockup chip row (line ~10880): "28h · LIVE · 2026 · PREMIUM · LECTURE 1.2".
+// Each chip is optional; the row only renders when at least one is set.
+const chips = [data.duration, data.liveStatus, data.year, data.tier, data.lectureMarker]
+  .filter((s): s is string => Boolean(s && s.trim()));
 ---
 
 <a class="featured-course-card" href={`/courses/${item.slug}/`}>
@@ -24,6 +29,16 @@ const price = data.price ? `$${(data.price / 100).toFixed(0)}` : '$29';
   <div class="fcc-content">
     <div class="fcc-eyebrow">FLAGSHIP · NOW RECORDING</div>
     <h3 class="fcc-title" set:html={titleHtml}></h3>
+    {chips.length > 0 && (
+      <div class="fcc-chips">
+        {chips.map((c, i) => (
+          <>
+            {i > 0 && <span class="fcc-chip-sep" aria-hidden="true">·</span>}
+            <span class="fcc-chip">{c}</span>
+          </>
+        ))}
+      </div>
+    )}
     <p class="fcc-sub">{data.subtitle1 || data.lede}</p>
     {tags.length > 0 && (
       <div class="fcc-tags">
@@ -100,6 +115,32 @@ const price = data.price ? `$${(data.price / 100).toFixed(0)}` : '$29';
     letter-spacing: -0.015em;
   }
   .fcc-title :global(em) { font-style: italic; color: var(--accent); }
+  /* Metadata chip row — mono uppercase, 0.18em, 10px, " · " separators. */
+  .fcc-chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 18px;
+  }
+  .fcc-chip {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    padding: 3px 9px;
+    background: rgba(20, 20, 24, 0.55);
+    border: 1px solid var(--border-2);
+    border-radius: 999px;
+    line-height: 1;
+  }
+  .fcc-chip-sep {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-3);
+    line-height: 1;
+  }
   .fcc-sub {
     font-family: var(--font-body);
     font-size: 16px;

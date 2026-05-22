@@ -144,6 +144,7 @@ const services = defineCollection({
       howItWorks: z.array(z.unknown()).optional(),
       bookingMode: z.enum(['lead-form', 'direct-link', 'waitlist']).default('lead-form'),
       bookingUrl: z.string().url().optional(),
+      status: z.enum(['live', 'coming-soon']).default('live'),
       draft: z.boolean().default(false),
     })
     .passthrough(),
@@ -196,6 +197,14 @@ const courses = defineCollection({
       stripePriceEnvKey: z.string().optional(),
       waitlistEnabled: z.boolean().default(true),
       durationLabel: z.string().optional(),
+      // Metadata chips — render as a mono-uppercase row between the title
+      // and the description on featured/detail cards (mockup line ~10880).
+      // Mirrors the "28h · LIVE · 2026 · PREMIUM · LECTURE 1.2" strip.
+      duration: z.string().optional(),
+      liveStatus: z.string().optional(),
+      year: z.string().optional(),
+      tier: z.string().optional(),
+      lectureMarker: z.string().optional(),
       draft: z.boolean().default(false),
     })
     .passthrough(),
