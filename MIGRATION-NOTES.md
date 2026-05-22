@@ -310,3 +310,20 @@ Final pre-merge sweep — closed all 5 CRITICAL issues + 5 of the 6 IMPORTANT on
 - `pnpm exec astro check` → 0 errors, 0 warnings, 3 hints (unused imports in `scripts/` + one unused param in newsletter cover helper)
 - Capture script now covers 29 pages × 2 viewports = 58 captures. All 200 OK.
 - 1440×900 + 1920×1080 captures walked: home/articles/products/courses/dossiers/services/ventures/about/lab parity all hold.
+
+---
+
+## Pass 8 — interaction polish + missing animation (2026-05-22)
+
+Three small but visible nits Sean's eye caught on final pre-merge review:
+
+1. **Missing CSS tokens caused the home stat dividers to vanish.** The v6 mockup CSS uses `var(--border)` (and `var(--border-light)` and `var(--text)`) without the numeric suffix throughout — most notably the `.pane[data-pane="home"] .stat { border-right: 1px solid var(--border); }` rule that draws the vertical lines between the 5 home stats. `tokens.css` defined `--border-1/2/3` and `--text-1/2/3` but no fallback aliases, so every `var(--border)` reference resolved to the property's initial value and rendered with no colour. Added three aliases under `:root` (`--border → --border-2`, `--border-light → --border-1`, `--text → --text-1`) so the mockup rules paint correctly. No other CSS changes needed — the dividers, ticker border-bottom, and panel-group separators all light up once the tokens resolve.
+
+2. **Cursor pointer on interactive chrome.** Sb1 nav items, sb2 panel-items and sb2-items, panel-group headers, the wordmark, the sb-search-btn, every card variant (`room-card` / `flat-card` / `pd-sibling-card` / `pd-look-card` / `exhibit-card`), the featured cards (`featured-product-card` / `featured-course-card` / `featured-prompt-card`), the `about-toc-item` rows, and the home `.card` portal tiles all behave as buttons/links. Default text/arrow cursor over `<a>`/`<div onclick>` made them feel non-interactive. Added `cursor: pointer` for each, plus `cursor: inherit` on nested `.count` / `.pi-dot` / `.sb2-count` / `.flat-card-tag` badges so each row reads as a single hit area.
+
+3. **AI ticker marquee.** The mockup CSS for `.ticker-brands` was static (`white-space: nowrap; overflow: hidden` on the parent, no animation). Pass-8 brief called for the scroll-loop, so added `melis-ticker-scroll` @keyframes translating `.ticker-track` from `0` to `-50%` over 60s linear infinite. Duplicated the brand list inside the track (second copy `aria-hidden="true"`) so the loop is seamless at the `-50%` snap-back point. Feathered the ticker container with a horizontal mask-image gradient so brands fade in/out at the edges instead of clipping hard. Honours `prefers-reduced-motion: reduce` — animation halts for users who've opted out.
+
+### What I noticed while in there
+
+- **The token aliases also fix invisible borders elsewhere.** The mockup CSS references `var(--border)` in dozens of places (panel-group separators, group-eyebrow underline, sb2-header bottom-rule, etc.). All of those silently rendered colourless before this pass. Now they paint at `--border-2 = rgba(255,255,255,0.06)`. Worth re-walking the comparison HTML — some "missing border" parity gaps from earlier passes may now self-heal.
+- **No other ticker / marquee patterns in the mockup** — the only `@keyframes` were `filterMenuIn`, `paneFadeIn`, `sb2SlideIn`, `cta-shimmer`, `checkoutSpin`, `cec-pulse`, `cmdk-in`. Of those, `paneFadeIn` and `sb2SlideIn` belong to the SPA's pane-swap behaviour (Astro view-transitions replace that). The others are tied to features not yet ported (cart, cmdk, cta-shimmer button variant). Left untouched — porting them now would create dead chrome.
