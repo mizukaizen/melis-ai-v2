@@ -25,6 +25,14 @@
   --border-2: rgba(255, 255, 255, 0.06);
   --border-3: rgba(255, 255, 255, 0.10);
 
+  /* Mockup-canonical aliases — the v6 mockup CSS references --border /
+     --border-light / --text without the numeric suffix. Without these the
+     stats row dividers, ticker border-bottom, and any other rule using
+     var(--border) silently fall back to no colour. */
+  --border: var(--border-2);
+  --border-light: var(--border-1);
+  --text: var(--text-1);
+
   /* Typography */
   --font-display: 'Cormorant Garamond', Georgia, serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
