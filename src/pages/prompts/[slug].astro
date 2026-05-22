@@ -20,6 +20,12 @@ const data = item.data;
 const cover = (data.cover && data.cover.startsWith('/'))
   ? data.cover
   : itemHero('prompts', data.category, item.slug) || landingHero('prompts');
+
+// The MDX stores prompt body with inline `<span class="pv-var">[TOKEN]</span>`
+// markup. Render the body as raw HTML so the spans render styled. For the
+// copy-to-clipboard fallback, strip the spans so the user pastes clean text.
+const promptHtml = data.prompt || '';
+const promptPlain = promptHtml.replace(/<span class="pv-var">([^<]*)<\/span>/g, '$1').replace(/<[^>]+>/g, '');
 ---
 
 <AppLayout title={data.title} pane="prompts" inRoom description={data.lede}>
@@ -31,12 +37,23 @@ const cover = (data.cover && data.cover.startsWith('/'))
   />
 
   <section class="section-body">
-    <div class="prompt-detail">
-      <div class="prompt-toolbar">
-        <button class="copy-btn" id="copy-btn" data-text={data.prompt}>Copy prompt</button>
-        <span class="copy-status" id="copy-status"></span>
+    <div class="room-prompt-card">
+      <div class="room-prompt-meta">
+        <span class="room-prompt-cat">{data.category}</span>
+        <span class="room-prompt-dot">·</span>
+        <span class="room-prompt-line">{data.lede}</span>
       </div>
-      <pre class="prompt-body"><code set:html={data.prompt.replace(/</g, '&lt;')}></code></pre>
+      <pre class="room-prompt-pre" id="prompt-pre" set:html={promptHtml}></pre>
+      <div class="room-prompt-footer">
+        <button class="room-prompt-copy" id="copy-btn" data-text={promptPlain}>
+          <i class="ph ph-copy" aria-hidden="true"></i>
+          <span id="copy-label">Copy prompt</span>
+        </button>
+        <button class="room-prompt-expand" id="expand-btn" type="button">
+          <i class="ph ph-arrows-out-line-vertical" aria-hidden="true"></i>
+          <span id="expand-label">Expand</span>
+        </button>
+      </div>
     </div>
   </section>
 
@@ -46,33 +63,43 @@ const cover = (data.cover && data.cover.startsWith('/'))
   </div>
 
   <style>
-    .prompt-detail { max-width: 900px; margin: 0 auto; }
-    .prompt-toolbar { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
-    .copy-btn { padding: 10px 18px; background: var(--accent); color: white; border: none; border-radius: 6px; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; cursor: pointer; transition: background 0.2s var(--ease); }
-    .copy-btn:hover { background: #9333ea; }
-    .copy-status { font-family: var(--font-mono); font-size: 11px; color: #5eead4; }
-    .prompt-body { padding: 24px 28px; background: rgba(20, 20, 24, 0.65); border: 1px solid var(--border-2); border-radius: 10px; font-family: var(--font-mono); font-size: 13px; line-height: 1.65; color: var(--text-1); overflow-x: auto; white-space: pre-wrap; }
-    .prompt-body :global(.pv-var) { color: var(--accent); background: var(--accent-subtle); padding: 1px 6px; border-radius: 4px; }
+    .room-prompt-card { max-width: 900px; margin: 0 auto; padding: 22px 24px; background: rgba(20, 20, 24, 0.55); border: 1px solid var(--border-2); border-radius: 12px; }
+    .room-prompt-meta { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-3); margin-bottom: 14px; flex-wrap: wrap; }
+    .room-prompt-cat { color: var(--accent); }
+    .room-prompt-line { text-transform: none; letter-spacing: 0; font-family: var(--font-body); font-size: 12.5px; color: var(--text-2); }
+    .room-prompt-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; }
+    .room-prompt-copy, .room-prompt-expand { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: rgba(168, 85, 247, 0.08); color: var(--accent); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 6px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em; cursor: pointer; transition: background 0.18s var(--ease); }
+    .room-prompt-copy:hover, .room-prompt-expand:hover { background: rgba(168, 85, 247, 0.18); }
   </style>
 
   <script>
-    function wire() {
-      const btn = document.getElementById('copy-btn') as HTMLButtonElement | null;
-      const status = document.getElementById('copy-status');
-      if (!btn || !status || btn.dataset.wired === '1') return;
-      btn.dataset.wired = '1';
-      btn.addEventListener('click', async () => {
-        const text = btn.dataset.text || '';
+    function wirePromptRoom() {
+      const copyBtn = document.getElementById('copy-btn') as HTMLButtonElement | null;
+      const copyLabel = document.getElementById('copy-label');
+      const expandBtn = document.getElementById('expand-btn') as HTMLButtonElement | null;
+      const expandLabel = document.getElementById('expand-label');
+      const card = document.querySelector<HTMLDivElement>('.room-prompt-card');
+      if (!copyBtn || !copyLabel || !expandBtn || !expandLabel || !card) return;
+      if (copyBtn.dataset.wired === '1') return;
+      copyBtn.dataset.wired = '1';
+
+      copyBtn.addEventListener('click', async () => {
+        const text = copyBtn.dataset.text || '';
         try {
           await navigator.clipboard.writeText(text);
-          status.textContent = 'Copied.';
-          setTimeout(() => (status.textContent = ''), 1800);
+          copyLabel.textContent = 'Copied';
+          setTimeout(() => (copyLabel.textContent = 'Copy prompt'), 1600);
         } catch {
-          status.textContent = 'Copy failed — select manually.';
+          copyLabel.textContent = 'Select manually';
         }
       });
+
+      expandBtn.addEventListener('click', () => {
+        const expanded = card.classList.toggle('is-expanded');
+        expandLabel.textContent = expanded ? 'Collapse' : 'Expand';
+      });
     }
-    document.addEventListener('astro:page-load', wire);
-    wire();
+    document.addEventListener('astro:page-load', wirePromptRoom);
+    wirePromptRoom();
   </script>
 </AppLayout>
