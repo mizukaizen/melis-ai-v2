@@ -2,6 +2,7 @@
 import AppLayout from '../../layouts/AppLayout.astro';
 import SectionHero from '../../components/SectionHero.astro';
 import LeadForm from '../../components/LeadForm.astro';
+import NewsletterForm from '../../components/NewsletterForm.astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { itemHero, landingHero } from '../../lib/hero-image';
 import { SERVICES_DETAIL } from '../../data/services';
@@ -30,6 +31,7 @@ const cta = detail?.cta;
 const cover = (data.cover && data.cover.startsWith('/'))
   ? data.cover
   : itemHero('services', data.title.replace(/<[^>]+>/g, ''), item.slug) || landingHero('services');
+const isComingSoon = (data as { status?: string }).status === 'coming-soon';
 ---
 
 <AppLayout title={data.title} pane="services" inRoom description={lede}>
@@ -53,7 +55,15 @@ const cover = (data.cover && data.cover.startsWith('/'))
       </div>
     )}
 
-    {steps.length > 0 && (
+    {isComingSoon && (
+      <div class="service-soon">
+        <div class="ss-soon-pill">Coming soon</div>
+        <p>This service is in development. Join the newsletter to be the first to know when it opens.</p>
+        <div class="ss-soon-form"><NewsletterForm /></div>
+      </div>
+    )}
+
+    {!isComingSoon && steps.length > 0 && (
       <section class="service-how">
         <div class="section-eyebrow-small">How it works</div>
         <h2 class="h2">What you'll <em>walk away with</em>.</h2>
@@ -71,18 +81,20 @@ const cover = (data.cover && data.cover.startsWith('/'))
       </section>
     )}
 
-    {cta && (
+    {!isComingSoon && cta && (
       <div class="service-cta">
         <h3>{cta.title}</h3>
         <p>{cta.line}</p>
       </div>
     )}
 
-    <div class="service-lead-form">
-      <h3>Get in touch.</h3>
-      <p>Tell Sean what you're trying to ship. He responds personally within a working day.</p>
-      <LeadForm service={data.title} />
-    </div>
+    {!isComingSoon && (
+      <div class="service-lead-form">
+        <h3>Get in touch.</h3>
+        <p>Tell Sean what you're trying to ship. He responds personally within a working day.</p>
+        <LeadForm service={data.title} />
+      </div>
+    )}
   </section>
 
   <div class="footer">
@@ -109,5 +121,10 @@ const cover = (data.cover && data.cover.startsWith('/'))
     .service-lead-form { max-width: 540px; margin: 0 auto; }
     .service-lead-form h3 { font-family: var(--font-display); font-size: 28px; color: var(--text-1); margin: 0 0 8px; }
     .service-lead-form p { font-family: var(--font-body); font-size: 15px; color: var(--text-2); margin: 0 0 24px; line-height: 1.55; }
+    /* Coming-soon stub services (Fractional Operator / Speaking) */
+    .service-soon { max-width: 540px; margin: 0 auto 2em; text-align: center; }
+    .ss-soon-pill { display: inline-block; padding: 4px 12px; margin-bottom: 14px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); background: rgba(168, 85, 247, 0.10); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 999px; }
+    .service-soon p { font-family: var(--font-body); font-size: 15px; color: var(--text-2); line-height: 1.6; margin: 0 0 20px; }
+    .ss-soon-form { margin: 0 auto; max-width: 460px; }
   </style>
 </AppLayout>

@@ -1,16 +1,16 @@
 ---
 // Mockup-canonical sb2 entries (lines 5311-5351 of melis-ai-spa-v6-astro-content.html).
-// Note: mockup labels (Strategy Session / Build Sprint / Fractional Operator /
-// Speaking / Advisory) don't 1:1 map to live service slugs — they're the
-// mockup's IA. Each entry links to /services/ landing; specific detail pages
-// are only available for the three live services.
+// Each mockup label maps to a real Astro detail page — 3 live services
+// (Strategy Session, Build Sprint, Advisory) keep their existing content
+// under the original slugs, the other 2 (Fractional Operator, Speaking)
+// are coming-soon stubs created in pass 10.
 
-const ENTRIES: { name: string; count: string; desc: string }[] = [
-  { name: 'Strategy Session',    count: '1:1', desc: '90-minute deep dive' },
-  { name: 'Build Sprint',        count: '1:1', desc: '2-week intensive shipping' },
-  { name: 'Fractional Operator', count: '1:1', desc: 'Embedded for 3+ months' },
-  { name: 'Speaking',            count: '—',   desc: 'Keynotes and workshops' },
-  { name: 'Advisory',            count: '—',   desc: 'Ongoing strategic counsel' },
+const ENTRIES: { name: string; count: string; desc: string; href: string }[] = [
+  { name: 'Strategy Session',    count: '1:1', desc: '90-minute deep dive',         href: '/services/strategy-print-sprint/' },
+  { name: 'Build Sprint',        count: '1:1', desc: '2-week intensive shipping',   href: '/services/ai-builds-on-tap/' },
+  { name: 'Fractional Operator', count: '1:1', desc: 'Embedded for 3+ months',      href: '/services/fractional-operator/' },
+  { name: 'Speaking',            count: '—',   desc: 'Keynotes and workshops',      href: '/services/speaking/' },
+  { name: 'Advisory',            count: '—',   desc: 'Ongoing strategic counsel',   href: '/services/business-ai-blueprint/' },
 ];
 ---
 
@@ -28,7 +28,7 @@ const ENTRIES: { name: string; count: string; desc: string }[] = [
         <div class="sb2-desc">How to work with me</div>
       </a>
       {ENTRIES.map((e) => (
-        <a class="sb2-item" href="/services/">
+        <a class="sb2-item" href={e.href}>
           <div class="sb2-row">
             <div class="sb2-name">{e.name}</div>
             <div class="sb2-count">{e.count}</div>
