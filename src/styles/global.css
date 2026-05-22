@@ -71,7 +71,7 @@ body::-webkit-scrollbar,
  * `height:auto`, and `mask-image` overrides so the section-hero-base
  * overlay can do its job.
  * ────────────────────────────────────────────────────────────── */
-/* Landing heroes are SHORT (340-380px) so the cards lift into the fold
+/* Landing heroes are SHORT (~320px) so the cards lift into the fold
    at 900px viewport. Detail/in-room heroes stay tall for cinematic effect. */
 .pane .section-header,
 main.content .section-header {
@@ -81,7 +81,7 @@ main.content .section-header {
   top: auto !important;
   width: auto !important;
   height: auto !important;
-  min-height: 360px !important;
+  min-height: 320px !important;
   overflow: hidden !important;
 }
 .pane.in-room .section-header,
@@ -98,10 +98,10 @@ main.content .pane.in-room .section-header {
   display: flex !important;
   flex-direction: column !important;
   justify-content: flex-end !important;
-  padding: 64px clamp(24px, 3vw, 56px) 40px !important;
+  padding: 48px clamp(24px, 3vw, 56px) 32px !important;
   max-width: 1280px !important;
   margin: 0 auto !important;
-  min-height: 360px !important;
+  min-height: 320px !important;
   width: 100% !important;
   height: auto !important;
   text-align: left !important;
@@ -121,9 +121,13 @@ main.content .pane.in-room .section-header {
 }
 
 .pane .section-body {
-  padding-top: clamp(48px, 6vh, 96px) !important;
+  padding-top: clamp(28px, 4vh, 56px) !important;
   max-width: 1280px !important;
   margin: 0 auto !important;
+}
+/* Detail/in-room pages keep the cinematic breathing room above the body. */
+.pane.in-room .section-body {
+  padding-top: clamp(48px, 6vh, 96px) !important;
 }
 
 .pane .section-hero-bg {
