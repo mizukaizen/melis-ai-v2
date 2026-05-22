@@ -1,7 +1,7 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro';
 import SectionHero from '../../components/SectionHero.astro';
-import StripeBuyButton from '../../components/StripeBuyButton.astro';
+import ProductDetail from '../../components/ProductDetail.astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { itemHero, landingHero } from '../../lib/hero-image';
 
@@ -23,10 +23,15 @@ const cover = (data.cover && data.cover.startsWith('/'))
   ? data.cover
   : itemHero('products', data.title.replace(/<[^>]+>/g, ''), item.slug) || landingHero('products');
 
-function priceLabel(cents: number, currency: string) {
-  const sym = currency === 'USD' ? '$' : currency === 'AUD' ? 'A$' : currency === 'EUR' ? '€' : '£';
-  return `${sym}${(cents / 100).toFixed(0)}`;
-}
+// Sibling products from the same category — drives the "More kits from
+// the operator desk" grid at the bottom of the detail page.
+const allProducts = await getCollection('products');
+const siblings = allProducts
+  .filter((p) => !p.data.draft && p.slug !== item.slug && p.data.category === data.category);
+
+// Complete Arsenal still shows its bundle breakdown table (the bundle's
+// unique selling point) above the standard detail body.
+const isBundle = item.slug === 'complete-arsenal';
 ---
 
 <AppLayout title={data.title} pane="products" inRoom description={data.lede}>
@@ -39,33 +44,26 @@ function priceLabel(cents: number, currency: string) {
   />
 
   <section class="section-body">
-    <div class="product-detail">
-      <div class="product-pricing">
-        <div class="price-block">
-          <div class="price">{priceLabel(data.price, data.currency)}</div>
-          {data.badge && <div class="badge">{data.badge}</div>}
-        </div>
-        <StripeBuyButton productSlug={item.slug} label={`Buy — ${priceLabel(data.price, data.currency)}`} />
-      </div>
+    {isBundle && data.breakdown && data.breakdown.length > 0 && (
+      <section class="product-breakdown">
+        <h3>What's in the bundle</h3>
+        <ul>
+          {data.breakdown.map((b) => (
+            <li>
+              <span class="bn">{b.name}</span>
+              <span class="bc">{b.count}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
 
-      <article class="product-body">
-        <Content />
-      </article>
+    <ProductDetail item={item} siblings={siblings} />
 
-      {data.breakdown && data.breakdown.length > 0 && (
-        <section class="product-breakdown">
-          <h3>What's in the bundle</h3>
-          <ul>
-            {data.breakdown.map((b) => (
-              <li>
-                <span class="bn">{b.name}</span>
-                <span class="bc">{b.count}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-    </div>
+    {/* MDX body — extra prose authored in the .mdx file, rendered below the v2 layout. */}
+    <article class="product-mdx-body">
+      <Content />
+    </article>
   </section>
 
   <div class="footer">
@@ -74,18 +72,15 @@ function priceLabel(cents: number, currency: string) {
   </div>
 
   <style>
-    .product-detail { max-width: 720px; margin: 0 auto; }
-    .product-pricing { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 28px; flex-wrap: wrap; }
-    .price-block { display: flex; align-items: baseline; gap: 16px; }
-    .price { font-family: var(--font-display); font-size: 48px; color: var(--accent); }
-    .badge { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; padding: 4px 10px; background: var(--accent-subtle); color: var(--accent); border-radius: 4px; }
-    .product-body :global(p) { font-family: var(--font-body); font-size: 17px; line-height: 1.7; color: var(--text-1); margin: 0 0 1.4em; }
-    .product-breakdown { margin-top: 3em; padding: 24px 28px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 12px; }
-    .product-breakdown h3 { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-3); margin: 0 0 18px; }
+    .product-breakdown { max-width: 720px; margin: 0 auto 2.5em; padding: 22px 26px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 12px; }
+    .product-breakdown h3 { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-3); margin: 0 0 14px; }
     .product-breakdown ul { list-style: none; padding: 0; margin: 0; }
-    .product-breakdown li { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-1); font-family: var(--font-body); font-size: 15px; }
+    .product-breakdown li { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border-1); font-family: var(--font-body); font-size: 14px; }
     .product-breakdown li:last-child { border-bottom: none; }
     .bn { color: var(--text-1); }
     .bc { color: var(--text-3); font-family: var(--font-mono); font-size: 12px; }
+
+    .product-mdx-body { max-width: 720px; margin: 2.5em auto 0; }
+    .product-mdx-body :global(p) { font-family: var(--font-body); font-size: 15px; line-height: 1.7; color: var(--text-2); margin: 0 0 1.2em; }
   </style>
 </AppLayout>

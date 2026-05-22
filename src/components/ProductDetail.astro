@@ -1,0 +1,344 @@
+---
+// Full product-detail-v2 layout — mockup line 7915 renderProductDetail().
+// Renders chip row, About + 3 mini blocks + pull-quote, Take-a-look gallery,
+// Buy aside, Why-it-works grid, and More-kits siblings.
+
+import StripeBuyButton from './StripeBuyButton.astro';
+import { PRODUCT_INCLUDES, PRODUCT_ABOUT_BLOCKS, PD_THUMBS, PD_WHY_TILES, fallbackAboutModel } from '../data/products';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  item: CollectionEntry<'products'>;
+  siblings: CollectionEntry<'products'>[];
+}
+
+const { item, siblings } = Astro.props;
+const data = item.data;
+const slug = item.slug;
+const priceLabel = (() => {
+  const sym = data.currency === 'USD' ? '$' : data.currency === 'AUD' ? 'A$' : data.currency === 'EUR' ? '€' : '£';
+  return `${sym}${(data.price / 100).toFixed(0)}`;
+})();
+const wasPrice = data.price > 1500 ? '$44' : null;
+const saveLabel = wasPrice ? 'Save 33%' : null;
+
+const includes = PRODUCT_INCLUDES[slug] || ['Setup guide', 'Implementation walkthrough', 'Update access', 'Sean@melis.ai support'];
+const about = PRODUCT_ABOUT_BLOCKS[slug] || fallbackAboutModel(data.lede || '', data.category);
+const siblingsDisplay = siblings.slice(0, 4);
+---
+
+<div class="product-detail-v2">
+  <div class="pd-top pd-top-hybrid">
+    <div class="pd-intro">
+      <div class="pd-chip-row">
+        <span class="pd-chip"><i class="ph ph-package" aria-hidden="true"></i> {data.category}</span>
+        <span class="pd-chip"><i class="ph ph-download-simple" aria-hidden="true"></i> Instant delivery</span>
+        <span class="pd-chip"><i class="ph ph-shield-check" aria-hidden="true"></i> 30-day guarantee</span>
+      </div>
+      <div class="pd-section pd-intro-about">
+        <div class="pd-section-label">About this kit</div>
+        <div class="pd-about">
+          <p class="pd-about-intro">{about.intro}</p>
+          <div class="pd-about-blocks">
+            {about.blocks.map((b) => (
+              <p class="pd-about-block">
+                <i class={`ph ${b.icon}`} aria-hidden="true"></i>
+                <strong>{b.head}.</strong> {b.body}
+              </p>
+            ))}
+          </div>
+          <blockquote class="pd-about-quote">
+            <p>"I built this because I needed it first. Everything here came out of actual daily use — running OpenClaw, coordinating agents, shipping products."</p>
+            <div class="pd-about-quote-attrib">— Sean Melis · 20k+ Udemy students</div>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+
+    <aside class="pd-buy-v2">
+      <div class="pd-buy-head">
+        <div class="pd-buy-title" set:html={data.titleHtml || data.title}></div>
+        <div class="pd-buy-sub">by Sean Melis · melis.ai</div>
+      </div>
+      <div class="pd-buy-rating">
+        <span class="pd-stars">★★★★★</span>
+        <span class="pd-rating-num">4.9</span>
+        <span class="pd-rating-sep">·</span>
+        <span class="pd-rating-meta">Instant download</span>
+      </div>
+      <div class="pd-buy-price-row">
+        <span class="pd-buy-price">{priceLabel}</span>
+        {wasPrice && <span class="pd-buy-price-was">{wasPrice}</span>}
+        {saveLabel && <span class="pd-buy-save">{saveLabel}</span>}
+      </div>
+      <div class="pd-buy-cta">
+        <StripeBuyButton productSlug={slug} label={`Get for ${priceLabel}`} />
+      </div>
+      <div class="pd-buy-note">
+        <i class="ph ph-lock" aria-hidden="true"></i>
+        <span>Limited launch pricing</span>
+      </div>
+      <ul class="pd-trust">
+        <li><i class="ph ph-check" aria-hidden="true"></i> One-time payment — no subscription</li>
+        <li><i class="ph ph-check" aria-hidden="true"></i> Delivered to your inbox instantly</li>
+        <li><i class="ph ph-check" aria-hidden="true"></i> Lifetime updates included</li>
+      </ul>
+      <div class="pd-included">
+        <div class="pd-included-label">What's included</div>
+        <ul class="pd-included-list">
+          {includes.map((line) => (
+            <li><i class="ph ph-check-circle" aria-hidden="true"></i> {line}</li>
+          ))}
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <div class="pd-section pd-take-look">
+    <div class="pd-section-label">Take a look · {PD_THUMBS.length} previews</div>
+    <div class="pd-look-grid">
+      {PD_THUMBS.map((src) => (
+        <div class="pd-look-card" style={`background-image: url('${src}');`}>
+          <div class="pd-look-pill">Preview</div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div class="pd-section">
+    <div class="pd-section-label">Why it works</div>
+    <div class="pd-why-grid">
+      {PD_WHY_TILES.map((t) => (
+        <div class="pd-why-tile">
+          <i class={`ph ${t.icon} pd-why-icon`} aria-hidden="true"></i>
+          <div class="pd-why-title">{t.title}</div>
+          <div class="pd-why-line">{t.line}</div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  {siblingsDisplay.length > 0 && (
+    <div class="pd-siblings">
+      <div class="pd-section-label">More kits from the operator desk</div>
+      <div class="pd-siblings-grid">
+        {siblingsDisplay.map((s) => {
+          const sym = s.data.currency === 'USD' ? '$' : s.data.currency === 'AUD' ? 'A$' : s.data.currency === 'EUR' ? '€' : '£';
+          const sPrice = `${sym}${(s.data.price / 100).toFixed(0)}`;
+          const sCover = s.data.cover || `/section-rooms/products-${s.data.category.toLowerCase().replace(/\s+/g, '-')}.png`;
+          return (
+            <a class="pd-sibling-card" href={`/products/${s.slug}/`}>
+              <div class="pd-sibling-img" style={`background-image: url('${sCover}');`}></div>
+              <div class="pd-sibling-veil"></div>
+              <div class="pd-sibling-meta">
+                <div class="pd-sibling-cat">{s.data.category}</div>
+                <div class="pd-sibling-title" set:html={s.data.titleHtml || s.data.title}></div>
+                <div class="pd-sibling-price">{sPrice}</div>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  )}
+</div>
+
+<style>
+  .product-detail-v2 { max-width: 1100px; margin: 0 auto; }
+
+  /* ── Top hybrid: intro (left) + buy aside (right) ── */
+  .pd-top-hybrid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 32px;
+    align-items: start;
+    margin-bottom: 2.5em;
+  }
+  @media (max-width: 880px) {
+    .pd-top-hybrid { grid-template-columns: 1fr; }
+  }
+
+  .pd-chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .pd-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 12px;
+    background: rgba(20, 20, 24, 0.55);
+    border: 1px solid var(--border-2);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+  .pd-chip i { font-size: 12px; color: var(--accent); }
+
+  .pd-section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-1);
+  }
+
+  /* ── About this kit ── */
+  .pd-about-intro {
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--text-1);
+    margin: 0 0 1.2em;
+    max-width: 60ch;
+  }
+  .pd-about-blocks { display: grid; gap: 14px; margin-bottom: 1.6em; }
+  .pd-about-block {
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--text-2);
+    line-height: 1.65;
+    margin: 0;
+    padding-left: 28px;
+    position: relative;
+    max-width: 60ch;
+  }
+  .pd-about-block i {
+    position: absolute;
+    left: 0;
+    top: 4px;
+    color: var(--accent);
+    font-size: 16px;
+  }
+  .pd-about-block strong { color: var(--text-1); font-weight: 500; }
+  .pd-about-quote {
+    padding: 18px 22px;
+    margin: 0;
+    border-left: 3px solid var(--accent);
+    background: rgba(168, 85, 247, 0.04);
+    border-radius: 0 8px 8px 0;
+  }
+  .pd-about-quote p {
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: 15px;
+    color: var(--text-1);
+    line-height: 1.55;
+    margin: 0 0 8px;
+  }
+  .pd-about-quote-attrib {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--text-3);
+  }
+
+  /* ── Buy aside ── */
+  .pd-buy-v2 {
+    padding: 22px;
+    background: rgba(20, 20, 24, 0.55);
+    border: 1px solid var(--border-2);
+    border-radius: 12px;
+    position: sticky;
+    top: 24px;
+  }
+  .pd-buy-head { margin-bottom: 12px; }
+  .pd-buy-title { font-family: var(--font-display); font-size: 22px; font-weight: 500; color: var(--text-1); margin-bottom: 4px; line-height: 1.2; }
+  .pd-buy-title :global(em) { font-style: italic; color: var(--accent); }
+  .pd-buy-sub { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); letter-spacing: 0.08em; }
+  .pd-buy-rating { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .pd-stars { color: #fbbf24; font-size: 13px; }
+  .pd-rating-num { font-family: var(--font-mono); font-size: 12px; color: var(--text-1); }
+  .pd-rating-sep, .pd-rating-meta { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); letter-spacing: 0.06em; }
+  .pd-buy-price-row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .pd-buy-price { font-family: var(--font-display); font-size: 32px; color: var(--accent); }
+  .pd-buy-price-was { font-family: var(--font-mono); font-size: 13px; color: var(--text-3); text-decoration: line-through; }
+  .pd-buy-save { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; padding: 3px 8px; background: rgba(74, 222, 128, 0.12); color: #4ade80; border-radius: 999px; text-transform: uppercase; }
+  .pd-buy-cta { margin-bottom: 12px; }
+  .pd-buy-cta :global(.stripe-buy-button) { width: 100%; }
+  .pd-buy-note { display: flex; align-items: center; gap: 6px; margin-bottom: 14px; font-family: var(--font-mono); font-size: 10px; color: var(--text-3); letter-spacing: 0.06em; }
+  .pd-buy-note i { color: var(--accent); }
+  .pd-trust { list-style: none; padding: 0; margin: 0 0 14px; display: grid; gap: 6px; }
+  .pd-trust li { display: flex; align-items: center; gap: 8px; font-family: var(--font-body); font-size: 12px; color: var(--text-2); }
+  .pd-trust i { color: #4ade80; font-size: 13px; }
+  .pd-included { padding-top: 12px; border-top: 1px solid var(--border-1); }
+  .pd-included-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; }
+  .pd-included-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+  .pd-included-list li { display: flex; align-items: flex-start; gap: 8px; font-family: var(--font-body); font-size: 12px; color: var(--text-1); line-height: 1.45; }
+  .pd-included-list i { color: var(--accent); font-size: 13px; margin-top: 2px; }
+
+  /* ── Sections ── */
+  .pd-section { margin-bottom: 2.5em; }
+
+  /* ── Take a look gallery ── */
+  .pd-look-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .pd-look-card {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    border: 1px solid var(--border-2);
+    overflow: hidden;
+  }
+  .pd-look-pill {
+    position: absolute;
+    top: 10px; left: 10px;
+    padding: 3px 8px;
+    background: rgba(5, 5, 5, 0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-1);
+  }
+
+  /* ── Why it works ── */
+  .pd-why-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+  }
+  .pd-why-tile {
+    padding: 20px 22px;
+    background: rgba(20, 20, 24, 0.45);
+    border: 1px solid var(--border-2);
+    border-radius: 10px;
+  }
+  .pd-why-icon { font-size: 22px; color: var(--accent); opacity: 0.7; display: block; margin-bottom: 10px; }
+  .pd-why-title { font-family: var(--font-display); font-size: 16px; font-weight: 500; color: var(--text-1); margin-bottom: 6px; }
+  .pd-why-line { font-family: var(--font-body); font-size: 13px; color: var(--text-2); line-height: 1.55; }
+
+  /* ── Siblings ── */
+  .pd-siblings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+  }
+  .pd-sibling-card {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: 10px;
+    border: 1px solid var(--border-2);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s var(--ease), border-color 0.2s var(--ease);
+  }
+  .pd-sibling-card:hover { transform: translateY(-2px); border-color: rgba(168, 85, 247, 0.3); }
+  .pd-sibling-img { position: absolute; inset: 0; background-size: cover; background-position: center; }
+  .pd-sibling-veil { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,5,5,0.1) 30%, rgba(5,5,5,0.85) 100%); }
+  .pd-sibling-meta { position: absolute; left: 14px; right: 14px; bottom: 14px; z-index: 1; }
+  .pd-sibling-cat { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-3); margin-bottom: 4px; }
+  .pd-sibling-title { font-family: var(--font-display); font-size: 16px; font-weight: 500; color: var(--text-1); line-height: 1.2; margin-bottom: 4px; }
+  .pd-sibling-title :global(em) { font-style: italic; color: var(--accent); }
+  .pd-sibling-price { font-family: var(--font-mono); font-size: 11px; color: var(--accent); }
+</style>
