@@ -327,3 +327,42 @@ Three small but visible nits Sean's eye caught on final pre-merge review:
 
 - **The token aliases also fix invisible borders elsewhere.** The mockup CSS references `var(--border)` in dozens of places (panel-group separators, group-eyebrow underline, sb2-header bottom-rule, etc.). All of those silently rendered colourless before this pass. Now they paint at `--border-2 = rgba(255,255,255,0.06)`. Worth re-walking the comparison HTML — some "missing border" parity gaps from earlier passes may now self-heal.
 - **No other ticker / marquee patterns in the mockup** — the only `@keyframes` were `filterMenuIn`, `paneFadeIn`, `sb2SlideIn`, `cta-shimmer`, `checkoutSpin`, `cec-pulse`, `cmdk-in`. Of those, `paneFadeIn` and `sb2SlideIn` belong to the SPA's pane-swap behaviour (Astro view-transitions replace that). The others are tied to features not yet ported (cart, cmdk, cta-shimmer button variant). Left untouched — porting them now would create dead chrome.
+
+---
+
+## Pass 9 — final parity sweep (2026-05-22)
+
+Worked through all 10 issues in the pass-9 white-glove audit. 8 closed, 1 partial, 1 deferred-as-needs-Sean. Full per-page status in `_cowork/outputs/website-rebrand/audit/INDEX.md`.
+
+### Closed
+
+- **Issue 1 (About Sean photo hero).** Live was rendering /hero-about.png — a photographic close-up. Mockup canonical is /card-services-v1.png (warm reading-room paper-craft). Swapped in `src/_html/pane-about.html`.
+- **Issue 2 (Lighthouse missing hero).** `itemHero('projects', ...)` was building `/section-rooms/projects-lighthouse.png` (doesn't exist) — assets are `ventures-*.png`. Added FILE_PREFIX map in `src/lib/hero-image.ts` so the projects/ventures sections resolve to the ventures- prefix. Also added explicit `cover:` frontmatter to all three services MDX so their detail pages bypass the resolver entirely.
+- **Issue 3 (landing title drift).** Updated `/ventures/` title "Ventures" → "Projects", `/lab/exhibits/` "The Exhibits" → "Exhibits", `/dossiers/[category]/` category-name → "Dossiers" (with category in eyebrow). Other landings already verbatim.
+- **Issue 4 (hero title wrapping).** `.pane.in-room .section-title` dropped from `clamp(72,9vw,132)` → `clamp(48,5.5vw,88)`. `.section-title-block` max-width lifted to 100% on detail pages. Dossier detail keeps `clamp(64,8vw,120)` since titles are short. Verified at 1440×900: every product/course/service detail title fits single-line.
+- **Issue 5 (Dossiers card grid claim).** Reclassified as a captures bug — `mockup-dossiers-books.png` is actually the Dossiers LANDING screenshot, not the Books category page. The real mockup category page uses the `vd-row` table pattern, which our KCT already implements 1:1. No code change needed.
+- **Issue 6 (sb2 data drift).** Rewrote Sidebar2 for Articles, Newsletter, Recos, Services, Ventures, and Exhibits with hardcoded mockup-verbatim entries (lines 5148-5446 of mockup HTML). Items link to section landings except the three live venture detail pages (lighthouse / holy-signal / phantom-ink) which keep direct links. Sb2-active sync from pass 7 highlights the current row.
+- **Issue 7 (landing copy drift).** Articles / Courses / Dossiers / Products / Recos / Services hero eyebrows and ledes all rewired to mockup verbatim (lines 5683-6269).
+- **Issue 8 (home polish residue).** Lotus sigil bumped 14px → 16px + explicit `fill: var(--accent) !important` so the violet glyph reliably renders. Portal cards min-height 240 → 280 to match mockup's taller silhouette. Stat dividers already paint at runtime since the pass-8 `--border` alias fix; if captures still look subtle it's because the stroke is intentionally low-opacity (`rgba(255,255,255,0.06)`).
+- **Issue 9 (per-page polish).** Atomic Habits pull-quote violet rule bumped 2px → 3px + padding. Exhibit detail gained the mockup's meta strip (Works / Format / Year / Status from EXHIBITS_DETAIL line 12989) + "What's inside?" subhead. Recos detail title casing flipped to sentence-case ("Tools I use daily", etc.) with italic em on the final word.
+- **Issue 10 (capture-mockup script).** Added `lab-landing` (uses projects pane) + `article-detail-first-three-minutes` entries to PAGES, made PROJECT_ROOT portable via `Path(__file__)`. Updated annotate-comparison.py PAGES dict to wire those two as non-skipped clean side-by-side renders.
+
+### Partial / deferred
+
+- **Issue 3 (Prompts title)** — audit flagged "The Prompt Dailies"; current source already shows "The Prompt Library". The "Dailies" text is not in the codebase. Audit screenshot was probably stale. **Closed ✓** in code; verify on next capture.
+- **Issue 7 (Newsletter inline-signup form)** — the live `/newsletter/` landing renders a violet `Subscribe — Free` email form above the fold; mockup doesn't. This is a UX divergence, not styling drift. **Deferred — needs Sean's call.** Keep or remove?
+- **Issue 9 (AI Mastery metadata chips)** — audit flagged missing "28h LIVE · COURSE 2026 · PREMIUM LECTURE 1.2" chip row. No equivalent fields in mockup's COURSES_DETAIL. **Deferred — needs Sean's call** on whether to add these as new fields.
+- **Issue 9 (Recos affiliate chips + "The list" subhead)** — not in current Recos MDX schema. **Deferred — Phase 2 follow-up** (schema extension required).
+
+### What was harder than expected
+
+- **The audit comparison HTML conflates mockup-captured-state with mockup-canonical-data.** The `mockup-dossiers-books.png` mis-capture is one example — the SPA's `openLibrarySb2Group('books')` JS call apparently didn't render the category page, so the screenshot is the landing instead. When a "page lost X" diff turns out to be a script-side capture issue rather than a missing feature in our port, it costs hours of false-positive investigation.
+- **Mockup data ≠ live MDX schema.** Several mockup entries (e.g. services "Strategy Session / Build Sprint / Fractional Operator / Speaking / Advisory") don't have corresponding MDX files in the live content collection. Hard-coding the sb2 to match the mockup made sb2 click-through links land on the section landing — workable but not ideal. Long-term fix is to either generate empty stubs for these or accept the sb2-is-IA-only stance.
+- **Title-typeface metrics with `<em>` make wrap calculations approximate.** Cormorant italic has narrower letterforms than the upright weight; titles like "AI Workspace Starter Kit" (heavy upright) needed the clamp drop more than dossiers titles ("Atomic Habits", light italic) which still look great at higher clamp.
+
+### Anything Sean needs to decide
+
+1. **Newsletter landing inline subscribe form** — keep or remove? Currently above the fold on `/newsletter/`; mockup has none.
+2. **AI Mastery metadata chips ("28h LIVE · COURSE 2026 · PREMIUM LECTURE 1.2")** — pulled from where? COURSES_DETAIL doesn't have these fields. Add as new MDX frontmatter?
+3. **Recos affiliate chips + "The list" subhead** — same question: extend MDX schema, or treat as Phase 2?
+4. **Complete Arsenal hero image** — current is hive.jpg (cathedral, pass 4 user choice); mockup canonical is bundles.png. Stay or revert?
