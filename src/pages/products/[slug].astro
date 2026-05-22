@@ -41,8 +41,11 @@ function priceLabel(cents: number, currency: string) {
   <section class="section-body">
     <div class="product-detail">
       <div class="product-pricing">
-        <div class="price">{priceLabel(data.price, data.currency)}</div>
-        {data.badge && <div class="badge">{data.badge}</div>}
+        <div class="price-block">
+          <div class="price">{priceLabel(data.price, data.currency)}</div>
+          {data.badge && <div class="badge">{data.badge}</div>}
+        </div>
+        <StripeBuyButton productSlug={item.slug} label={`Buy — ${priceLabel(data.price, data.currency)}`} />
       </div>
 
       <article class="product-body">
@@ -62,10 +65,6 @@ function priceLabel(cents: number, currency: string) {
           </ul>
         </section>
       )}
-
-      <div class="product-cta">
-        <StripeBuyButton productSlug={item.slug} label={`Buy — ${priceLabel(data.price, data.currency)}`} />
-      </div>
     </div>
   </section>
 
@@ -76,7 +75,8 @@ function priceLabel(cents: number, currency: string) {
 
   <style>
     .product-detail { max-width: 720px; margin: 0 auto; }
-    .product-pricing { display: flex; align-items: baseline; gap: 16px; margin-bottom: 28px; }
+    .product-pricing { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 28px; flex-wrap: wrap; }
+    .price-block { display: flex; align-items: baseline; gap: 16px; }
     .price { font-family: var(--font-display); font-size: 48px; color: var(--accent); }
     .badge { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; padding: 4px 10px; background: var(--accent-subtle); color: var(--accent); border-radius: 4px; }
     .product-body :global(p) { font-family: var(--font-body); font-size: 17px; line-height: 1.7; color: var(--text-1); margin: 0 0 1.4em; }
@@ -87,6 +87,5 @@ function priceLabel(cents: number, currency: string) {
     .product-breakdown li:last-child { border-bottom: none; }
     .bn { color: var(--text-1); }
     .bc { color: var(--text-3); font-family: var(--font-mono); font-size: 12px; }
-    .product-cta { margin-top: 3em; }
   </style>
 </AppLayout>
