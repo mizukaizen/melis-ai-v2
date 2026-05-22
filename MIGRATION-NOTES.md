@@ -271,3 +271,42 @@ Three regressions Sean caught at 1920×1080 that were invisible to the 1440×900
 - **Articles, Newsletter, Recos, Services, Ventures, Courses, Exhibits sb2 use `.sb2-item` (not `.panel-item`).** These don't need icons per the mockup — they're a different list pattern (`.sb2-row` + `.sb2-desc`). Left untouched.
 - **Sb2 sidebar width is fine at all tested widths** — no regressions on the other 7 pages.
 - **Prompt categories collapse to one (`Sean's Edge`).** The MDX content only has the Sean's Edge category; the other four (Business / Think & Communicate / Life & Career / Build) are placeholders in the mockup. CAT_ICON map covers all five so future imports just work.
+
+---
+
+## Pass 7 — white-glove polish (2026-05-22)
+
+Final pre-merge sweep — closed all 5 CRITICAL issues + 5 of the 6 IMPORTANT ones from Sean's pass-7 audit. Skipped Issue 8 (panel-group IA on Prompts/Recos/Ventures sb2) because the current content only has one category per section; adding empty group placeholders would harm UX.
+
+### CRITICAL — all closed
+
+1. **Product detail full body (Issue 1).** `/products/[slug]/` was rendering ~370 chars of body. New `src/components/ProductDetail.astro` renders the full mockup v2 layout: chip row (Category / Instant delivery / 30-day guarantee), "About this kit" with 3 mini-blocks + Sean pull-quote, sticky Buy aside (5★ rating, price + $44 strikethrough + Save 33%, Stripe CTA, trust list, "What's included" from PRODUCT_INCLUDES), "Take a look" 4-up gallery, "Why it works" 4-tile grid, and "More kits from the operator desk" siblings grid (4 from same category). New `src/data/products.ts` lifts PRODUCT_INCLUDES (35 entries), PRODUCT_ABOUT_BLOCKS (bespoke for ai-workspace-starter-kit; fallback otherwise), PD_THUMBS, and PD_WHY_TILES from the mockup. Complete Arsenal keeps its bundle-breakdown table above the v2 layout — its unique selling point.
+
+2. **Sb2 click-active sync (Issue 2).** AppLayout now runs `syncSb2Active()` on DOMContentLoaded + astro:after-swap. Toggles `.active` on each `a.panel-item` / `a.sb2-item` whose href matches `location.pathname` (trailing-slash normalised). When a match lands inside a `.panel-group`, the script also auto-expands the group so the active row is visible. Landing-page fallback: light up the first sb2 row.
+
+3. **Prompts detail HTML + room-prompt footer (Issue 3).** Detail template was HTML-escaping the prompt body, so `<span class="pv-var">[TOKEN]</span>` rendered as literal text. Switched to `set:html`; copy button strips the spans first so the user pastes clean `[TOKEN]` text. Added the room-prompt-meta header + Copy/Expand footer from the mockup's room-prompt-card pattern (lines 248-289). Expand toggles the mask + max-height.
+
+4. **About Sean + melis.ai chapter TOC + scroll-spy (Issues 4 + 11).** Sidebar2About now renders a chapter list under the sub-page links when on `/about/sean` (12 entries: Opening + ch01–09 + Career Timeline + What Drives Me) or `/about/melis-ai` (4 entries). Anchor IDs match existing div ids in `src/_html/pane-about*.html`. Inline script wires smooth-scroll on click + IntersectionObserver scroll-spy (rootMargin `-15% 0px -55% 0px`). Hero images swapped to the purpose-built `/hero-about.png` + `/about-bg.png` from generic card-services / card-projects.
+
+5. **Services + Ventures detail bodies (Issue 5).** `src/data/services.ts` (SERVICES_DETAIL from mockup line 11889) + `src/data/ventures.ts` (VENTURES_DETAIL from line 11947) keyed by slug. Services [slug] renders the 4-step "How it works" numbered grid above the LeadForm. Ventures [slug] renders the 3 What-Why-Where sections + status pill + closing CTA.
+
+### IMPORTANT — 5 of 6 closed
+
+6. **Course detail body (Issue 6).** `src/data/courses.ts` (COURSES_DETAIL from line 12008) keyed by slug. AI Mastery 2026 detail page now renders: subtitle h2 ("Future-Proof Your Career, Income & Decisions"), Problem block + 6-bullet pain list, Outcomes 6-card grid, Right-Fit two-column for-you/not-for-you, Ready-To-Start closing block. Coming-soon courses (Claude Cowork etc.) render the mockup's `soonLine` as a single notification card above the waitlist form — Claude Cowork keeps its "RECORDING · FLAGSHIP" badge variant.
+
+7. **Card paper-craft images on landings (Issue 7).** Recos / Services / Ventures / Exhibits landings switched from flat dark cards to the room-card pattern (paper-craft bg + veil + arrow + meta block). Per-section slug → cover maps point at the existing `/section-rooms/<section>-<slug>.png` assets. Exhibits resolves base = `slug.replace(/^the-/, '')` to match files in `public/section-rooms/exhibits/`.
+
+8. **Sb2 IA panel-groups (Issue 8).** SKIPPED — Prompts has 5 entries all in "Sean's Edge"; Ventures has 3 items; Recos has 3 series. Adding empty placeholder categories would create dead UX. Category map already in place; will activate once content grows.
+
+9. **Newsletter landing hero + 3-up grid (Issue 9).** Hero title `Newsletter` → `Soul of the <em>Machine</em>` with the three-threads subhead. Body switches from item-list (text rows) to flat-list-grid (2-col paper-craft cards) using news-1.png..news-6.png cycled by index. Filter dropdown rewired against `.flat-card`.
+
+10. **Prompts landing hero + Sean's Edge featured card (Issue 10).** Hero title `Prompts` → `The Prompt <em>Library</em>` with library-specific eyebrow + lede. New featured card above the category grid picks up the first Sean's Edge prompt as flagship. Category sections gain a header icon + count badge using the same `CAT_ICON` palette as Sidebar2Prompts.
+
+11. (closed under Issue 4.)
+
+### Verification
+
+- `pnpm build` → 0 errors, 164 prerendered routes
+- `pnpm exec astro check` → 0 errors, 0 warnings, 3 hints (unused imports in `scripts/` + one unused param in newsletter cover helper)
+- Capture script now covers 29 pages × 2 viewports = 58 captures. All 200 OK.
+- 1440×900 + 1920×1080 captures walked: home/articles/products/courses/dossiers/services/ventures/about/lab parity all hold.
