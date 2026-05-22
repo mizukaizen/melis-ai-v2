@@ -1,38 +1,47 @@
 ---
+// Mockup-canonical sb2 entries (lines 5430-5445 of melis-ai-spa-v6-astro-content.html).
 import { getCollection } from 'astro:content';
-import { EXHIBITS_ORDER } from '../../data/exhibits-order';
 
 const all = (await getCollection('exhibits')).filter((a) => !a.data.draft);
-const byTitle = new Map(all.map((e) => [e.data.title, e]));
-const ordered = EXHIBITS_ORDER.map((t) => byTitle.get(t)).filter((e): e is NonNullable<typeof e> => Boolean(e));
+const total = all.length;
 const currentSlug = Astro.url.pathname.match(/\/lab\/exhibits\/([^/]+)/)?.[1];
+
+// Mockup uses names-only (with count chip on the right showing "01-10"),
+// not "No.01 — Name". Restore mockup ordering + naming verbatim.
+const ENTRIES: { slug: string; name: string; count: string; desc: string }[] = [
+  { slug: 'phainesis',      name: 'Phainesis',      count: '01', desc: 'Inaugural · AI meets humanity' },
+  { slug: 'the-melissae',   name: 'The Melissae',   count: '02', desc: 'Bee priestesses, cave to garden' },
+  { slug: 'the-keeper',     name: 'The Keeper',     count: '03', desc: 'The contemporary tender' },
+  { slug: 'the-field',      name: 'The Field',      count: '04', desc: 'The living ground beneath it all' },
+  { slug: 'the-threshold',  name: 'The Threshold',  count: '05', desc: 'Crossing into the work' },
+  { slug: 'the-loss',       name: 'The Loss',       count: '06', desc: 'What is at stake if we do not tend it' },
+  { slug: 'the-inheritance',name: 'The Inheritance',count: '07', desc: 'What survives because someone tended it' },
+  { slug: 'the-doctrine',   name: 'The Doctrine',   count: '08', desc: 'Counter-architecture for AI' },
+  { slug: 'the-arc',        name: 'The Arc',        count: '09', desc: 'Fourteen to now. Same operator.' },
+  { slug: 'lessons',        name: 'Lessons',        count: '10', desc: 'Thirty-three lessons, one per year' },
+];
 ---
 
 <aside class="sidebar-2" transition:persist="sb2-exhibits">
   <div class="sb2-pane active" data-pane="exhibits">
     <div class="sb2-header">
-      <div class="sb2-title"><em>The Lab</em></div>
+      <div class="sb2-title"><em>Exhibits</em></div>
     </div>
     <div class="sb2-list">
-      <a class="sb2-item" href="/lab/">
-        <div class="sb2-row">
-          <div class="sb2-name">Lab overview</div>
-        </div>
-        <div class="sb2-desc">Ventures + Exhibits</div>
-      </a>
       <a class="sb2-item" class:list={[{ active: !currentSlug }]} href="/lab/exhibits/">
         <div class="sb2-row">
           <div class="sb2-name">All Exhibits</div>
-          <div class="sb2-count">{ordered.length}</div>
+          <div class="sb2-count">{total}</div>
         </div>
-        <div class="sb2-desc">10 assembled — paper-craft, scroll-stories</div>
+        <div class="sb2-desc">Immersive scroll-experiences</div>
       </a>
-      {ordered.map((e, i) => (
+      {ENTRIES.map((e) => (
         <a class="sb2-item" class:list={[{ active: e.slug === currentSlug }]} href={`/lab/exhibits/${e.slug}/`}>
           <div class="sb2-row">
-            <div class="sb2-name">No. {String(i + 1).padStart(2, '0')} — {e.data.title}</div>
-            {e.data.status === 'live' && <div class="sb2-count badge-live">LIVE</div>}
+            <div class="sb2-name">{e.name}</div>
+            <div class="sb2-count">{e.count}</div>
           </div>
+          <div class="sb2-desc">{e.desc}</div>
         </a>
       ))}
     </div>

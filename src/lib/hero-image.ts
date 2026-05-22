@@ -49,11 +49,23 @@ export function itemHero(section: string, title: string, slug: string): string {
   const special = ITEM_SPECIAL[section]?.[slug];
   if (special) return special;
 
+  // File prefix per section — assets in public/section-rooms/ are named
+  // by section _scope_ rather than by `data-pane` (the ventures pane is
+  // `data-pane="projects"` for legacy reasons, but the files are
+  // `ventures-<slug>.png`, etc.).
+  const FILE_PREFIX: Record<string, string> = {
+    projects: 'ventures',
+    ventures: 'ventures',
+    services: 'services',
+    recos:    'recos',
+  };
+  const prefix = FILE_PREFIX[section] || section;
+
   // 2) Mockup override map (title → image basename)
   const sectionOverrides = overrides[section];
   if (sectionOverrides && sectionOverrides[title]) {
     const basename = sectionOverrides[title];
-    return `/section-rooms/${section}-${basename}.png`;
+    return `/section-rooms/${prefix}-${basename}.png`;
   }
   // 3) Per-section slug-based conventions
   if (section === 'products') {
@@ -64,6 +76,9 @@ export function itemHero(section: string, title: string, slug: string): string {
   }
   if (section === 'courses') {
     return `/section-rooms/courses-${slug}.png`;
+  }
+  if (section === 'projects' || section === 'ventures') {
+    return `/section-rooms/ventures-${slug}.png`;
   }
   // 4) Fallback to landing
   return landingHero(section);

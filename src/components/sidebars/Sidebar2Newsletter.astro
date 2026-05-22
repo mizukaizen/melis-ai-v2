@@ -1,10 +1,18 @@
 ---
+// Mockup-canonical sb2 entries (lines 5197-5244 of melis-ai-spa-v6-astro-content.html).
 import { getCollection } from 'astro:content';
 
-const items = (await getCollection('newsletter'))
-  .filter((a) => !a.data.draft)
-  .sort((a, b) => (b.data.publishedAt || '').localeCompare(a.data.publishedAt || ''));
-const currentSlug = Astro.url.pathname.match(/\/newsletter\/([^/]+)/)?.[1];
+const items = (await getCollection('newsletter')).filter((n) => !n.data.draft);
+const total = items.length;
+
+const ENTRIES: { name: string; count: string; desc: string }[] = [
+  { name: 'Latest dispatch',     count: '01', desc: 'Sent this week' },
+  { name: 'Soul of the Machine', count: '47', desc: 'The flagship Sunday email' },
+  { name: "Operator's Brief",    count: '23', desc: 'Tuesday tactical newsletter' },
+  { name: 'Hive Doctrine',       count: '12', desc: 'Cinematic essays on intelligence' },
+  { name: 'Subscribe',           count: '—',  desc: 'Join 6,400+ operators' },
+  { name: 'Archive',             count: '82', desc: 'Browse every issue' },
+];
 ---
 
 <aside class="sidebar-2" transition:persist="sb2-newsletter">
@@ -13,20 +21,20 @@ const currentSlug = Astro.url.pathname.match(/\/newsletter\/([^/]+)/)?.[1];
       <div class="sb2-title"><em>Newsletter</em></div>
     </div>
     <div class="sb2-list">
-      <a class="sb2-item" class:list={[{ active: !currentSlug }]} href="/newsletter/">
+      <a class="sb2-item" href="/newsletter/">
         <div class="sb2-row">
-          <div class="sb2-name">Subscribe</div>
-          <div class="sb2-count badge-live">DAILY</div>
+          <div class="sb2-name">All Issues</div>
+          <div class="sb2-count">{total}×</div>
         </div>
-        <div class="sb2-desc">Soul of the Machine · daily dispatch</div>
+        <div class="sb2-desc">Every dispatch</div>
       </a>
-      {items.map((n) => (
-        <a class="sb2-item" class:list={[{ active: n.slug === currentSlug }]} href={`/newsletter/${n.slug}/`}>
+      {ENTRIES.map((e) => (
+        <a class="sb2-item" href="/newsletter/">
           <div class="sb2-row">
-            <div class="sb2-name">{n.data.title}</div>
-            {n.data.publishedAt && <div class="sb2-count">{n.data.publishedAt.slice(5)}</div>}
+            <div class="sb2-name">{e.name}</div>
+            <div class="sb2-count">{e.count}</div>
           </div>
-          {n.data.byline && <div class="sb2-desc">{n.data.byline}</div>}
+          <div class="sb2-desc">{e.desc}</div>
         </a>
       ))}
     </div>

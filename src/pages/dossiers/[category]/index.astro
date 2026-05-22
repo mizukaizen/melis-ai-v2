@@ -39,9 +39,9 @@ const sortedCatalog = [...catalog].sort((a, b) => libraryNormalise(a).localeComp
 <AppLayout title={cat.title} pane="library" inRoom description={cat.line}>
   <SectionHero
     cover={dossierCategoryHero(category)}
-    eyebrow={`Dossiers · ${cat.count}`}
-    title={cat.title}
-    titleHtml={`<em>${cat.title}</em>`}
+    eyebrow={`Dossiers · ${cat.title} · ${cat.count}`}
+    title="Dossiers"
+    titleHtml="<em>Dossiers</em>"
     lede={cat.line}
   />
 

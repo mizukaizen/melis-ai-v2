@@ -188,12 +188,28 @@ main.content .pane.in-room .section-header {
   list-style: none !important;
 }
 .pane.in-room .section-title {
-  font-size: clamp(72px, 9vw, 132px) !important;
+  /* Detail-page heroes are cinematic but must fit single-line at 1440.
+     Longest titles in the catalogue: "AI Workspace Starter Kit" (24),
+     "Business OS Starter Kit" (23), "Claude Cowork for Professionals"
+     (29). At max 88px these all fit within the .section-title-block
+     when its max-width is lifted to span the inner block. */
+  font-size: clamp(48px, 5.5vw, 88px) !important;
+  white-space: normal;
 }
-.pane[data-pane="library"].in-room .section-title,
+/* Dossier detail keeps its larger cinematic title — only short titles
+   live in /dossiers/[cat]/[slug] (e.g. "Atomic Habits"). */
+.pane[data-pane="library"].in-room .section-title {
+  font-size: clamp(64px, 8vw, 120px) !important;
+}
+/* Products + Courses detail use the standard in-room clamp above. */
 .pane[data-pane="products"].in-room .section-title,
 .pane[data-pane="courses"].in-room .section-title {
-  font-size: clamp(72px, 9vw, 132px) !important;
+  font-size: clamp(48px, 5.5vw, 88px) !important;
+}
+/* Let title-block fill the inner-block width so long titles can flow
+   single-line instead of wrapping at the old 880px ceiling. */
+.pane.in-room .section-title-block {
+  max-width: 100% !important;
 }
 .pane .section-title em {
   font-style: italic !important;

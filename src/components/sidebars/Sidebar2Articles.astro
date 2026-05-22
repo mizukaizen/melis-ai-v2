@@ -1,10 +1,20 @@
 ---
+// Mockup-canonical sb2 entries (lines 5148-5195 of melis-ai-spa-v6-astro-content.html).
+// Items link to the landing — the mockup's pane-swap behaviour is collapsed in Astro;
+// category filtering is a Phase 2 follow-up.
 import { getCollection } from 'astro:content';
 
-const items = (await getCollection('articles'))
-  .filter((a) => !a.data.draft)
-  .sort((a, b) => (b.data.publishedAt || '').localeCompare(a.data.publishedAt || ''));
-const currentSlug = Astro.url.pathname.match(/\/articles\/([^/]+)/)?.[1];
+const items = (await getCollection('articles')).filter((a) => !a.data.draft);
+const total = items.length;
+
+const ENTRIES: { name: string; count: string; desc: string }[] = [
+  { name: 'Latest',      count: '06', desc: 'Most recent dispatches' },
+  { name: 'Essays',      count: '12', desc: 'Long-form thinking' },
+  { name: 'Tutorials',   count: '18', desc: 'Step-by-step guides' },
+  { name: 'Field Notes', count: '24', desc: "What I'm building right now" },
+  { name: 'Tear-downs',  count: '08', desc: 'How things actually work' },
+  { name: 'Archive',     count: '82', desc: "Everything I've written" },
+];
 ---
 
 <aside class="sidebar-2" transition:persist="sb2-articles">
@@ -13,20 +23,20 @@ const currentSlug = Astro.url.pathname.match(/\/articles\/([^/]+)/)?.[1];
       <div class="sb2-title"><em>Articles</em></div>
     </div>
     <div class="sb2-list">
-      <a class="sb2-item" class:list={[{ active: !currentSlug }]} href="/articles/">
+      <a class="sb2-item" href="/articles/">
         <div class="sb2-row">
           <div class="sb2-name">All Articles</div>
-          <div class="sb2-count">{items.length}</div>
+          <div class="sb2-count">{total}</div>
         </div>
-        <div class="sb2-desc">Essays, field notes, tear-downs</div>
+        <div class="sb2-desc">Every essay + field note</div>
       </a>
-      {items.map((a) => (
-        <a class="sb2-item" class:list={[{ active: a.slug === currentSlug }]} href={`/articles/${a.slug}/`}>
+      {ENTRIES.map((e) => (
+        <a class="sb2-item" href="/articles/">
           <div class="sb2-row">
-            <div class="sb2-name">{a.data.title}</div>
-            {a.data.category && <div class="sb2-count">{a.data.category}</div>}
+            <div class="sb2-name">{e.name}</div>
+            <div class="sb2-count">{e.count}</div>
           </div>
-          {a.data.byline && <div class="sb2-desc">{a.data.byline}</div>}
+          <div class="sb2-desc">{e.desc}</div>
         </a>
       ))}
     </div>
