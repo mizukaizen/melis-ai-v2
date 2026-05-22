@@ -12,6 +12,17 @@ const articles = (await getCollection('articles'))
   .sort((a, b) => (b.data.publishedAt || '').localeCompare(a.data.publishedAt || ''));
 
 const categories = ['All', ...new Set(articles.map((a) => a.data.category).filter((c): c is string => Boolean(c)))];
+
+function formatDate(iso?: string) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function fallbackCover(i: number) {
+  return `/section-rooms/articles-${(i % 10) + 1}.png`;
+}
 ---
 
 <AppLayout
@@ -28,7 +39,7 @@ const categories = ['All', ...new Set(articles.map((a) => a.data.category).filte
   />
 
   <section class="section-body">
-    <div class="articles-headstrip">
+    <div class="flat-list-header">
       <div>
         <div class="section-eyebrow-small">{articles.length} articles · essays + field notes</div>
         <h2 class="h2">Operator's notes from <em>inside</em> the work.</h2>
@@ -37,17 +48,24 @@ const categories = ['All', ...new Set(articles.map((a) => a.data.category).filte
     </div>
     <p class="body-lead">No tutorials. No "10 prompts that…" listicles. Just essays, observations, and field notes from someone using AI as a daily tool — sometimes thinking, sometimes ranting, always honest. Newsletter sends fresh ones every morning at dawn.</p>
 
-    <div class="item-list" id="articles-list">
-      {articles.map((a, i) => (
-        <a class="item-row" href={`/articles/${a.slug}/`} data-category={a.data.category || ''}>
-          <div class="num">No. {String(i + 1).padStart(2, '0')}</div>
-          <div class="col-main">
-            <h4>{a.data.title}</h4>
-            {a.data.lede && <p>{a.data.lede}</p>}
-          </div>
-          <div class="col-meta">{a.data.category || '—'}{a.data.byline ? ` · ${a.data.byline}` : ''}</div>
-        </a>
-      ))}
+    <div class="flat-list-grid" id="articles-list">
+      {articles.map((a, i) => {
+        const cover = a.data.cover || fallbackCover(i);
+        const tag = a.data.category || '';
+        const date = formatDate(a.data.publishedAt);
+        const tagLine = [tag, date].filter(Boolean).join(' · ');
+        return (
+          <a class="flat-card" href={`/articles/${a.slug}/`} data-category={tag}>
+            <div class="flat-card-img" style={`background-image: url('${cover}');`}></div>
+            <div class="flat-card-veil"></div>
+            <div class="flat-card-meta">
+              {tagLine && <div class="flat-card-tag">{tagLine}</div>}
+              <div class="flat-card-title">{a.data.title}</div>
+              {a.data.lede && <div class="flat-card-line">{a.data.lede}</div>}
+            </div>
+          </a>
+        );
+      })}
     </div>
   </section>
 
@@ -56,19 +74,6 @@ const categories = ['All', ...new Set(articles.map((a) => a.data.category).filte
     <div>Operator-built · Australia</div>
   </div>
 
-  <style>
-    .articles-headstrip {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 24px;
-      margin-bottom: 24px;
-    }
-    @media (max-width: 720px) {
-      .articles-headstrip { flex-direction: column; align-items: flex-start; }
-    }
-  </style>
-
   <script>
     function wireFilter() {
       const sel = document.getElementById('articles-filter');
@@ -76,11 +81,11 @@ const categories = ['All', ...new Set(articles.map((a) => a.data.category).filte
       if (!sel || !list) return;
       sel.addEventListener('filter:change', (e) => {
         const val = (e as CustomEvent).detail as string;
-        list.querySelectorAll<HTMLAnchorElement>('a.item-row').forEach((row) => {
-          if (val === 'All' || row.dataset.category === val) {
-            row.style.display = '';
+        list.querySelectorAll<HTMLAnchorElement>('a.flat-card').forEach((card) => {
+          if (val === 'All' || card.dataset.category === val) {
+            card.style.display = '';
           } else {
-            row.style.display = 'none';
+            card.style.display = 'none';
           }
         });
       });
