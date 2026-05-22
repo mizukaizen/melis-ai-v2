@@ -84,5 +84,48 @@ const appClass = [
         </div>
       </main>
     </div>
+
+    <script>
+      // Sync .active on sb2 rows to location.pathname after every navigation.
+      // Lifted from the mockup's enterRoom() behaviour (highlighted the
+      // matching panel-item by title) but rebuilt around the href that each
+      // Astro link already carries. Runs on first mount + after every Astro
+      // view-transition.
+      function syncSb2Active() {
+        const sb2 = document.querySelector('aside.sidebar-2');
+        if (!sb2) return;
+        const path = location.pathname.replace(/\/$/, '');
+        const rows = sb2.querySelectorAll<HTMLAnchorElement>('a.panel-item, a.sb2-item');
+        let matched = false;
+        rows.forEach((row) => {
+          const href = (row.getAttribute('href') || '').replace(/\/$/, '');
+          // Exact match wins. Partial-prefix match (path is deeper than href)
+          // also counts so a dossier-detail page lights up its category row
+          // if no per-item row exists. href "" or "/" never matches partials.
+          const isActive =
+            href !== '' &&
+            href !== '/' &&
+            (href === path || (path === '' && href === '/'));
+          row.classList.toggle('active', isActive);
+          if (isActive) {
+            matched = true;
+            const group = row.closest('.panel-group');
+            if (group) group.classList.add('open');
+          }
+        });
+        // Landing-page fallback: light up the "All <section>" sentinel row
+        // (the first panel-item / sb2-item) so the user always sees something
+        // highlighted in sb2.
+        if (!matched) {
+          const all =
+            sb2.querySelector<HTMLAnchorElement>('a.panel-item, a.sb2-item');
+          if (all) all.classList.add('active');
+        }
+      }
+      document.addEventListener('DOMContentLoaded', syncSb2Active);
+      document.addEventListener('astro:after-swap', syncSb2Active);
+      // Run immediately for direct-loads when DOMContentLoaded has already fired.
+      if (document.readyState !== 'loading') syncSb2Active();
+    </script>
   </body>
 </html>
