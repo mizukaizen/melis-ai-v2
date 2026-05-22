@@ -300,10 +300,13 @@ body[data-pane="home"] main.content {
   gap: 8px !important;
 }
 .pane[data-pane="home"] .lotus-sigil {
-  width: 14px;
-  height: 14px;
-  color: var(--accent);
+  width: 16px;
+  height: 16px;
+  color: var(--accent) !important;
+  fill: var(--accent) !important;
   flex-shrink: 0;
+  display: inline-block !important;
+  vertical-align: middle;
 }
 
 /* Home portal cards — make sure they render at a proper size + show
@@ -326,7 +329,7 @@ body[data-pane="home"] main.content {
 .pane[data-pane="home"] .card {
   position: relative !important;
   display: block !important;
-  min-height: 240px !important;
+  min-height: 280px !important;
   height: auto !important;
   border-radius: 10px !important;
   overflow: hidden !important;
