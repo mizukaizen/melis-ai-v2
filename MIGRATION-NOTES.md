@@ -249,3 +249,25 @@ Five small fixes on top of pass 4. Build green, `astro check` clean, screenshots
 - **Capture script PROJECT_ROOT made portable.** `scripts/capture-live.py` previously hardcoded the Cowork VM path `/sessions/friendly-nice-darwin/mnt/Documents/_cowork/…`. Now derives from `Path(__file__)`, so it runs the same way on macOS native and inside the VM.
 
 - **"Enrol — be the first" vs. mockup data.** The mockup's `COURSES_DETAIL` actually has `"Enrol on Udemy"`. Sean's pass-5 brief specified "Enrol — be the first" verbatim, so I followed the explicit instruction over the literal mockup data. Flag this back to Sean if it's the wrong direction.
+
+---
+
+## Pass 6 — wider-viewport regressions closed (2026-05-22)
+
+Three regressions Sean caught at 1920×1080 that were invisible to the 1440×900 capture script. All closed. Capture script now shoots both viewports so the next audit catches this class of bug.
+
+1. **Home phantom 280px gap at ≥1920.** `mockup.css` line 3468 `.app:has(.pane.active.is-direct-view) > main.content { margin-left: calc(sidebar-w + sidebar-w2) !important }` was firing on `/` because `AppLayout` applied `is-direct-view` to the home pane. `:has()` lifts the rule's specificity above the plain `.app.is-home > main.content` override, so home ended up shifted right by sb2's width even though sb2 was hidden. Fix: don't apply `is-direct-view` to home (AppLayout.astro) + a defensive `.is-home.is-home` + `body[data-pane="home"] main.content` override in global.css that wins regardless of which classes land on the pane. Verified at 1920×1080 — computed `margin-left = 192px` (one sidebar), zero gap between sb1 right edge and hero image.
+
+2. **Sb2 panel-item icons + count badges restored.** `Sidebar2Dossiers`, `Sidebar2Products`, and `Sidebar2Prompts` were rendering `.panel-item` with only `.pi-body` — both the leading `<i class="ph ph-X pi-icon">` and trailing `.pi-dot` were missing, so each row looked like flat text. Added per-category icon + colour maps mirroring the mockup's `LIBRARY_CAT_ICON` (line 8751-8765), `wireProductsRooms` `CAT_ICON` (line 7687-7696), and the per-Prompts-category palette. Each panel-item now renders the tri-column `<i> + <pi-body> + <pi-dot>` the mockup CSS expects.
+
+3. **Sb1 hand-drawn inline SVGs instead of Phosphor.** The mockup uses bespoke inline SVGs (`<svg class="ico" viewBox="0 0 24 24" ...>`) for every sb-item — open-book Courses, two-curves Articles, envelope-with-line Newsletter, two-books Dossiers, dots-grid Products, curve-with-dot Prompts, clock-face Sean's Recos, hexagon Ventures, picture-frame Exhibits, globe Services, person Sean, concentric circles melis.ai. Phosphor was wrong — the hand-drawn voice is brand-tied. Lifted each SVG verbatim from `melis-ai-spa-v6-astro-content.html` (lines 4954-4999). Socials too — X / YouTube / LinkedIn as inline SVGs.
+
+### Capture-script change
+
+- `scripts/capture-live.py` now iterates a `VIEWPORTS` list (1440×900 + 1920×1080) and writes `live-<slug>.png` + `live-<slug>-1920.png` per page. Stops viewport-dependent bugs from slipping past audits.
+
+### What I noticed while in there
+
+- **Articles, Newsletter, Recos, Services, Ventures, Courses, Exhibits sb2 use `.sb2-item` (not `.panel-item`).** These don't need icons per the mockup — they're a different list pattern (`.sb2-row` + `.sb2-desc`). Left untouched.
+- **Sb2 sidebar width is fine at all tested widths** — no regressions on the other 7 pages.
+- **Prompt categories collapse to one (`Sean's Edge`).** The MDX content only has the Sean's Edge category; the other four (Business / Think & Communicate / Life & Career / Build) are placeholders in the mockup. CAT_ICON map covers all five so future imports just work.
