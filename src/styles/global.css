@@ -121,7 +121,8 @@ main.content .pane.in-room .section-header {
 }
 
 .pane .section-body {
-  padding-top: clamp(28px, 4vh, 56px) !important;
+  padding-top: clamp(12px, 2vh, 28px) !important;
+  padding-bottom: 80px !important;
   max-width: 1280px !important;
   margin: 0 auto !important;
 }
@@ -129,6 +130,12 @@ main.content .pane.in-room .section-header {
 .pane.in-room .section-body {
   padding-top: clamp(48px, 6vh, 96px) !important;
 }
+
+/* Landing headers — tighter so flat-card grids surface more rows in the fold. */
+.pane .flat-list-header { margin-bottom: 12px !important; }
+.pane .section-body > .body-lead { margin-bottom: 20px !important; max-width: 60ch !important; }
+.pane .section-body .h2 { margin-bottom: 8px !important; }
+.pane .section-eyebrow-small { margin-bottom: 6px !important; }
 
 .pane .section-hero-bg {
   position: absolute !important;
