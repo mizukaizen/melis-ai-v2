@@ -33,7 +33,7 @@ const cats = ORDER
     <div class="library-landing">
       <div class="section-eyebrow-small">51 fleshed · 242 catalogued · across twelve categories</div>
       <h2 class="h2">A small archive of <em>dossiers for operators</em>.</h2>
-      <p class="body-lead">A small archive of the world's most important ideas — books, essays, mental models, and concepts worth remembering. Each entry is an AI-led breakdown: the work, why it matters, the key concepts, and how to take them forward. Built as a daily-return shelf, kept open for anyone who wants a calm space to read one idea at a time.</p>
+      <p class="body-lead">A small archive of the world's most important ideas — AI-led breakdowns of the work, why it matters, the key concepts, and how to take them forward.</p>
       <div class="room-grid">
         {cats.map((c) => (
           <a class="room-card" href={`/dossiers/${c.slug}/`}>
@@ -55,4 +55,10 @@ const cats = ORDER
     <div>melis.ai · 2026</div>
     <div>Operator-built · Australia</div>
   </div>
+
+  <style>
+    .library-landing .section-eyebrow-small { margin-bottom: 8px; }
+    .library-landing .h2 { margin-bottom: 10px; }
+    .library-landing .body-lead { margin-bottom: 20px; max-width: 60ch; }
+  </style>
 </AppLayout>
