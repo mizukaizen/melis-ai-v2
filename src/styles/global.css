@@ -384,3 +384,84 @@ body[data-pane="home"] main.content {
   line-height: 1.4 !important;
   margin: 0 !important;
 }
+
+/* ──────────────────────────────────────────────────────────────
+ * Cursor pointer on interactive chrome.
+ *
+ * Sb1/sb2 rows + room-cards + featured cards + the wordmark and
+ * search button all behave as buttons/links. The browser's default
+ * text cursor over <a>/<div onclick> made them feel non-interactive
+ * — these rules make the hover state read as clickable.
+ * ────────────────────────────────────────────────────────────── */
+.sb-logo,
+.sb-item,
+.sb-search-btn,
+.panel-group-header,
+.panel-item,
+.sb2-item,
+.sb2-title,
+.room-card,
+.flat-card,
+.featured-product-card,
+.featured-course-card,
+.featured-prompt-card,
+.pd-sibling-card,
+.pd-look-card,
+.exhibit-card,
+.editorial-hero,
+.about-toc-item,
+.btn,
+button:not(:disabled),
+[data-pane],
+.pane[data-pane="home"] .card {
+  cursor: pointer;
+}
+/* Count badges and decorative dots inside a clickable row don't need
+   their own pointer — inherit from the parent so the cursor stays
+   consistent across the whole row. */
+.sb-item .count,
+.panel-item .pi-dot,
+.sb2-item .sb2-count,
+.flat-card .flat-card-tag {
+  cursor: inherit;
+}
+
+/* ──────────────────────────────────────────────────────────────
+ * AI ticker — continuous right-to-left marquee.
+ *
+ * The mockup's `.ticker` has `overflow: hidden` + a static
+ * `.ticker-brands` strip. Live needs the scroll loop the brief
+ * called for. The track contains the brand list twice so when the
+ * first half slides off the left, the second half is mid-frame
+ * and the loop is seamless at the -50% translate point.
+ * ────────────────────────────────────────────────────────────── */
+.pane[data-pane="home"] .ticker {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 6%, black 94%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, black 6%, black 94%, transparent 100%);
+}
+.pane[data-pane="home"] .ticker-brands {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+.pane[data-pane="home"] .ticker-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 32px;
+  white-space: nowrap;
+  animation: melis-ticker-scroll 60s linear infinite;
+  will-change: transform;
+}
+.pane[data-pane="home"] .ticker-track > span {
+  flex-shrink: 0;
+  padding-right: 32px;
+}
+@keyframes melis-ticker-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pane[data-pane="home"] .ticker-track {
+    animation: none;
+  }
+}
