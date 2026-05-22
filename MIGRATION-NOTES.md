@@ -227,3 +227,25 @@ Set these in **Vercel project settings → Environment Variables** before the fi
 5. **Products sb2 must switch behaviour by route.** Landing = panel-group categories; detail = flat alphabetical list. Detected via `Astro.url.pathname` match.
 
 6. **Pass-3 "cathedral" misread.** Sean's pass-3 audit described the Complete Arsenal mockup hero as a "candlelit altar scene with figures." I read that as the hive.jpg cathedral, but the actual mockup uses products-bundles.png (a figure standing inside an open gift box with a glowing violet flower) — also altar-like. Mockup canonical wins; restore bundles.png. Use the actual mockup file as the visual reference, not the prose description.
+
+---
+
+## Pass 5 — polish nits closed (2026-05-22)
+
+Five small fixes on top of pass 4. Build green, `astro check` clean, screenshots recaptured.
+
+1. **Articles list cards with paper-craft thumbnails.** `/articles/` was rendering text-only `item-row` rows. Replaced with the mockup's `.flat-card` grid (2-col, 16:10 aspect, bottom-veil meta — matching the runtime-rendered `renderFlatList()` in the mockup). Added `cover` + `category` + `publishedAt` to the three Sean-drafted articles (`how-i-run-9-agents…`, `on-the-two-way-door`, `the-operator-s-toolkit`) so all 13 entries have a thumbnail. Existing covers re-used for the trio: `articles-8` (tear-down), `articles-5` (field note), `articles-6` (essay).
+
+2. **Shorter landing heroes site-wide.** `min-height` 360 → 320 on `.pane .section-header` + `.section-header-inner`; padding tightened 64/40 → 48/32. Section-body padding-top on landings dropped from `clamp(48,6vh,96)` → `clamp(12,2vh,28)` so the fold pulls more cards above 900px. Detail/in-room heroes (`.pane.in-room`) keep the cinematic 560/600. Newsletter/Recos/Services/Ventures inherit automatically — all still return 200 OK.
+
+3. **Single Buy CTA on `/products/[slug]/`.** Moved the Stripe button inline next to the price/badge pill at the top of `product-detail`; dropped the redundant bottom `.product-cta` block. One buy entry-point per product, per mockup.
+
+4. **AI Mastery 2026 CTA copy.** `ctas.primary.label` in the MDX frontmatter changed from "Enrol on Udemy" → "Enrol — be the first" (em-dash). Threads through both `FeaturedCourseCard` on `/courses/` and the Stripe button on the detail page.
+
+5. **Dossiers landing fold.** Six+ category cards now sit above 900px (was 3). Combined effects: hero shorter (#2), `library-landing` body-lead shortened + tightened to 60ch, eyebrow/h2/body-lead margins reduced.
+
+### Notes
+
+- **Capture script PROJECT_ROOT made portable.** `scripts/capture-live.py` previously hardcoded the Cowork VM path `/sessions/friendly-nice-darwin/mnt/Documents/_cowork/…`. Now derives from `Path(__file__)`, so it runs the same way on macOS native and inside the VM.
+
+- **"Enrol — be the first" vs. mockup data.** The mockup's `COURSES_DETAIL` actually has `"Enrol on Udemy"`. Sean's pass-5 brief specified "Enrol — be the first" verbatim, so I followed the explicit instruction over the literal mockup data. Flag this back to Sean if it's the wrong direction.
