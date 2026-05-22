@@ -253,6 +253,13 @@ main.content .pane.in-room .section-header {
 .app.is-home > main.content {
   margin-left: var(--sidebar-w) !important;
 }
+/* Beat the mockup's `:has(.pane.active.is-direct-view) > main.content` rule
+   (which adds enough specificity via :has() to override .is-home alone).
+   Doubling the .is-home class lifts specificity safely. */
+.app.is-home.is-home > main.content,
+body[data-pane="home"] main.content {
+  margin-left: var(--sidebar-w) !important;
+}
 @media (max-width: 1024px) {
   .app > main.content { margin-left: 0 !important; }
 }

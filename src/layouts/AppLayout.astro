@@ -27,7 +27,11 @@ const {
 
 const fullTitle = title === 'melis.ai' ? title : `${title} · melis.ai`;
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
-const paneClass = ['pane', 'active', inRoom ? 'in-room' : 'is-direct-view'].filter(Boolean).join(' ');
+// Home is sb1-only — adding `is-direct-view` would trip the mockup's
+// :has(.pane.active.is-direct-view) > main.content rule, which forces
+// margin-left to sb1+sb2 width and leaves a phantom 280px gap on home.
+const paneMode = pane === 'home' ? '' : (inRoom ? 'in-room' : 'is-direct-view');
+const paneClass = ['pane', 'active', paneMode].filter(Boolean).join(' ');
 // Home is sb1-only per the mockup. Every other route gets the contextual sb2.
 const hasSb2 = pane !== 'home';
 const appClass = [
