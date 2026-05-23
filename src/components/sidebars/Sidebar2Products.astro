@@ -45,10 +45,18 @@ function iconFor(cat: string) {
 // Landing view = panel groups by category.
 const isDetail = Boolean(currentSlug);
 
-// Sort products alphabetically for the flat view
-const flatSorted = [...all].sort((a, b) =>
-  a.data.title.replace(/<[^>]+>/g, '').localeCompare(b.data.title.replace(/<[^>]+>/g, '')),
-);
+// Mockup uses source order, not alphabetical — Complete Arsenal first
+// (the flagship bundle), then everything else by category in PRODUCTS_CATEGORIES
+// declaration order. Alphabetical loses the editorial priority.
+const arsenal = all.find((p) => p.slug === 'complete-arsenal');
+const others = all
+  .filter((p) => p.slug !== 'complete-arsenal')
+  .sort((a, b) => {
+    const ai = PRODUCTS_CATEGORIES.findIndex((c) => c.title === (a.data.category || ''));
+    const bi = PRODUCTS_CATEGORIES.findIndex((c) => c.title === (b.data.category || ''));
+    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+  });
+const flatSorted = arsenal ? [arsenal, ...others] : others;
 ---
 
 <aside class="sidebar-2" transition:persist="sb2-products">
