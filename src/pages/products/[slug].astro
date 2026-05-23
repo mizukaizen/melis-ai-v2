@@ -1,0 +1,86 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import SectionHero from '../../components/SectionHero.astro';
+import ProductDetail from '../../components/ProductDetail.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { itemHero, landingHero } from '../../lib/hero-image';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const items = await getCollection('products');
+  return items.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
+}
+
+type Props = { item: CollectionEntry<'products'> };
+const { item } = Astro.props as Props;
+const { Content } = await item.render();
+const data = item.data;
+const cover = (data.cover && data.cover.startsWith('/'))
+  ? data.cover
+  : itemHero('products', data.title.replace(/<[^>]+>/g, ''), item.slug) || landingHero('products');
+
+// Sibling products from the same category — drives the "More kits from
+// the operator desk" grid at the bottom of the detail page.
+const allProducts = await getCollection('products');
+const siblings = allProducts
+  .filter((p) => !p.data.draft && p.slug !== item.slug && p.data.category === data.category);
+
+// Complete Arsenal still shows its bundle breakdown table (the bundle's
+// unique selling point) above the standard detail body.
+const isBundle = item.slug === 'complete-arsenal';
+---
+
+<AppLayout title={data.title} pane="products" inRoom description={data.lede}>
+  <SectionHero
+    cover={cover}
+    eyebrow={data.eyebrow || data.category}
+    title={data.title}
+    titleHtml={data.titleHtml}
+    lede={data.lede}
+  />
+
+  <section class="section-body">
+    {isBundle && data.breakdown && data.breakdown.length > 0 && (
+      <section class="product-breakdown">
+        <h3>What's in the bundle</h3>
+        <ul>
+          {data.breakdown.map((b) => (
+            <li>
+              <span class="bn">{b.name}</span>
+              <span class="bc">{b.count}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <ProductDetail item={item} siblings={siblings} />
+
+    {/* MDX body — extra prose authored in the .mdx file, rendered below the v2 layout. */}
+    <article class="product-mdx-body">
+      <Content />
+    </article>
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
+
+  <style>
+    .product-breakdown { max-width: 720px; margin: 0 auto 2.5em; padding: 22px 26px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 12px; }
+    .product-breakdown h3 { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-3); margin: 0 0 14px; }
+    .product-breakdown ul { list-style: none; padding: 0; margin: 0; }
+    .product-breakdown li { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border-1); font-family: var(--font-body); font-size: 14px; }
+    .product-breakdown li:last-child { border-bottom: none; }
+    .bn { color: var(--text-1); }
+    .bc { color: var(--text-3); font-family: var(--font-mono); font-size: 12px; }
+
+    .product-mdx-body { max-width: 720px; margin: 2.5em auto 0; }
+    .product-mdx-body :global(p) { font-family: var(--font-body); font-size: 15px; line-height: 1.7; color: var(--text-2); margin: 0 0 1.2em; }
+  </style>
+</AppLayout>

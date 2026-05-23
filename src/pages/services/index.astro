@@ -1,0 +1,57 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import SectionHero from '../../components/SectionHero.astro';
+import { getCollection } from 'astro:content';
+import { landingHero } from '../../lib/hero-image';
+
+export const prerender = true;
+
+const services = (await getCollection('services')).filter((s) => !s.data.draft);
+
+const COVER_MAP: Record<string, string> = {
+  'strategy-print-sprint': '/section-rooms/services-strategy.png',
+  'business-ai-blueprint': '/section-rooms/services-advisory.png',
+  'ai-builds-on-tap':      '/section-rooms/services-build.png',
+  'fractional-operator':   '/section-rooms/services-fractional.png',
+  'speaking':              '/section-rooms/services-speaking.png',
+};
+function coverFor(slug: string) {
+  return COVER_MAP[slug] || '/section-rooms/services-landing.png';
+}
+---
+
+<AppLayout
+  title="Services"
+  pane="services"
+  description="Work directly with Sean — strategy sprints, implementation, retainers."
+>
+  <SectionHero
+    cover={landingHero('services')}
+    eyebrow="Work With Me · the offerings"
+    title="Services"
+    titleHtml="<em>Services</em>"
+    lede="When you need the studio in the room — strategy sprints, agent builds, coaching, brand systems, speaking."
+  />
+
+  <section class="section-body">
+    <div class="room-grid">
+      {services.map((s) => (
+        <a class="room-card" href={`/services/${s.slug}/`}>
+          <div class="room-card-img" style={`background-image: url('${coverFor(s.slug)}');`}></div>
+          <div class="room-card-veil"></div>
+          <div class="room-card-arrow">↗</div>
+          <div class="room-card-meta">
+            <div class="room-card-eyebrow">{s.data.eyebrow}</div>
+            <div class="room-card-title" set:html={s.data.titleHtml || s.data.title}></div>
+            <div class="room-card-line">{s.data.lede}</div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
+</AppLayout>

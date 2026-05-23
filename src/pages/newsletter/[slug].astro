@@ -1,0 +1,52 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import AppLayout from '../../layouts/AppLayout.astro';
+import SectionHero from '../../components/SectionHero.astro';
+import { landingHero } from '../../lib/hero-image';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const items = await getCollection('newsletter');
+  return items.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
+}
+
+type Props = { item: CollectionEntry<'newsletter'> };
+const { item } = Astro.props as Props;
+const { Content } = await item.render();
+const data = item.data;
+const cover = (data.cover && data.cover.startsWith('/'))
+  ? data.cover
+  : (data.cover ? `/${data.cover}` : landingHero('newsletter'));
+---
+
+<AppLayout title={data.title} pane="newsletter" inRoom description={data.lede}>
+  <SectionHero
+    cover={cover}
+    eyebrow={data.eyebrow}
+    title={data.title}
+    titleHtml={data.titleHtml}
+    byline={data.byline}
+    lede={data.lede}
+  />
+
+  <section class="section-body">
+    <article class="article-content">
+      <Content />
+    </article>
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
+
+  <style>
+    .article-content { max-width: 720px; margin: 0 auto; }
+    .article-content :global(p) { font-family: var(--font-body); font-size: 17px; line-height: 1.7; color: var(--text-1); margin: 0 0 1.4em; max-width: 680px; }
+    .article-content :global(em) { color: var(--accent); font-style: italic; }
+  </style>
+</AppLayout>

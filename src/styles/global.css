@@ -1,0 +1,486 @@
+@import "tailwindcss";
+@import "./tokens.css";
+@import "./sidebar-base.css";
+@import "./section-hero-base.css";
+
+/* ── Felt background ── */
+html, body {
+  background: #050505;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' /><feColorMatrix values='0 0 0 0 0.075  0 0 0 0 0.075  0 0 0 0 0.08  0 0 0 0.42 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  color: var(--text-1);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+/* ── Invisible scrollbar (per mockup) ── */
+html, body, * {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar { display: none; }
+
+/* ── Selection ── */
+::selection {
+  background: var(--accent-subtle);
+  color: var(--text-1);
+}
+
+/* ── View transitions (cross-fade) ── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+}
+
+/* ── Section spacing tokens ── */
+:root {
+  --pane-pad-x: clamp(24px, 4vw, 64px);
+  --pane-pad-y: clamp(32px, 5vh, 80px);
+  --section-max-w: 1240px;
+}
+
+/* ──────────────────────────────────────────────────────────────
+ * Post-mockup overrides — sb2 is visible on every NON-home route.
+ * Home is sb1-only per mockup; AppLayout omits the Sidebar2
+ * component on /, so no CSS-side hide needed there.
+ * Loaded AFTER mockup.css via AppLayout import order.
+ * ────────────────────────────────────────────────────────────── */
+.app:not(.is-home) > aside.sidebar-2,
+.app.has-sb2 > aside.sidebar-2,
+.app.is-landing-mode:not(.is-home) > aside.sidebar-2,
+.app.is-flat-list-mode > aside.sidebar-2,
+.app.is-library-landing > aside.sidebar-2 {
+  display: flex !important;
+}
+/* Explicitly hide sb2 on home (defence-in-depth in case mockup
+   rules somehow inject one). */
+.app.is-home > aside.sidebar-2,
+.app.no-sb2 > aside.sidebar-2 {
+  display: none !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+ * Section hero overlay — force the title-OVER-image pattern.
+ *
+ * The mockup's CSS was calibrated for an SPA where the hero was
+ * position:fixed and stayed across pane swaps. Astro does per-route,
+ * so we need to win against the mockup's `position:fixed !important`,
+ * `height:auto`, and `mask-image` overrides so the section-hero-base
+ * overlay can do its job.
+ * ────────────────────────────────────────────────────────────── */
+/* Landing heroes are SHORT (~320px) so the cards lift into the fold
+   at 900px viewport. Detail/in-room heroes stay tall for cinematic effect. */
+.pane .section-header,
+main.content .section-header {
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 320px !important;
+  overflow: hidden !important;
+}
+.pane.in-room .section-header,
+main.content .pane.in-room .section-header {
+  min-height: 560px !important;
+}
+.pane[data-pane="library"].in-room .section-header {
+  min-height: 600px !important;
+}
+
+.pane .section-header-inner {
+  position: relative !important;
+  z-index: 3 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+  padding: 48px clamp(24px, 3vw, 56px) 32px !important;
+  max-width: 1280px !important;
+  margin: 0 auto !important;
+  min-height: 320px !important;
+  width: 100% !important;
+  height: auto !important;
+  text-align: left !important;
+  box-sizing: border-box !important;
+}
+.pane.in-room .section-header-inner {
+  min-height: 560px !important;
+  padding: 80px clamp(24px, 3vw, 56px) 60px !important;
+}
+.pane[data-pane="library"].in-room .section-header-inner { min-height: 600px !important; }
+
+.pane .section-title-block {
+  text-align: left !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  align-self: flex-start !important;
+}
+
+.pane .section-body {
+  padding-top: clamp(12px, 2vh, 28px) !important;
+  padding-bottom: 80px !important;
+  max-width: 1280px !important;
+  margin: 0 auto !important;
+}
+/* Detail/in-room pages keep the cinematic breathing room above the body. */
+.pane.in-room .section-body {
+  padding-top: clamp(48px, 6vh, 96px) !important;
+}
+
+/* Landing headers — tighter so flat-card grids surface more rows in the fold. */
+.pane .flat-list-header { margin-bottom: 12px !important; }
+.pane .section-body > .body-lead { margin-bottom: 20px !important; max-width: 60ch !important; }
+.pane .section-body .h2 { margin-bottom: 8px !important; }
+.pane .section-eyebrow-small { margin-bottom: 6px !important; }
+
+.pane .section-hero-bg {
+  position: absolute !important;
+  inset: 0 !important;
+  -webkit-mask-image: none !important;
+          mask-image: none !important;
+  background-size: cover !important;
+  background-position: center !important;
+  z-index: 0 !important;
+}
+.pane .section-hero-veil {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  background: linear-gradient(180deg,
+    rgba(5, 5, 5, 0.35) 0%,
+    rgba(5, 5, 5, 0.08) 20%,
+    transparent 45%,
+    transparent 100%) !important;
+  pointer-events: none !important;
+}
+.pane .section-header::after {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  bottom: 0 !important;
+  height: auto !important;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    transparent 55%,
+    rgba(5, 5, 5, 0.55) 85%,
+    var(--bg) 100%) !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+}
+
+/* Hide the back-link (per mockup) */
+.pane .back-link { display: none !important; }
+
+/* Section title — landing tier (smaller). Detail/in-room tier bumps it up. */
+.pane .section-title {
+  font-family: var(--font-display) !important;
+  font-size: clamp(52px, 6vw, 88px) !important;
+  font-weight: 500 !important;
+  line-height: 0.98 !important;
+  letter-spacing: -0.02em !important;
+  color: var(--text-1) !important;
+  margin: 0 !important;
+  list-style: none !important;
+}
+.pane.in-room .section-title {
+  /* Detail-page heroes are cinematic but must fit single-line at 1440.
+     Longest titles in the catalogue: "AI Workspace Starter Kit" (24),
+     "Business OS Starter Kit" (23), "Claude Cowork for Professionals"
+     (29). At max 88px these all fit within the .section-title-block
+     when its max-width is lifted to span the inner block. */
+  font-size: clamp(48px, 5.5vw, 88px) !important;
+  white-space: normal;
+}
+/* Dossier detail keeps its larger cinematic title — only short titles
+   live in /dossiers/[cat]/[slug] (e.g. "Atomic Habits"). */
+.pane[data-pane="library"].in-room .section-title {
+  font-size: clamp(64px, 8vw, 120px) !important;
+}
+/* Products + Courses detail use the standard in-room clamp above. */
+.pane[data-pane="products"].in-room .section-title,
+.pane[data-pane="courses"].in-room .section-title {
+  font-size: clamp(48px, 5.5vw, 88px) !important;
+}
+/* Let title-block fill the inner-block width so long titles can flow
+   single-line instead of wrapping at the old 880px ceiling. */
+.pane.in-room .section-title-block {
+  max-width: 100% !important;
+}
+.pane .section-title em {
+  font-style: italic !important;
+  color: var(--accent) !important;
+  /* Strip any inherited decoration that could create a stray glint. */
+  text-decoration: none !important;
+  background: none !important;
+  list-style: none !important;
+}
+/* Defence-in-depth: explicitly squash any stray pseudo on title em that
+   the mockup CSS or a UA stylesheet might inject. */
+.pane .section-title em::before,
+.pane .section-title em::after,
+.pane .section-title::before,
+.pane .section-title::after {
+  content: none !important;
+  display: none !important;
+}
+.pane .section-eyebrow {
+  font-family: var(--font-mono) !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.22em !important;
+  text-transform: uppercase !important;
+  color: var(--text-2) !important;
+  margin: 0 !important;
+}
+.pane .section-byline {
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.18em !important;
+  text-transform: uppercase !important;
+  color: var(--text-2) !important;
+  margin: 4px 0 0 !important;
+  display: block !important;
+}
+.pane .section-lead {
+  display: block !important;
+  font-family: var(--font-body) !important;
+  font-size: clamp(15px, 1.2vw, 19px) !important;
+  line-height: 1.55 !important;
+  color: var(--text-1) !important;
+  max-width: 720px !important;
+  margin: 8px 0 0 !important;
+}
+.pane .section-lead em {
+  font-style: italic !important;
+  color: var(--accent) !important;
+}
+
+/* Content shift: home is sb1-only (192px); every other route also clears sb2 (+280px). */
+.app.has-sb2 > main.content {
+  margin-left: calc(var(--sidebar-w) + var(--sidebar-w2)) !important;
+}
+.app.no-sb2 > main.content,
+.app.is-home > main.content {
+  margin-left: var(--sidebar-w) !important;
+}
+/* Beat the mockup's `:has(.pane.active.is-direct-view) > main.content` rule
+   (which adds enough specificity via :has() to override .is-home alone).
+   Doubling the .is-home class lifts specificity safely. */
+.app.is-home.is-home > main.content,
+body[data-pane="home"] main.content {
+  margin-left: var(--sidebar-w) !important;
+}
+@media (max-width: 1024px) {
+  .app > main.content { margin-left: 0 !important; }
+}
+
+/* Home pane: lift the height:100vh + overflow:hidden lock from
+   the mockup so the page scrolls normally with sb2 visible. */
+.pane[data-pane="home"].active {
+  display: block !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+.pane[data-pane="home"] .hero {
+  position: relative !important;
+  min-height: 70vh;
+  height: auto !important;
+}
+
+/* Lotus sigil on home hero eyebrow */
+.pane[data-pane="home"] .hero-eyebrow {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+.pane[data-pane="home"] .lotus-sigil {
+  width: 16px;
+  height: 16px;
+  color: var(--accent) !important;
+  fill: var(--accent) !important;
+  flex-shrink: 0;
+  display: inline-block !important;
+  vertical-align: middle;
+}
+
+/* Home portal cards — make sure they render at a proper size + show
+   eyebrow/title/tagline/arrow. The mockup CSS targets these but the
+   styled clamp height was set for an SPA viewport; with sb2 visible,
+   the cards looked tiny. */
+.pane[data-pane="home"] .cards {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important;
+  gap: 12px !important;
+  padding: 24px clamp(16px, 2vw, 32px) 36px !important;
+  margin: 0 !important;
+}
+@media (max-width: 1100px) {
+  .pane[data-pane="home"] .cards { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 600px) {
+  .pane[data-pane="home"] .cards { grid-template-columns: 1fr !important; }
+}
+.pane[data-pane="home"] .card {
+  position: relative !important;
+  display: block !important;
+  min-height: 280px !important;
+  height: auto !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  text-decoration: none !important;
+  color: inherit !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  isolation: isolate !important;
+  transition: transform 0.2s var(--ease), border-color 0.2s var(--ease) !important;
+}
+.pane[data-pane="home"] .card:hover {
+  transform: translateY(-2px) !important;
+  border-color: rgba(168, 85, 247, 0.35) !important;
+}
+.pane[data-pane="home"] .card .card-img {
+  position: absolute !important;
+  inset: 0 !important;
+  background-size: cover !important;
+  background-position: center !important;
+  z-index: 0 !important;
+}
+.pane[data-pane="home"] .card .card-veil {
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(180deg, transparent 30%, rgba(5, 5, 5, 0.75) 100%) !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+}
+.pane[data-pane="home"] .card .card-arrow {
+  position: absolute !important;
+  top: 12px !important;
+  right: 14px !important;
+  z-index: 2 !important;
+  font-family: var(--font-mono);
+  font-size: 14px !important;
+  color: var(--text-1) !important;
+  background: rgba(5, 5, 5, 0.5) !important;
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.pane[data-pane="home"] .card .card-meta {
+  position: absolute !important;
+  left: 16px !important;
+  right: 16px !important;
+  bottom: 14px !important;
+  z-index: 2 !important;
+}
+.pane[data-pane="home"] .card .card-eyebrow {
+  font-family: var(--font-mono) !important;
+  font-size: 9px !important;
+  letter-spacing: 0.18em !important;
+  text-transform: uppercase !important;
+  color: var(--accent) !important;
+  margin-bottom: 4px !important;
+}
+.pane[data-pane="home"] .card .card-title {
+  font-family: var(--font-display) !important;
+  font-size: 22px !important;
+  font-weight: 500 !important;
+  color: var(--text-1) !important;
+  margin: 0 0 4px !important;
+  line-height: 1.1 !important;
+}
+.pane[data-pane="home"] .card .card-line {
+  font-family: var(--font-body) !important;
+  font-size: 12px !important;
+  color: var(--text-2) !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+ * Cursor pointer on interactive chrome.
+ *
+ * Sb1/sb2 rows + room-cards + featured cards + the wordmark and
+ * search button all behave as buttons/links. The browser's default
+ * text cursor over <a>/<div onclick> made them feel non-interactive
+ * — these rules make the hover state read as clickable.
+ * ────────────────────────────────────────────────────────────── */
+.sb-logo,
+.sb-item,
+.sb-search-btn,
+.panel-group-header,
+.panel-item,
+.sb2-item,
+.sb2-title,
+.room-card,
+.flat-card,
+.featured-product-card,
+.featured-course-card,
+.featured-prompt-card,
+.pd-sibling-card,
+.pd-look-card,
+.exhibit-card,
+.editorial-hero,
+.about-toc-item,
+.btn,
+button:not(:disabled),
+[data-pane],
+.pane[data-pane="home"] .card {
+  cursor: pointer;
+}
+/* Count badges and decorative dots inside a clickable row don't need
+   their own pointer — inherit from the parent so the cursor stays
+   consistent across the whole row. */
+.sb-item .count,
+.panel-item .pi-dot,
+.sb2-item .sb2-count,
+.flat-card .flat-card-tag {
+  cursor: inherit;
+}
+
+/* ──────────────────────────────────────────────────────────────
+ * AI ticker — continuous right-to-left marquee.
+ *
+ * The mockup's `.ticker` has `overflow: hidden` + a static
+ * `.ticker-brands` strip. Live needs the scroll loop the brief
+ * called for. The track contains the brand list twice so when the
+ * first half slides off the left, the second half is mid-frame
+ * and the loop is seamless at the -50% translate point.
+ * ────────────────────────────────────────────────────────────── */
+.pane[data-pane="home"] .ticker {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 6%, black 94%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, black 6%, black 94%, transparent 100%);
+}
+.pane[data-pane="home"] .ticker-brands {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+.pane[data-pane="home"] .ticker-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 32px;
+  white-space: nowrap;
+  animation: melis-ticker-scroll 60s linear infinite;
+  will-change: transform;
+}
+.pane[data-pane="home"] .ticker-track > span {
+  flex-shrink: 0;
+  padding-right: 32px;
+}
+@keyframes melis-ticker-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pane[data-pane="home"] .ticker-track {
+    animation: none;
+  }
+}

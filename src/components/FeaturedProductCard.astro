@@ -1,0 +1,146 @@
+---
+// Featured-product card with full paper-craft scene as background.
+// Used by the Products landing for The Complete Arsenal.
+// Pattern matches mockup .products-hero-card / arsenal-banner.
+import { itemHero } from '../lib/hero-image';
+
+interface Props {
+  slug: string;
+  hero: any;
+}
+
+const { slug, hero } = Astro.props;
+const cover = itemHero('products', hero.title, slug);
+const breakdown = (hero.breakdown || []).slice(0, 6);
+---
+
+<a class="featured-product-card" href={`/products/${slug}/`}>
+  <div class="fpc-bg" style={`background-image: url('${cover}');`}></div>
+  <div class="fpc-veil"></div>
+  <div class="fpc-content">
+    <div class="fpc-eyebrow">FEATURED · PREMIUM BUNDLE</div>
+    <h3 class="fpc-title">The Complete <em>Arsenal</em></h3>
+    <p class="fpc-sub">{hero.longHook || hero.line}</p>
+    {breakdown.length > 0 && (
+      <div class="fpc-tags">
+        {breakdown.map((b: any) => (
+          <span class="fpc-tag">{b.name}</span>
+        ))}
+      </div>
+    )}
+    <div class="fpc-foot">
+      <div class="fpc-price">{hero.badge || '$197'}</div>
+      <div class="fpc-cta">Buy bundle →</div>
+    </div>
+  </div>
+</a>
+
+<style>
+  .featured-product-card {
+    position: relative;
+    display: block;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto 4em;
+    min-height: 380px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(168, 85, 247, 0.22);
+    text-decoration: none;
+    color: inherit;
+    isolation: isolate;
+    transition: transform 0.2s var(--ease), border-color 0.2s var(--ease);
+  }
+  .featured-product-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(168, 85, 247, 0.45);
+  }
+  .fpc-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+  }
+  .fpc-veil {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(110deg,
+      rgba(5, 5, 5, 0.65) 0%,
+      rgba(5, 5, 5, 0.45) 35%,
+      rgba(5, 5, 5, 0.18) 70%,
+      transparent 100%);
+    pointer-events: none;
+  }
+  .fpc-content {
+    position: relative;
+    z-index: 2;
+    padding: 40px 44px;
+    max-width: 620px;
+  }
+  .fpc-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .fpc-title {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 5vw, 64px);
+    font-weight: 500;
+    line-height: 1;
+    color: var(--text-1);
+    margin: 0 0 14px;
+    letter-spacing: -0.015em;
+  }
+  .fpc-title em { font-style: italic; color: var(--accent); }
+  .fpc-sub {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--text-1);
+    margin: 0 0 20px;
+    max-width: 540px;
+  }
+  .fpc-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .fpc-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    padding: 4px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 4px;
+    color: var(--text-1);
+    background: rgba(5, 5, 5, 0.35);
+  }
+  .fpc-foot {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .fpc-price {
+    font-family: var(--font-display);
+    font-size: 32px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .fpc-cta {
+    padding: 12px 22px;
+    background: var(--accent);
+    color: white;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+  }
+</style>

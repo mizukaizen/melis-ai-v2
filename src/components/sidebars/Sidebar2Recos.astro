@@ -1,0 +1,40 @@
+---
+// Mockup-canonical sb2 entries (lines 5262-5310 of melis-ai-spa-v6-astro-content.html).
+
+const ENTRIES: { name: string; count: string; desc: string }[] = [
+  { name: 'Tools I use daily',     count: '18', desc: 'The stack that runs my life' },
+  { name: 'Books worth your time', count: '47', desc: 'Curated reading list' },
+  { name: 'People worth following',count: '32', desc: 'Operators and thinkers' },
+  { name: 'Newsletters',           count: '16', desc: 'Inboxes worth your attention' },
+  { name: 'Podcasts',              count: '12', desc: 'Audio I actually finish' },
+  { name: 'Software',              count: '24', desc: 'Apps and services I pay for' },
+];
+
+const TOTAL_COUNT = '53';
+---
+
+<aside class="sidebar-2" transition:persist="sb2-recos">
+  <div class="sb2-pane active" data-pane="recos">
+    <div class="sb2-header">
+      <div class="sb2-title">Sean's <em>Recos</em></div>
+    </div>
+    <div class="sb2-list">
+      <a class="sb2-item" href="/recos/">
+        <div class="sb2-row">
+          <div class="sb2-name">All Recommendations</div>
+          <div class="sb2-count">{TOTAL_COUNT}</div>
+        </div>
+        <div class="sb2-desc">Everything I actually use</div>
+      </a>
+      {ENTRIES.map((e) => (
+        <a class="sb2-item" href="/recos/">
+          <div class="sb2-row">
+            <div class="sb2-name">{e.name}</div>
+            <div class="sb2-count">{e.count}</div>
+          </div>
+          <div class="sb2-desc">{e.desc}</div>
+        </a>
+      ))}
+    </div>
+  </div>
+</aside>

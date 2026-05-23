@@ -1,0 +1,140 @@
+---
+import { getCollection } from 'astro:content';
+import { PRODUCTS_CATEGORIES } from '../../data/products-categories';
+
+const all = (await getCollection('products')).filter((p) => !p.data.draft);
+const byCategory = new Map<string, typeof all>();
+for (const p of all) {
+  const c = p.data.category || 'Other';
+  if (!byCategory.has(c)) byCategory.set(c, [] as never);
+  byCategory.get(c)!.push(p);
+}
+
+const currentSlug = Astro.url.pathname.match(/\/products\/([^/]+)/)?.[1];
+const currentCategory = currentSlug
+  ? all.find((p) => p.slug === currentSlug)?.data.category
+  : undefined;
+
+// Per-category Phosphor icon + colour — mirrors mockup's wireProductsRooms CAT_ICON.
+const CAT_ICON: Record<string, { i: string; c: string }> = {
+  'Starter Kits':     { i: 'ph-package',       c: '#fb923c' },
+  'Claude Skills':    { i: 'ph-rocket',        c: '#5eead4' },
+  'AI Personas':      { i: 'ph-cube',          c: '#a78bfa' },
+  'Spreadsheets':     { i: 'ph-table',         c: '#4ade80' },
+  'Notion Covers':    { i: 'ph-image',         c: '#60a5fa' },
+  'Wall Art':         { i: 'ph-frame-corners', c: '#f472b6' },
+  'Wallpapers':       { i: 'ph-device-mobile', c: '#22d3ee' },
+  'Notion Templates': { i: 'ph-files',         c: '#94a3b8' },
+  'Bundles':          { i: 'ph-star',          c: '#a78bfa' },
+};
+const ALL_ICON    = { i: 'ph-storefront', c: '#5eead4' };
+const BUNDLE_ICON = { i: 'ph-star',       c: '#a78bfa' };
+
+function hexToRgba(hex: string, alpha: number) {
+  const m = hex.replace('#', '').match(/.{2}/g);
+  if (!m) return `rgba(94,234,212,${alpha})`;
+  const [r, g, b] = m.map((h) => parseInt(h, 16));
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function iconFor(cat: string) {
+  return CAT_ICON[cat] || { i: 'ph-circle', c: '#94a3b8' };
+}
+
+// Detail view = flat list of all products with current highlighted.
+// Landing view = panel groups by category.
+const isDetail = Boolean(currentSlug);
+
+// Sort products alphabetically for the flat view
+const flatSorted = [...all].sort((a, b) =>
+  a.data.title.replace(/<[^>]+>/g, '').localeCompare(b.data.title.replace(/<[^>]+>/g, '')),
+);
+---
+
+<aside class="sidebar-2" transition:persist="sb2-products">
+  <div class="sb2-pane active" data-pane="products">
+    <div class="sb2-header">
+      <div class="sb2-title"><em>Products</em></div>
+    </div>
+
+    {isDetail ? (
+      <div class="panel-list">
+        <a class="panel-item" href="/products/">
+          <i class={`ph ${ALL_ICON.i} pi-icon`} style={`color:${ALL_ICON.c};opacity:0.85`}></i>
+          <div class="pi-body">
+            <div class="pi-title">All Products</div>
+            <div class="pi-meta">{all.length} items</div>
+          </div>
+          <div class="pi-dot" style={`background:${hexToRgba(ALL_ICON.c, 0.15)};color:${ALL_ICON.c}`}>{all.length}</div>
+        </a>
+        {flatSorted.map((p) => {
+          const ic = iconFor(p.data.category || '');
+          return (
+            <a class="panel-item" class:list={[{ active: p.slug === currentSlug }]} href={`/products/${p.slug}/`}>
+              <i class={`ph ${ic.i} pi-icon`} style={`color:${ic.c};opacity:0.85`}></i>
+              <div class="pi-body">
+                <div class="pi-title">{p.data.title.replace(/<[^>]+>/g, '')}</div>
+                <div class="pi-meta">{p.data.category}</div>
+              </div>
+              <div class="pi-dot">${(p.data.price / 100).toFixed(0)}</div>
+            </a>
+          );
+        })}
+      </div>
+    ) : (
+      <div class="panel-list">
+        <a class="panel-item active" href="/products/">
+          <i class={`ph ${ALL_ICON.i} pi-icon`} style={`color:${ALL_ICON.c};opacity:0.85`}></i>
+          <div class="pi-body">
+            <div class="pi-title">All Products</div>
+            <div class="pi-meta">{all.length} items · {byCategory.size} categories</div>
+          </div>
+          <div class="pi-dot" style={`background:${hexToRgba(ALL_ICON.c, 0.15)};color:${ALL_ICON.c}`}>{all.length}</div>
+        </a>
+        <a class="panel-item" href="/products/complete-arsenal/">
+          <i class={`ph ${BUNDLE_ICON.i} pi-icon`} style={`color:${BUNDLE_ICON.c};opacity:0.85`}></i>
+          <div class="pi-body">
+            <div class="pi-title">The Complete Arsenal</div>
+            <div class="pi-meta">Premium bundle · $197</div>
+          </div>
+          <div class="pi-dot" style={`background:${hexToRgba(BUNDLE_ICON.c, 0.15)};color:${BUNDLE_ICON.c}`}>bundle</div>
+        </a>
+        {PRODUCTS_CATEGORIES.map((cat) => {
+          const items = byCategory.get(cat.title) ?? [];
+          const isOpen = currentCategory === cat.title;
+          const ic = iconFor(cat.title);
+          return (
+            <div class:list={['panel-group', { open: isOpen }]}>
+              <div class="panel-group-header">
+                <span class="pgh-label">{cat.title}</span>
+                <svg class="pgh-chevron" viewBox="0 0 10 6" fill="none">
+                  <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+              <div class="panel-group-items">
+                {items.map((p) => (
+                  <a class="panel-item" class:list={[{ active: p.slug === currentSlug }]} href={`/products/${p.slug}/`}>
+                    <i class={`ph ${ic.i} pi-icon`} style={`color:${ic.c};opacity:0.85`}></i>
+                    <div class="pi-body">
+                      <div class="pi-title">{p.data.title.replace(/<[^>]+>/g, '')}</div>
+                      <div class="pi-meta">${(p.data.price / 100).toFixed(0)}</div>
+                    </div>
+                    <div class="pi-dot">${(p.data.price / 100).toFixed(0)}</div>
+                  </a>
+                ))}
+                {items.length === 0 && (
+                  <div class="panel-item" style="opacity:0.4;cursor:default;">
+                    <i class={`ph ${ic.i} pi-icon`} style={`color:${ic.c};opacity:0.5`}></i>
+                    <div class="pi-body">
+                      <div class="pi-title" style="font-style:italic;">Coming soon</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    )}
+  </div>
+</aside>

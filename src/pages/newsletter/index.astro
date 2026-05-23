@@ -1,0 +1,112 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import SectionHero from '../../components/SectionHero.astro';
+import NewsletterForm from '../../components/NewsletterForm.astro';
+import FilterDropdown from '../../components/FilterDropdown.astro';
+import { getCollection } from 'astro:content';
+import { landingHero } from '../../lib/hero-image';
+
+export const prerender = true;
+
+const issues = (await getCollection('newsletter'))
+  .filter((n) => !n.data.draft)
+  .sort((a, b) => (b.data.publishedAt || '').localeCompare(a.data.publishedAt || ''));
+
+const filters = ['All', 'Soul of the Machine', "Operator's Brief", 'Hive Doctrine'];
+
+function formatDate(iso?: string) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function newsletterCover(slug: string, fallbackIndex: number) {
+  // Per-issue paper-craft images live at /section-rooms/news-1.png ... news-6.png.
+  // Cycle through them deterministically so each issue gets a stable cover.
+  return `/section-rooms/news-${(fallbackIndex % 6) + 1}.png`;
+}
+
+function tagFor(byline?: string) {
+  if (!byline) return '';
+  const parts = byline.split('·').map((s) => s.trim());
+  return parts[1] || '';
+}
+---
+
+<AppLayout
+  title="Newsletter"
+  pane="newsletter"
+  description="A daily dispatch from inside the operation. Field notes, observations, and one-line wins from a working studio."
+>
+  <SectionHero
+    cover={landingHero('newsletter')}
+    eyebrow="Channel · three threads"
+    title="Soul of the Machine"
+    titleHtml="Soul of the <em>Machine</em>"
+    lede="What kind of writing — three threads, one tight signal-to-noise."
+  />
+
+  <section class="section-body">
+    <div class="newsletter-subscribe-block">
+      <NewsletterForm />
+    </div>
+
+    <div class="flat-list-header" style="margin-top:3em;">
+      <div>
+        <div class="section-eyebrow-small">{issues.length} issues · three threads</div>
+        <h2 class="h2"><em>Bi-weekly</em> dispatches from the studio.</h2>
+      </div>
+      <FilterDropdown id="newsletter-filter" options={filters} />
+    </div>
+
+    <div class="flat-list-grid" id="newsletter-list">
+      {issues.map((n, i) => {
+        const cover = n.data.cover || newsletterCover(n.slug, i);
+        const tag = tagFor(n.data.byline);
+        const date = formatDate(n.data.publishedAt);
+        const tagLine = [tag, date].filter(Boolean).join(' · ');
+        return (
+          <a class="flat-card" href={`/newsletter/${n.slug}/`} data-category={tag}>
+            <div class="flat-card-img" style={`background-image: url('${cover}');`}></div>
+            <div class="flat-card-veil"></div>
+            <div class="flat-card-meta">
+              {tagLine && <div class="flat-card-tag">{tagLine}</div>}
+              <div class="flat-card-title">{n.data.title}</div>
+              {n.data.lede && <div class="flat-card-line">{n.data.lede}</div>}
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
+
+  <style>
+    .newsletter-subscribe-block { max-width: 540px; margin-top: 12px; }
+  </style>
+
+  <script>
+    function wireFilter() {
+      const sel = document.getElementById('newsletter-filter');
+      const list = document.getElementById('newsletter-list');
+      if (!sel || !list) return;
+      sel.addEventListener('filter:change', (e) => {
+        const val = (e as CustomEvent).detail as string;
+        list.querySelectorAll<HTMLAnchorElement>('a.flat-card').forEach((card) => {
+          if (val === 'All' || (card.dataset.category || '').includes(val)) {
+            card.style.display = '';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    }
+    document.addEventListener('astro:page-load', wireFilter);
+    wireFilter();
+  </script>
+</AppLayout>

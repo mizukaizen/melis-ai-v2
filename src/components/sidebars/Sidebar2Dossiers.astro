@@ -1,0 +1,105 @@
+---
+import { getCollection } from 'astro:content';
+import { DOSSIER_CATEGORIES } from '../../data/dossier-categories';
+
+const all = (await getCollection('dossiers')).filter((d) => !d.data.draft);
+const byCategory = new Map<string, typeof all>();
+for (const d of all) {
+  const c = d.data.category;
+  if (!byCategory.has(c)) byCategory.set(c, [] as never);
+  byCategory.get(c)!.push(d);
+}
+
+// Find current category from URL: /dossiers/<category>/ or /dossiers/<category>/<slug>/
+const pathParts = Astro.url.pathname.replace(/^\/+|\/+$/g, '').split('/');
+const currentCategory = pathParts[0] === 'dossiers' ? pathParts[1] : undefined;
+const currentSlug = pathParts[0] === 'dossiers' ? pathParts[2] : undefined;
+
+const ORDER = [
+  'books', 'essays', 'mental-models', 'thought-experiments',
+  'remarkable-people', 'letters', 'speeches', 'poems',
+  'manifestos', 'scientific-papers', 'ai-concepts', 'vocabulary',
+] as const;
+
+// Per-category Phosphor icon + colour — mirrors mockup's LIBRARY_CAT_ICON.
+const CAT_ICON: Record<string, { i: string; c: string }> = {
+  'books':              { i: 'ph-book-open',     c: '#fbbf24' },
+  'essays':             { i: 'ph-newspaper',     c: '#60a5fa' },
+  'mental-models':      { i: 'ph-puzzle-piece',  c: '#a78bfa' },
+  'thought-experiments':{ i: 'ph-lightbulb',     c: '#fde047' },
+  'remarkable-people':  { i: 'ph-users',         c: '#f472b6' },
+  'letters':            { i: 'ph-envelope',      c: '#94a3b8' },
+  'speeches':           { i: 'ph-microphone',    c: '#fb923c' },
+  'poems':              { i: 'ph-quotes',        c: '#c4b5fd' },
+  'manifestos':         { i: 'ph-flag-banner',   c: '#ef4444' },
+  'scientific-papers':  { i: 'ph-flask',         c: '#5eead4' },
+  'ai-concepts':        { i: 'ph-brain',         c: '#22d3ee' },
+  'vocabulary':         { i: 'ph-translate',     c: '#84cc16' },
+};
+const ALL_ICON = { i: 'ph-books', c: '#a855f7' };
+
+function hexToRgba(hex: string, alpha: number) {
+  const m = hex.replace('#', '').match(/.{2}/g);
+  if (!m) return `rgba(168,85,247,${alpha})`;
+  const [r, g, b] = m.map((h) => parseInt(h, 16));
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+type CatSlug = keyof typeof DOSSIER_CATEGORIES;
+const categories = ORDER.map((slug) => ({
+  slug,
+  cat: DOSSIER_CATEGORIES[slug as CatSlug],
+  items: byCategory.get(slug) ?? [],
+  ic: CAT_ICON[slug] || { i: 'ph-circle', c: '#94a3b8' },
+})).filter((c) => c.cat);
+---
+
+<aside class="sidebar-2" transition:persist="sb2-dossiers">
+  <div class="sb2-pane active" data-pane="library">
+    <div class="sb2-header">
+      <div class="sb2-title"><em>Dossiers</em></div>
+    </div>
+    <div class="panel-list">
+      <a class="panel-item" class:list={[{ active: !currentCategory }]} href="/dossiers/">
+        <i class={`ph ${ALL_ICON.i} pi-icon`} style={`color:${ALL_ICON.c};opacity:0.85`}></i>
+        <div class="pi-body">
+          <div class="pi-title">All Dossiers</div>
+          <div class="pi-meta">{all.length} fleshed · 242 catalogued</div>
+        </div>
+        <div class="pi-dot" style={`background:${hexToRgba(ALL_ICON.c, 0.18)};color:${ALL_ICON.c}`}>{all.length}</div>
+      </a>
+      {categories.map(({ slug, cat, items, ic }) => {
+        const isOpen = currentCategory === slug;
+        return (
+          <div class:list={['panel-group', { open: isOpen }]}>
+            <div class="panel-group-header">
+              <span class="pgh-label">{cat.title}</span>
+              <svg class="pgh-chevron" viewBox="0 0 10 6" fill="none">
+                <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="panel-group-items">
+              <a class="panel-item" class:list={[{ active: currentCategory === slug && !currentSlug }]} href={`/dossiers/${slug}/`}>
+                <i class={`ph ${ic.i} pi-icon`} style={`color:${ic.c};opacity:0.85`}></i>
+                <div class="pi-body">
+                  <div class="pi-title" style="font-style:italic;">View all {cat.title.toLowerCase()}</div>
+                  <div class="pi-meta">{cat.count}</div>
+                </div>
+                <div class="pi-dot" style={`background:${hexToRgba(ic.c, 0.15)};color:${ic.c}`}>{items.length}</div>
+              </a>
+              {items.map((d) => (
+                <a class="panel-item" class:list={[{ active: d.slug === currentSlug }]} href={`/dossiers/${slug}/${d.slug}/`}>
+                  <i class={`ph ${ic.i} pi-icon`} style={`color:${ic.c};opacity:0.85`}></i>
+                  <div class="pi-body">
+                    <div class="pi-title">{d.data.title.replace(/<[^>]+>/g, '')}</div>
+                    {d.data.byline && <div class="pi-meta">{d.data.byline.split('·')[0].trim()}</div>}
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</aside>

@@ -1,0 +1,130 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import SectionHero from '../../components/SectionHero.astro';
+import LeadForm from '../../components/LeadForm.astro';
+import NewsletterForm from '../../components/NewsletterForm.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { itemHero, landingHero } from '../../lib/hero-image';
+import { SERVICES_DETAIL } from '../../data/services';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const items = await getCollection('services');
+  return items.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
+}
+
+type Props = { item: CollectionEntry<'services'> };
+const { item } = Astro.props as Props;
+const data = item.data;
+const detail = SERVICES_DETAIL[item.slug];
+// Detail data wins over MDX frontmatter — it's the mockup-canonical copy.
+const eyebrow = detail?.eyebrow || data.eyebrow;
+const titleHtml = detail?.title || data.titleHtml || data.title;
+const lede = detail?.lede || data.lede;
+const strip = detail?.strip || data.strip || [];
+const steps = detail?.whatYouGet || [];
+const cta = detail?.cta;
+const cover = (data.cover && data.cover.startsWith('/'))
+  ? data.cover
+  : itemHero('services', data.title.replace(/<[^>]+>/g, ''), item.slug) || landingHero('services');
+const isComingSoon = (data as { status?: string }).status === 'coming-soon';
+---
+
+<AppLayout title={data.title} pane="services" inRoom description={lede}>
+  <SectionHero
+    cover={cover}
+    eyebrow={eyebrow}
+    title={data.title}
+    titleHtml={titleHtml}
+    lede={lede}
+  />
+
+  <section class="section-body">
+    {strip.length > 0 && (
+      <div class="service-strip">
+        {strip.map((s) => (
+          <div class="ss-cell">
+            <div class="ss-lbl">{s.lbl}</div>
+            <div class="ss-val">{s.val}</div>
+          </div>
+        ))}
+      </div>
+    )}
+
+    {isComingSoon && (
+      <div class="service-soon">
+        <div class="ss-soon-pill">Coming soon</div>
+        <p>This service is in development. Join the newsletter to be the first to know when it opens.</p>
+        <div class="ss-soon-form"><NewsletterForm /></div>
+      </div>
+    )}
+
+    {!isComingSoon && steps.length > 0 && (
+      <section class="service-how">
+        <div class="section-eyebrow-small">How it works</div>
+        <h2 class="h2">What you'll <em>walk away with</em>.</h2>
+        <div class="service-steps">
+          {steps.map((s) => (
+            <div class="service-step">
+              <div class="ss-num">{s.num}</div>
+              <div class="ss-step-body">
+                <h4 set:html={s.title}></h4>
+                <p>{s.line}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {!isComingSoon && cta && (
+      <div class="service-cta">
+        <h3>{cta.title}</h3>
+        <p>{cta.line}</p>
+      </div>
+    )}
+
+    {!isComingSoon && (
+      <div class="service-lead-form">
+        <h3>Get in touch.</h3>
+        <p>Tell Sean what you're trying to ship. He responds personally within a working day.</p>
+        <LeadForm service={data.title} />
+      </div>
+    )}
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
+
+  <style>
+    .service-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; max-width: 920px; margin: 0 auto 3em; padding: 20px 24px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 12px; }
+    .ss-lbl { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); letter-spacing: 0.06em; margin-bottom: 4px; }
+    .ss-val { font-family: var(--font-display); font-size: 18px; color: var(--text-1); }
+    .service-how { max-width: 920px; margin: 0 auto 3em; }
+    .service-how .h2 { font-family: var(--font-display); font-size: clamp(28px, 3vw, 42px); font-weight: 500; line-height: 1.15; letter-spacing: -0.01em; color: var(--text-1); margin: 0 0 28px; }
+    .service-how .h2 :global(em) { font-style: italic; color: var(--accent); }
+    .service-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+    .service-step { display: flex; gap: 16px; padding: 20px 22px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 10px; }
+    .ss-num { font-family: var(--font-mono); font-size: 12px; color: var(--accent); letter-spacing: 0.08em; flex-shrink: 0; padding-top: 4px; }
+    .ss-step-body h4 { font-family: var(--font-display); font-size: 18px; font-weight: 500; color: var(--text-1); margin: 0 0 8px; line-height: 1.25; }
+    .ss-step-body h4 :global(em) { font-style: italic; color: var(--accent); }
+    .ss-step-body p { font-family: var(--font-body); font-size: 14px; color: var(--text-2); line-height: 1.55; margin: 0; }
+    .service-cta { max-width: 920px; margin: 0 auto 2.5em; padding: 24px 28px; background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 10px; text-align: center; }
+    .service-cta h3 { font-family: var(--font-display); font-size: 24px; color: var(--text-1); margin: 0 0 6px; }
+    .service-cta p { font-family: var(--font-body); font-size: 14px; color: var(--text-2); margin: 0; line-height: 1.55; }
+    .service-lead-form { max-width: 540px; margin: 0 auto; }
+    .service-lead-form h3 { font-family: var(--font-display); font-size: 28px; color: var(--text-1); margin: 0 0 8px; }
+    .service-lead-form p { font-family: var(--font-body); font-size: 15px; color: var(--text-2); margin: 0 0 24px; line-height: 1.55; }
+    /* Coming-soon stub services (Fractional Operator / Speaking) */
+    .service-soon { max-width: 540px; margin: 0 auto 2em; text-align: center; }
+    .ss-soon-pill { display: inline-block; padding: 4px 12px; margin-bottom: 14px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); background: rgba(168, 85, 247, 0.10); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 999px; }
+    .service-soon p { font-family: var(--font-body); font-size: 15px; color: var(--text-2); line-height: 1.6; margin: 0 0 20px; }
+    .ss-soon-form { margin: 0 auto; max-width: 460px; }
+  </style>
+</AppLayout>

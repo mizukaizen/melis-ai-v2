@@ -1,0 +1,12 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+import homeHtml from '../_html/pane-home.html?raw';
+---
+
+<AppLayout
+  title="melis.ai"
+  pane="home"
+  description="A working AI studio — courses, products, and dispatches from an operator who's been in the work since before it was the work."
+>
+  <Fragment set:html={homeHtml} />
+</AppLayout>

@@ -1,0 +1,54 @@
+---
+// Contextual secondary sidebar. Dispatches to a per-section component
+// based on the current `pane`. Each per-section component pulls its
+// items from the relevant content collection at build time.
+
+import Articles from './sidebars/Sidebar2Articles.astro';
+import Newsletter from './sidebars/Sidebar2Newsletter.astro';
+import Recos from './sidebars/Sidebar2Recos.astro';
+import Services from './sidebars/Sidebar2Services.astro';
+import Ventures from './sidebars/Sidebar2Ventures.astro';
+import Courses from './sidebars/Sidebar2Courses.astro';
+import Exhibits from './sidebars/Sidebar2Exhibits.astro';
+import About from './sidebars/Sidebar2About.astro';
+import Products from './sidebars/Sidebar2Products.astro';
+import Prompts from './sidebars/Sidebar2Prompts.astro';
+import Dossiers from './sidebars/Sidebar2Dossiers.astro';
+import Home from './sidebars/Sidebar2Home.astro';
+
+interface Props {
+  pane: string;
+}
+
+const { pane } = Astro.props;
+---
+
+{pane === 'home' && <Home />}
+{pane === 'articles' && <Articles />}
+{pane === 'newsletter' && <Newsletter />}
+{pane === 'recos' && <Recos />}
+{pane === 'services' && <Services />}
+{(pane === 'projects' || pane === 'ventures') && <Ventures />}
+{pane === 'courses' && <Courses />}
+{pane === 'exhibits' && <Exhibits />}
+{(pane === 'about' || pane === 'about-studio') && <About />}
+{pane === 'products' && <Products />}
+{pane === 'prompts' && <Prompts />}
+{pane === 'library' && <Dossiers />}
+
+<script>
+  // Panel-group expand/collapse — the mockup uses inline onclick which
+  // Astro strips when bundling. Re-wire here.
+  function wirePanelGroups() {
+    document.querySelectorAll<HTMLElement>('aside.sidebar-2 .panel-group-header').forEach((header) => {
+      if (header.dataset.wired === '1') return;
+      header.dataset.wired = '1';
+      header.addEventListener('click', () => {
+        header.parentElement?.classList.toggle('open');
+      });
+    });
+  }
+  document.addEventListener('astro:page-load', wirePanelGroups);
+  document.addEventListener('astro:after-swap', wirePanelGroups);
+  wirePanelGroups();
+</script>

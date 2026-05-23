@@ -1,0 +1,105 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import SectionHero from '../../components/SectionHero.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { itemHero, landingHero } from '../../lib/hero-image';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const items = await getCollection('prompts');
+  return items.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
+}
+
+type Props = { item: CollectionEntry<'prompts'> };
+const { item } = Astro.props as Props;
+const data = item.data;
+const cover = (data.cover && data.cover.startsWith('/'))
+  ? data.cover
+  : itemHero('prompts', data.category, item.slug) || landingHero('prompts');
+
+// The MDX stores prompt body with inline `<span class="pv-var">[TOKEN]</span>`
+// markup. Render the body as raw HTML so the spans render styled. For the
+// copy-to-clipboard fallback, strip the spans so the user pastes clean text.
+const promptHtml = data.prompt || '';
+const promptPlain = promptHtml.replace(/<span class="pv-var">([^<]*)<\/span>/g, '$1').replace(/<[^>]+>/g, '');
+---
+
+<AppLayout title={data.title} pane="prompts" inRoom description={data.lede}>
+  <SectionHero
+    cover={cover}
+    eyebrow={data.eyebrow || data.category}
+    title={data.title}
+    lede={data.lede}
+  />
+
+  <section class="section-body">
+    <div class="room-prompt-card">
+      <div class="room-prompt-meta">
+        <span class="room-prompt-cat">{data.category}</span>
+        <span class="room-prompt-dot">·</span>
+        <span class="room-prompt-line">{data.lede}</span>
+      </div>
+      <pre class="room-prompt-pre" id="prompt-pre" set:html={promptHtml}></pre>
+      <div class="room-prompt-footer">
+        <button class="room-prompt-copy" id="copy-btn" data-text={promptPlain}>
+          <i class="ph ph-copy" aria-hidden="true"></i>
+          <span id="copy-label">Copy prompt</span>
+        </button>
+        <button class="room-prompt-expand" id="expand-btn" type="button">
+          <i class="ph ph-arrows-out-line-vertical" aria-hidden="true"></i>
+          <span id="expand-label">Expand</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
+
+  <style>
+    .room-prompt-card { max-width: 900px; margin: 0 auto; padding: 22px 24px; background: rgba(20, 20, 24, 0.55); border: 1px solid var(--border-2); border-radius: 12px; }
+    .room-prompt-meta { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-3); margin-bottom: 14px; flex-wrap: wrap; }
+    .room-prompt-cat { color: var(--accent); }
+    .room-prompt-line { text-transform: none; letter-spacing: 0; font-family: var(--font-body); font-size: 12.5px; color: var(--text-2); }
+    .room-prompt-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; }
+    .room-prompt-copy, .room-prompt-expand { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: rgba(168, 85, 247, 0.08); color: var(--accent); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 6px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em; cursor: pointer; transition: background 0.18s var(--ease); }
+    .room-prompt-copy:hover, .room-prompt-expand:hover { background: rgba(168, 85, 247, 0.18); }
+  </style>
+
+  <script>
+    function wirePromptRoom() {
+      const copyBtn = document.getElementById('copy-btn') as HTMLButtonElement | null;
+      const copyLabel = document.getElementById('copy-label');
+      const expandBtn = document.getElementById('expand-btn') as HTMLButtonElement | null;
+      const expandLabel = document.getElementById('expand-label');
+      const card = document.querySelector<HTMLDivElement>('.room-prompt-card');
+      if (!copyBtn || !copyLabel || !expandBtn || !expandLabel || !card) return;
+      if (copyBtn.dataset.wired === '1') return;
+      copyBtn.dataset.wired = '1';
+
+      copyBtn.addEventListener('click', async () => {
+        const text = copyBtn.dataset.text || '';
+        try {
+          await navigator.clipboard.writeText(text);
+          copyLabel.textContent = 'Copied';
+          setTimeout(() => (copyLabel.textContent = 'Copy prompt'), 1600);
+        } catch {
+          copyLabel.textContent = 'Select manually';
+        }
+      });
+
+      expandBtn.addEventListener('click', () => {
+        const expanded = card.classList.toggle('is-expanded');
+        expandLabel.textContent = expanded ? 'Collapse' : 'Expand';
+      });
+    }
+    document.addEventListener('astro:page-load', wirePromptRoom);
+    wirePromptRoom();
+  </script>
+</AppLayout>

@@ -1,0 +1,44 @@
+---
+// Mockup-canonical sb2 entries (lines 5353-5428 of melis-ai-spa-v6-astro-content.html).
+// The three with live Astro detail pages (lighthouse / holy-signal / phantom-ink)
+// link to their detail routes; the rest link to /ventures/ landing.
+
+const ENTRIES: { name: string; count: string; desc: string; href?: string }[] = [
+  { name: 'Lighthouse',      count: 'live', desc: 'AI-native publishing platform',  href: '/ventures/lighthouse/' },
+  { name: 'Holy Signal',     count: 'beta', desc: 'Newsletter analytics for operators', href: '/ventures/holy-signal/' },
+  { name: 'Phantom Ink',     count: 'live', desc: 'Editorial AI for serious writers',   href: '/ventures/phantom-ink/' },
+  { name: 'Nightglass',      count: 'beta', desc: 'Multi-agent observability' },
+  { name: 'Hive Doctrine',   count: 'live', desc: 'Cinematic essay series' },
+  { name: 'Motif',           count: 'beta', desc: 'Brand-locked image generation' },
+  { name: 'NexusOS',         count: 'wip',  desc: 'Personal AI operating system' },
+  { name: 'Pantheon',        count: 'live', desc: 'Persona-driven content network' },
+  { name: 'Polymarket Bots', count: 'live', desc: 'Algorithmic trading fleet' },
+  { name: 'OpenClaw Skills', count: 'live', desc: 'Published agent capabilities' },
+];
+---
+
+<aside class="sidebar-2" transition:persist="sb2-ventures">
+  <div class="sb2-pane active" data-pane="projects">
+    <div class="sb2-header">
+      <div class="sb2-title"><em>Projects</em></div>
+    </div>
+    <div class="sb2-list">
+      <a class="sb2-item" href="/ventures/">
+        <div class="sb2-row">
+          <div class="sb2-name">All Ventures</div>
+          <div class="sb2-count">39</div>
+        </div>
+        <div class="sb2-desc">Live + in-progress</div>
+      </a>
+      {ENTRIES.map((e) => (
+        <a class="sb2-item" href={e.href || '/ventures/'}>
+          <div class="sb2-row">
+            <div class="sb2-name">{e.name}</div>
+            <div class="sb2-count">{e.count}</div>
+          </div>
+          <div class="sb2-desc">{e.desc}</div>
+        </a>
+      ))}
+    </div>
+  </div>
+</aside>

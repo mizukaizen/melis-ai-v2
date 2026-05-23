@@ -1,0 +1,131 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import Sidebar1 from '../components/Sidebar1.astro';
+import Sidebar2 from '../components/Sidebar2.astro';
+// Order matters: mockup.css first (it's the design source-of-truth),
+// global.css last (its post-mockup overrides win).
+import '../styles/mockup.css';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  /** Maps to mockup's `data-pane` — drives sb1 active state + sb2 selection */
+  pane: string;
+  /** Set to true on detail (in-room) views — adds `in-room` class to the .pane */
+  inRoom?: boolean;
+}
+
+const {
+  title,
+  description = 'Sean Melis builds at the frontier of AI. Articles, prompts, products, courses, and a public library of ideas.',
+  ogImage = '/og-default.png',
+  pane,
+  inRoom = false,
+} = Astro.props;
+
+const fullTitle = title === 'melis.ai' ? title : `${title} · melis.ai`;
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+// Home is sb1-only — adding `is-direct-view` would trip the mockup's
+// :has(.pane.active.is-direct-view) > main.content rule, which forces
+// margin-left to sb1+sb2 width and leaves a phantom 280px gap on home.
+const paneMode = pane === 'home' ? '' : (inRoom ? 'in-room' : 'is-direct-view');
+const paneClass = ['pane', 'active', paneMode].filter(Boolean).join(' ');
+// Home is sb1-only per the mockup. Every other route gets the contextual sb2.
+const hasSb2 = pane !== 'home';
+const appClass = [
+  'app',
+  hasSb2 ? 'has-sb2' : 'no-sb2',
+  pane === 'home' ? 'is-home' : '',
+  inRoom ? 'in-room-mode' : 'is-landing-mode',
+].filter(Boolean).join(' ');
+---
+
+<!doctype html>
+<html lang="en-AU">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(ogImage, Astro.site).toString()} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap"
+    />
+    <!-- Phosphor Icons (used by the mockup via <i class="ph ph-..."> markup) -->
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+
+    <ClientRouter />
+  </head>
+  <body data-pane={pane}>
+    <div class={appClass}>
+      <Sidebar1 pane={pane} />
+      {hasSb2 && <Sidebar2 pane={pane} />}
+      <main class="content">
+        <div class={paneClass} data-pane={pane}>
+          <slot />
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // Sync .active on sb2 rows to location.pathname after every navigation.
+      // Lifted from the mockup's enterRoom() behaviour (highlighted the
+      // matching panel-item by title) but rebuilt around the href that each
+      // Astro link already carries. Runs on first mount + after every Astro
+      // view-transition.
+      function syncSb2Active() {
+        const sb2 = document.querySelector('aside.sidebar-2');
+        if (!sb2) return;
+        const path = location.pathname.replace(/\/$/, '');
+        const rows = sb2.querySelectorAll<HTMLAnchorElement>('a.panel-item, a.sb2-item');
+        let matched = false;
+        rows.forEach((row) => {
+          const href = (row.getAttribute('href') || '').replace(/\/$/, '');
+          // Exact match wins. Partial-prefix match (path is deeper than href)
+          // also counts so a dossier-detail page lights up its category row
+          // if no per-item row exists. href "" or "/" never matches partials.
+          const isActive =
+            href !== '' &&
+            href !== '/' &&
+            (href === path || (path === '' && href === '/'));
+          row.classList.toggle('active', isActive);
+          if (isActive) {
+            matched = true;
+            const group = row.closest('.panel-group');
+            if (group) group.classList.add('open');
+          }
+        });
+        // Landing-page fallback: light up the "All <section>" sentinel row
+        // (the first panel-item / sb2-item) so the user always sees something
+        // highlighted in sb2.
+        if (!matched) {
+          const all =
+            sb2.querySelector<HTMLAnchorElement>('a.panel-item, a.sb2-item');
+          if (all) all.classList.add('active');
+        }
+      }
+      document.addEventListener('DOMContentLoaded', syncSb2Active);
+      document.addEventListener('astro:after-swap', syncSb2Active);
+      // Run immediately for direct-loads when DOMContentLoaded has already fired.
+      if (document.readyState !== 'loading') syncSb2Active();
+    </script>
+  </body>
+</html>

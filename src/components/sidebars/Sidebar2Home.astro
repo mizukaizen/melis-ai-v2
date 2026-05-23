@@ -1,0 +1,66 @@
+---
+import { getCollection } from 'astro:content';
+
+const recentArticles = (await getCollection('articles'))
+  .filter((a) => !a.data.draft && a.data.publishedAt)
+  .sort((a, b) => (b.data.publishedAt || '').localeCompare(a.data.publishedAt || ''))
+  .slice(0, 4);
+
+const recentNewsletter = (await getCollection('newsletter'))
+  .filter((n) => !n.data.draft)
+  .sort((a, b) => (b.data.publishedAt || '').localeCompare(a.data.publishedAt || ''))
+  .slice(0, 3);
+
+const recentDossiers = (await getCollection('dossiers'))
+  .filter((d) => !d.data.draft)
+  .slice(0, 5);
+---
+
+<aside class="sidebar-2" transition:persist="sb2-home">
+  <div class="sb2-pane active" data-pane="home">
+    <div class="sb2-header">
+      <div class="sb2-title"><em>The Studio</em></div>
+    </div>
+    <div class="sb2-list">
+      <a class="sb2-item" href="/articles/">
+        <div class="sb2-row">
+          <div class="sb2-name">Recent Articles</div>
+          <div class="sb2-count">{recentArticles.length}</div>
+        </div>
+        <div class="sb2-desc">Essays, field notes, tear-downs</div>
+      </a>
+      {recentArticles.map((a) => (
+        <a class="sb2-item" href={`/articles/${a.slug}/`}>
+          <div class="sb2-row">
+            <div class="sb2-name">{a.data.title}</div>
+          </div>
+          {a.data.publishedAt && <div class="sb2-desc">{a.data.publishedAt}</div>}
+        </a>
+      ))}
+
+      <div style="padding:14px 18px 4px;">
+        <div class="sb-group-label" style="padding:0;">Newsletter</div>
+      </div>
+      {recentNewsletter.map((n) => (
+        <a class="sb2-item" href={`/newsletter/${n.slug}/`}>
+          <div class="sb2-row">
+            <div class="sb2-name">{n.data.title}</div>
+          </div>
+          {n.data.publishedAt && <div class="sb2-desc">{n.data.publishedAt}</div>}
+        </a>
+      ))}
+
+      <div style="padding:14px 18px 4px;">
+        <div class="sb-group-label" style="padding:0;">From the Library</div>
+      </div>
+      {recentDossiers.map((d) => (
+        <a class="sb2-item" href={`/dossiers/${d.data.category}/${d.slug}/`}>
+          <div class="sb2-row">
+            <div class="sb2-name">{d.data.title.replace(/<[^>]+>/g, '')}</div>
+          </div>
+          {d.data.byline && <div class="sb2-desc">{d.data.byline.split('·')[0].trim()}</div>}
+        </a>
+      ))}
+    </div>
+  </div>
+</aside>

@@ -1,0 +1,65 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import SectionHero from '../../components/SectionHero.astro';
+import { DOSSIER_CATEGORIES } from '../../data/dossier-categories';
+import { landingHero } from '../../lib/hero-image';
+
+export const prerender = true;
+
+const ORDER = [
+  'books', 'essays', 'mental-models', 'thought-experiments',
+  'remarkable-people', 'letters', 'speeches', 'poems',
+  'manifestos', 'scientific-papers', 'ai-concepts', 'vocabulary',
+] as const;
+
+const cats = ORDER
+  .map((slug) => ({ slug, ...DOSSIER_CATEGORIES[slug] }))
+  .filter((c) => c.title);
+---
+
+<AppLayout
+  title="Dossiers"
+  pane="library"
+  description="A small archive of the world's most important ideas — books, essays, mental models, and concepts worth remembering."
+>
+  <SectionHero
+    cover={landingHero('library')}
+    eyebrow="Reference · Dossiers"
+    title="Dossiers"
+    titleHtml="<em>Dossiers</em>"
+    lede="A small archive of the world's most important ideas — books, essays, mental models, and concepts worth remembering. Each entry is an AI-led breakdown."
+  />
+
+  <section class="section-body">
+    <div class="library-landing">
+      <div class="section-eyebrow-small">51 fleshed · 242 catalogued · across twelve categories</div>
+      <h2 class="h2">A small archive of <em>dossiers for operators</em>.</h2>
+      <p class="body-lead">A small archive of the world's most important ideas — AI-led breakdowns of the work, why it matters, the key concepts, and how to take them forward.</p>
+      <div class="room-grid">
+        {cats.map((c) => (
+          <a class="room-card" href={`/dossiers/${c.slug}/`}>
+            <div class="room-card-img" style={`background-image: url('/${c.image}');`}></div>
+            <div class="room-card-veil"></div>
+            <div class="room-card-arrow">↗</div>
+            <div class="room-card-meta">
+              <div class="room-card-eyebrow">Dossiers · {c.count}</div>
+              <div class="room-card-title">{c.title}</div>
+              <div class="room-card-line">{c.line}</div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
+
+  <style>
+    .library-landing .section-eyebrow-small { margin-bottom: 8px; }
+    .library-landing .h2 { margin-bottom: 10px; }
+    .library-landing .body-lead { margin-bottom: 20px; max-width: 60ch; }
+  </style>
+</AppLayout>

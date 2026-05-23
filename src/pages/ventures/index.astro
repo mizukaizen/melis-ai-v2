@@ -1,0 +1,58 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import SectionHero from '../../components/SectionHero.astro';
+import { getCollection } from 'astro:content';
+import { landingHero } from '../../lib/hero-image';
+
+export const prerender = true;
+
+const ventures = (await getCollection('ventures')).filter((v) => !v.data.draft);
+
+const COVER_MAP: Record<string, string> = {
+  'lighthouse':  '/section-rooms/ventures-lighthouse.png',
+  'holy-signal': '/section-rooms/ventures-holy-signal.png',
+  'phantom-ink': '/section-rooms/ventures-phantom-ink.png',
+};
+function coverFor(slug: string) {
+  return COVER_MAP[slug] || '/section-rooms/ventures-landing.png';
+}
+---
+
+<AppLayout
+  title="Ventures"
+  pane="projects"
+  description="Live builds and sub-brands in flight from melis.ai."
+>
+  <SectionHero
+    cover={landingHero('ventures')}
+    eyebrow={`The Lab · ${ventures.length} · in flight`}
+    title="Projects"
+    titleHtml="<em>Projects</em>"
+    lede="Six sub-brands and ten more ventures. Real things being made in public."
+  />
+
+  <section class="section-body">
+    <div class="room-grid">
+      {ventures.map((v) => (
+        <a class="room-card" href={`/ventures/${v.slug}/`}>
+          <div class="room-card-img" style={`background-image: url('${coverFor(v.slug)}');`}></div>
+          <div class="room-card-veil"></div>
+          {v.data.pill && (
+            <div class={`room-card-group-pill ${v.data.pill.cls || ''}`}>{v.data.pill.label}</div>
+          )}
+          <div class="room-card-arrow">↗</div>
+          <div class="room-card-meta">
+            <div class="room-card-eyebrow">{v.data.eyebrow}</div>
+            <div class="room-card-title" set:html={v.data.titleHtml || v.data.title}></div>
+            <div class="room-card-line">{v.data.lede}</div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
+</AppLayout>

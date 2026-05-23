@@ -1,0 +1,12 @@
+---
+import AppLayout from '../../layouts/AppLayout.astro';
+import html from '../../_html/pane-about.html?raw';
+---
+
+<AppLayout
+  title="Sean Melis"
+  pane="about"
+  description="An operator's biography — a decade of building with AI before it was the work."
+>
+  <Fragment set:html={html} />
+</AppLayout>

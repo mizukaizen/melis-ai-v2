@@ -1,0 +1,60 @@
+/* ──────────────────────────────────────────────────────────────
+ * Design tokens — lifted verbatim from melis-ai-spa-v6 mockup.
+ * Single source of truth — do not duplicate values elsewhere.
+ * ────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Surface */
+  --bg: #050505;
+  --surface: rgba(20, 20, 24, 0.55);
+  --surface-2: rgba(20, 20, 24, 0.42);
+
+  /* Accent */
+  --accent: #a855f7;
+  --accent-subtle: rgba(168, 85, 247, 0.12);
+  --accent-glow: rgba(168, 85, 247, 0.25);
+
+  /* Text */
+  --text-1: rgba(232, 227, 216, 1);
+  --text-2: rgba(232, 227, 216, 0.62);
+  --text-3: rgba(232, 227, 216, 0.38);
+  --text-4: rgba(232, 227, 216, 0.22);
+
+  /* Borders */
+  --border-1: rgba(255, 255, 255, 0.04);
+  --border-2: rgba(255, 255, 255, 0.06);
+  --border-3: rgba(255, 255, 255, 0.10);
+
+  /* Mockup-canonical aliases — the v6 mockup CSS references --border /
+     --border-light / --text without the numeric suffix. Without these the
+     stats row dividers, ticker border-bottom, and any other rule using
+     var(--border) silently fall back to no colour. */
+  --border: var(--border-2);
+  --border-light: var(--border-1);
+  --text: var(--text-1);
+
+  /* Typography */
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Layout */
+  --sidebar-w: 192px;
+  --sidebar-w2: 280px;
+  --app-pad: 24px;
+
+  /* Radii */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+
+  /* Shadows */
+  --shadow-1: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-2: 0 8px 24px rgba(0,0,0,0.4);
+  --shadow-3: 0 24px 64px rgba(0,0,0,0.5);
+
+  /* Motion */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}

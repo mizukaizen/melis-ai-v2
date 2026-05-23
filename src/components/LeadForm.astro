@@ -1,0 +1,121 @@
+---
+interface Props {
+  service: string;
+}
+
+const { service } = Astro.props;
+---
+
+<form class="lead-form" id="lead-form" data-service={service} novalidate>
+  <div class="lf-field">
+    <label for="lf-name">Your name</label>
+    <input id="lf-name" name="name" type="text" autocomplete="name" required />
+  </div>
+  <div class="lf-field">
+    <label for="lf-email">Email</label>
+    <input id="lf-email" name="email" type="email" autocomplete="email" required />
+  </div>
+  <div class="lf-field">
+    <label for="lf-message">What are you trying to ship?</label>
+    <textarea id="lf-message" name="message" rows="5" required></textarea>
+  </div>
+  <button type="submit" class="lf-submit">Send →</button>
+  <p class="lf-status" data-state="idle"></p>
+</form>
+
+<style>
+  .lead-form { display: flex; flex-direction: column; gap: 18px; }
+  .lf-field { display: flex; flex-direction: column; gap: 6px; }
+  .lf-field label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-3);
+    letter-spacing: 0.04em;
+  }
+  .lf-field input,
+  .lf-field textarea {
+    padding: 10px 14px;
+    background: rgba(20, 20, 24, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text-1);
+    outline: none;
+  }
+  .lf-field input:focus,
+  .lf-field textarea:focus { border-color: var(--accent); }
+  .lf-submit {
+    padding: 12px 20px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    align-self: flex-start;
+  }
+  .lf-status {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    min-height: 1.4em;
+  }
+  .lf-status[data-state="error"] { color: #f87171; }
+  .lf-status[data-state="success"] { color: #5eead4; }
+  .lf-status[data-state="loading"] { color: var(--text-3); }
+</style>
+
+<script>
+  function wire() {
+    const form = document.getElementById('lead-form') as HTMLFormElement | null;
+    if (!form || form.dataset.wired === '1') return;
+    form.dataset.wired = '1';
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const status = form.querySelector<HTMLParagraphElement>('.lf-status');
+      const submit = form.querySelector<HTMLButtonElement>('.lf-submit');
+      if (!status || !submit) return;
+      const payload = {
+        service: form.dataset.service,
+        name: String(fd.get('name') || ''),
+        email: String(fd.get('email') || ''),
+        message: String(fd.get('message') || ''),
+      };
+      if (!payload.name || !payload.email || !payload.message) {
+        status.dataset.state = 'error';
+        status.textContent = 'All fields are required.';
+        return;
+      }
+      submit.disabled = true;
+      status.dataset.state = 'loading';
+      status.textContent = 'Sending…';
+      try {
+        const res = await fetch('/api/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          const text = await res.text();
+          status.dataset.state = 'error';
+          status.textContent = res.status === 503 ? 'Lead form not configured yet.' : text || 'Failed.';
+          submit.disabled = false;
+          return;
+        }
+        status.dataset.state = 'success';
+        status.textContent = 'Sent. Sean will reply within a working day.';
+        form.reset();
+      } catch {
+        status.dataset.state = 'error';
+        status.textContent = 'Network error — try again.';
+        submit.disabled = false;
+      }
+    });
+  }
+  document.addEventListener('astro:page-load', wire);
+  wire();
+</script>

@@ -1,0 +1,46 @@
+---
+// Canonical section hero. Renders the paper-craft background image
+// with the eyebrow / title (with <em> emphasis) / byline / lede stacked
+// at the bottom-left. Matches the v6 mockup's .section-header pattern.
+//
+// `cover` should be a path starting with `/` — e.g. /library-rooms/lib-books.png
+
+interface Props {
+  cover: string;
+  eyebrow?: string;
+  title: string;
+  /** title with `<em>...</em>` markup — wins over `title` if provided */
+  titleHtml?: string;
+  byline?: string;
+  lede?: string;
+  backHref?: string;
+  backLabel?: string;
+}
+
+const {
+  cover,
+  eyebrow,
+  title,
+  titleHtml,
+  byline,
+  lede,
+  backHref,
+  backLabel,
+} = Astro.props;
+---
+
+<section class="section-header">
+  <div class="section-hero-bg" style={`background-image: url('${cover}');`}></div>
+  <div class="section-hero-veil"></div>
+  <div class="section-header-inner">
+    {backHref && (
+      <a class="back-link" href={backHref}>← {backLabel || 'back'}</a>
+    )}
+    <div class="section-title-block">
+      {eyebrow && <div class="section-eyebrow">{eyebrow}</div>}
+      <h1 class="section-title" set:html={titleHtml || title}></h1>
+      {byline && <div class="section-byline">{byline}</div>}
+      {lede && <p class="section-lead">{lede}</p>}
+    </div>
+  </div>
+</section>
