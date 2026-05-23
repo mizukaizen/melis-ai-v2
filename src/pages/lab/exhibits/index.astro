@@ -35,6 +35,10 @@ function coverFor(slug: string): string {
   />
 
   <section class="section-body">
+    <div class="landing-intro">
+      <h2 class="h2">Immersive paper-craft <em>exhibitions</em>.</h2>
+      <p class="body-lead">Ten scroll-experiences. Each one a self-contained world — bees, hives, keepers, thresholds, arcs of a life. Best experienced full-screen with sound on.</p>
+    </div>
     <div class="room-grid">
       {ordered.map((ex, i) => (
         <a class="room-card" href={`/lab/exhibits/${ex.slug}/`}>
@@ -58,4 +62,11 @@ function coverFor(slug: string): string {
     <div>melis.ai · 2026</div>
     <div>Operator-built · Australia</div>
   </div>
+
+  <style>
+    .landing-intro { max-width: 720px; margin: 0 auto 2em; }
+    .landing-intro .h2 { font-family: var(--font-display); font-size: clamp(28px, 3vw, 42px); font-weight: 500; line-height: 1.15; color: var(--text-1); margin: 0 0 14px; }
+    .landing-intro .h2 :global(em) { font-style: italic; color: var(--accent); }
+    .landing-intro .body-lead { font-family: var(--font-body); font-size: 16px; color: var(--text-2); line-height: 1.7; margin: 0 0 24px; max-width: 60ch; }
+  </style>
 </AppLayout>

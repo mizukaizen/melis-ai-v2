@@ -455,3 +455,57 @@ eaedbe5 fix(pass11): dossier card grid + sb2 normalisation + prompts featured pa
 - `pnpm exec astro check` → 0 errors, 0 warnings, 3 pre-existing hints
 - 29 pages × 2 viewports = 58 live captures; 27 mockup captures; 25 annotated comparisons
 - Live HTML inspection confirms `dossier-card-grid` rendered with 6 cards on `/dossiers/books/`; AI Mastery chip row HTML present on `/courses/`; prompts featured card has `fpc-bg` + `fpc-cta` elements.
+
+---
+
+## Pass 12 — visual-regression pipeline + landing copy fixes (2026-05-23)
+
+Branch: `ui/visual-regression-pass`. **Not merged** — open as PR for Sean's review.
+
+### Pipeline
+
+New scripts under `_cowork/outputs/website-rebrand/scripts/visual-regression/`:
+
+- `pages.py` — single source of truth (29 entries: slug, mockup-pane JS, live URL, mask regions)
+- `capture-paired.py` — Playwright runs once per page; captures screenshot + DOM JSON for both mockup and live in one pass. DOM extractor maps elements to SEMANTIC roles (`hero-eyebrow`, `body-h2`, `card-0`, etc.) so the same logical element compares across mockup-SPA-markup vs Astro-route-markup.
+- `pixel-diff.mjs` + `run-pixel-diff-all.mjs` — pixelmatch via Node. Threshold 0.1, ignores anti-aliasing, outputs an overlay PNG (red = differing pixels) + JSON sidecar with `{diffPixels, ratio, maskedPixels}`.
+- `dom-diff.py` — JSON-vs-JSON comparison; outputs issues sorted by severity (CRITICAL = missing element, HIGH = text mismatch, MEDIUM = layout drift > 8px, LOW = style drift).
+- `build-report.py` — generates `audit/VISUAL-REGRESSION.html` (single-file report; triple-pane mockup/live/diff per page + collapsible issue table) and `audit/FIX-LIST.md` (CRITICAL + HIGH only, grouped by severity).
+- `run-all.sh` — orchestrator. Honours `LIVE_BASE=http://localhost:4321` env var so the pipeline can diff against a local dev server before pushing.
+
+Tool choice rationale: **pixelmatch + Playwright Python + Pillow**. BackstopJS doesn't do DOM extraction (the highest-signal part). odiff is overkill. Playwright's `toHaveScreenshot` requires the Test framework + same-origin snapshots — our mockup is `file://` and live is `https://`. Percy/Chromatic/Applitools are paid. The chosen hybrid is the smallest stack that catches both pixel-level AND DOM-level drift, runs locally in ~2 min, and emits a single HTML report.
+
+### Phase-4 fixes (9 commits, mockup-verbatim landing copy)
+
+- `articles`: `Operator's notes` → `Operator notes` + body-lead rewritten to mockup
+- `products`: body-lead tightened ("Every product…" not "Every product on this page…")
+- `recos / services / ventures / exhibits / prompts / lab`: added landing intro block (h2 + body-lead) that was missing entirely
+- `newsletter`: replaced count eyebrow with mockup-canonical body-lead
+
+### Phase-5 verification (local dev server, `LIVE_BASE=http://localhost:4321`)
+
+| | Before fixes | After fixes | Delta |
+|---|---:|---:|---:|
+| Total CRITICAL issues | 64 | 50 | −14 |
+| Total HIGH issues | 196 | 177 | −19 |
+| Pixel-diff mean | 24.5% | 24.4% | flat |
+| Pixel-diff < 8% pages | 0 | 1 (about-sean) | +1 |
+
+### What the pixel-diff numbers really mean
+
+Pixel-diff stays high (~24% mean) because **structural drift dominates**. The mockup is a single-page SPA — every pane, every sb2, every card lives in one DOM with `.active` toggled. Astro is per-route — each page is a separate document with its own markup, classes, and sidebar component. Even when text content matches verbatim, the bounding boxes don't — different class names, different sibling counts, different `position: fixed` vs `position: relative` decisions. The pixel-diff layer is honest about that.
+
+**The DOM-diff is the actionable layer.** It compares by semantic role, so "the hero title" in mockup and "the hero title" in live get compared on their text + computed styles regardless of how their markup differs. That's what dropped CRITICAL+HIGH by 33 items in Phase 4 with 9 small commits.
+
+### Residual CRITICAL items (not fixed in Phase 4 — intentional UX choices)
+
+- `product-detail-*` and `course-detail-*` pages flag missing `body-h2` / `body-lead` / `section-eyebrow-small`. These are the LANDING content that the SPA mockup keeps in DOM under the active product-pane room (because the mockup is single-page). Astro's per-route detail pages don't render landing content on detail routes — that's correct UX, not a port bug. Logged for clarity.
+- `card-N` "missing" on lab/courses/prompts landings — the mockup uses `.room-card` class, live uses `.flat-card` / `.dossier-card` / `.featured-product-card` etc. Role extractor catches mockup cards but not all live variants. Could be tightened in a follow-up — flag for Phase 2.
+- `hero-eyebrow` / `hero-lede` text drift on product/course detail pages — live renders the per-item eyebrow ("STARTER KITS") and lede; mockup keeps the section-level eyebrow ("PRODUCTS · AI WORKSPACE STARTER KIT") and lede on the hero, with per-item info in the body. We elevated per-item to the hero in passes 7-10 deliberately. **Needs Sean's call** if mockup-canonical is the right direction.
+
+### Sean's required actions
+
+1. Open `_cowork/outputs/website-rebrand/audit/VISUAL-REGRESSION.html` in a browser, scan the page-by-page diff overlays.
+2. Open `_cowork/outputs/website-rebrand/audit/FIX-LIST.md` for the actionable CRITICAL + HIGH residue.
+3. Decide on the "per-item-hero vs section-hero" pattern (above). Pass 13 can flip it.
+4. Review + merge the `ui/visual-regression-pass` PR.
