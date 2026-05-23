@@ -1,4 +1,7 @@
 ---
+// Mockup-canonical sb2: 12 category rows only, NO leaf items.
+// The category landing (/dossiers/<cat>/) shows the items grid; sb2 is for
+// inter-category navigation, not within-category browse.
 import { getCollection } from 'astro:content';
 import { DOSSIER_CATEGORIES } from '../../data/dossier-categories';
 
@@ -13,7 +16,6 @@ for (const d of all) {
 // Find current category from URL: /dossiers/<category>/ or /dossiers/<category>/<slug>/
 const pathParts = Astro.url.pathname.replace(/^\/+|\/+$/g, '').split('/');
 const currentCategory = pathParts[0] === 'dossiers' ? pathParts[1] : undefined;
-const currentSlug = pathParts[0] === 'dossiers' ? pathParts[2] : undefined;
 
 const ORDER = [
   'books', 'essays', 'mental-models', 'thought-experiments',
@@ -68,38 +70,16 @@ const categories = ORDER.map((slug) => ({
         </div>
         <div class="pi-dot" style={`background:${hexToRgba(ALL_ICON.c, 0.18)};color:${ALL_ICON.c}`}>{all.length}</div>
       </a>
-      {categories.map(({ slug, cat, items, ic }) => {
-        const isOpen = currentCategory === slug;
-        return (
-          <div class:list={['panel-group', { open: isOpen }]}>
-            <div class="panel-group-header">
-              <span class="pgh-label">{cat.title}</span>
-              <svg class="pgh-chevron" viewBox="0 0 10 6" fill="none">
-                <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <div class="panel-group-items">
-              <a class="panel-item" class:list={[{ active: currentCategory === slug && !currentSlug }]} href={`/dossiers/${slug}/`}>
-                <i class={`ph ${ic.i} pi-icon`} style={`color:${ic.c};opacity:0.85`}></i>
-                <div class="pi-body">
-                  <div class="pi-title" style="font-style:italic;">View all {cat.title.toLowerCase()}</div>
-                  <div class="pi-meta">{cat.count}</div>
-                </div>
-                <div class="pi-dot" style={`background:${hexToRgba(ic.c, 0.15)};color:${ic.c}`}>{items.length}</div>
-              </a>
-              {items.map((d) => (
-                <a class="panel-item" class:list={[{ active: d.slug === currentSlug }]} href={`/dossiers/${slug}/${d.slug}/`}>
-                  <i class={`ph ${ic.i} pi-icon`} style={`color:${ic.c};opacity:0.85`}></i>
-                  <div class="pi-body">
-                    <div class="pi-title">{d.data.title.replace(/<[^>]+>/g, '')}</div>
-                    {d.data.byline && <div class="pi-meta">{d.data.byline.split('·')[0].trim()}</div>}
-                  </div>
-                </a>
-              ))}
-            </div>
+      {categories.map(({ slug, cat, items, ic }) => (
+        <a class="panel-item" class:list={[{ active: currentCategory === slug }]} href={`/dossiers/${slug}/`}>
+          <i class={`ph ${ic.i} pi-icon`} style={`color:${ic.c};opacity:0.85`}></i>
+          <div class="pi-body">
+            <div class="pi-title">{cat.title}</div>
+            <div class="pi-meta">{cat.count}</div>
           </div>
-        );
-      })}
+          <div class="pi-dot" style={`background:${hexToRgba(ic.c, 0.15)};color:${ic.c}`}>{items.length}</div>
+        </a>
+      ))}
     </div>
   </div>
 </aside>
