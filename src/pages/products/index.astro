@@ -51,15 +51,15 @@ function priceLabel(cents: number) { return `$${(cents / 100).toFixed(0)}`; }
           <div class="product-grid">
             {items.map((p) => (
               <a class="product-card" href={`/products/${p.slug}/`}>
-                <div class="pc-title">{p.data.title}</div>
-                <div class="pc-hook">{p.data.lede}</div>
-                <div class="pc-price">{priceLabel(p.data.price)}</div>
+                <div class="pp-title">{p.data.title}</div>
+                <div class="pp-hook">{p.data.lede}</div>
+                <div class="pp-price">{priceLabel(p.data.price)}</div>
               </a>
             ))}
             {items.length === 0 && (
               <div class="product-card product-card-empty">
-                <div class="pc-title">Coming soon</div>
-                <div class="pc-hook">{cat.line}</div>
+                <div class="pp-title">Coming soon</div>
+                <div class="pp-hook">{cat.line}</div>
               </div>
             )}
           </div>
@@ -72,19 +72,4 @@ function priceLabel(cents: number) { return `$${(cents / 100).toFixed(0)}`; }
     <div>melis.ai · 2026</div>
     <div>Operator-built · Australia</div>
   </div>
-
-  <style>
-    .product-category-section { margin-bottom: 4em; }
-    .product-category-header { margin-bottom: 1.5em; }
-    .pch-sigil { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
-    .pch-title { font-family: var(--font-display); font-size: 32px; font-weight: 500; color: var(--text-1); margin: 0 0 4px; }
-    .pch-line { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); letter-spacing: 0.04em; margin: 0; }
-    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-    .product-card { display: flex; flex-direction: column; padding: 20px 22px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 12px; text-decoration: none; color: inherit; transition: border-color 0.2s var(--ease), transform 0.2s var(--ease); }
-    .product-card:hover { border-color: rgba(168, 85, 247, 0.3); transform: translateY(-2px); }
-    .pc-title { font-family: var(--font-display); font-size: 20px; color: var(--text-1); margin-bottom: 8px; }
-    .pc-hook { font-family: var(--font-body); font-size: 14px; color: var(--text-2); line-height: 1.55; flex: 1; margin-bottom: 14px; }
-    .pc-price { font-family: var(--font-mono); font-size: 13px; color: var(--accent); letter-spacing: 0.04em; }
-    .product-card-empty { opacity: 0.5; pointer-events: none; }
-  </style>
 </AppLayout>
