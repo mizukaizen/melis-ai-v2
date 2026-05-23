@@ -1,19 +1,17 @@
 ---
-// All articles in sb2 — live + coming-soon — sorted publishedAt desc.
-// Mockup-canonical styling:
-//   - Uppercase violet category eyebrow above each title (Field Notes /
-//     Essays / Tutorials / Tear-downs)
-//   - Date format DD/MM short in sb2 ONLY (cards keep ISO)
-//   - One-row metadata layout
-//   - Coming-soon items render as <div> (non-clickable) with a "Coming soon"
-//     badge — same treatment as the index cards.
+// Mockup-canonical sb2 pattern:
+//   .sb2-item > .sb2-row{ .sb2-name (left), .sb2-count (right) }
+//                + .sb2-desc (muted line below)
+// Real data per Astro:
+//   name = title, count = DD/MM date, desc = lowercase category tag.
+// Coming-soon items render as <div> (non-clickable) with opacity dim + a
+// "coming soon" prefix in the desc line. No violet uppercase eyebrow.
 import { getCollection } from 'astro:content';
 
 const items = (await getCollection('articles'))
   .sort((a, b) => (b.data.publishedAt || '').localeCompare(a.data.publishedAt || ''));
 
 function formatDateShort(iso?: string) {
-  // sb2 format: DD/MM (mockup-canonical for sidebar)
   if (!iso) return '';
   const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!m) return iso;
@@ -36,17 +34,19 @@ function formatDateShort(iso?: string) {
         <div class="sb2-desc">Every essay + field note</div>
       </a>
       {items.map((a) => {
-        const cat = a.data.category || a.data.tags?.[0] || '';
+        const cat = (a.data.category || a.data.tags?.[0] || '').toLowerCase();
         const date = formatDateShort(a.data.publishedAt);
         const isComingSoon = a.data.status === 'coming-soon';
+        const desc = isComingSoon
+          ? (cat ? `coming soon · ${cat}` : 'coming soon')
+          : cat;
         const inner = (
           <>
-            {cat && <div class="sb2-eyebrow">{cat}</div>}
             <div class="sb2-row">
               <div class="sb2-name">{a.data.title}</div>
-              {date && <div class="sb2-date">{date}</div>}
+              {date && <div class="sb2-count">{date}</div>}
             </div>
-            {isComingSoon && <div class="sb2-badge">Coming soon</div>}
+            {desc && <div class="sb2-desc">{desc}</div>}
           </>
         );
         return isComingSoon ? (
@@ -58,4 +58,3 @@ function formatDateShort(iso?: string) {
     </div>
   </div>
 </aside>
-

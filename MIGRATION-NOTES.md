@@ -44,6 +44,34 @@ These are Astro-introduced patterns that improve on the SPA mockup. The mockup H
 - 2 surfaces tagged `minor` (Astro expansion beyond mockup pattern — prompts index featured+category grid, dossiers category/detail Astro expansion)
 - 4 surfaces tagged `known-delta` (mockup has no per-slug detail panes — article/newsletter/product/newsletter details compare against in-room pane pattern; `lab` is an Astro-only route)
 
+### ⏳ Scorecard fixes (in progress) — 2026-05-24
+
+After strict-eyeball audit of PR #5 graded only 2 of 12 surfaces as actually clean, this pass applied targeted fixes:
+
+| Surface | Fix | Status |
+|---|---|---|
+| sb2 articles + newsletter | Reverted to mockup pattern: `.sb2-row` (name + count/date), `.sb2-desc` below. No more violet uppercase eyebrow. | ✓ |
+| /articles closing footer | Lifted "Field notes from a year of building in the open" + 3 vd-rows from mockup wireSectionDetails JS (verbatim). | ✓ |
+| /newsletter closing footer | Lifted "The Dispatch — what broke, what worked" + 3 vd-rows from mockup. | ✓ |
+| /ventures closing footer | Added "Other things in the studio" 10-item list verbatim from mockup. | ✓ |
+| /ventures cards | Added 3 missing prominent ventures (Hive Doctrine, OpenClaw Self-Host, Polymarket Bots). | ✓ |
+| /services closing footer | Added client list + "Want to talk first?" CTA panel verbatim from mockup. | ✓ |
+| /products | Replaced per-category sections with uniform room-grid below featured Arsenal. | ✓ |
+| /prompts | Replaced featured + category sections with flat room-grid + filter pills. | ✓ |
+| /recos | Added 3 missing categories (Courses I'd take again, Apps I won't quit, Hardware that holds up). | ✓ |
+| /courses | Reconciled coming-soon count: flipped 7 .mdx files from `status: "live"` to `"coming-soon"` to match mockup SOON array. | ✓ |
+
+### BLOCKED — Sean's call needed: services naming reconciliation
+
+Live service names don't all map cleanly to mockup service names. Applied unambiguous renames:
+- `Speaking` → `Speaking & Workshops` ✓
+- `Strategy Print Sprint` → `AI Strategy Sprint` ✓
+
+Three services have NO clean mockup equivalent. Left live names as-is, awaiting Sean's decision:
+1. **AI Builds on Tap** — mockup has "Multi-Agent Build" in same slot. Same concept? Rename or keep?
+2. **Business AI Blueprint** — mockup has no equivalent on the offerings list. Keep as live-only or rename?
+3. **Fractional Operator** — mockup has "Operator Coaching" in same slot. Different cadence (monthly coaching vs embedded 3-month) — possibly distinct offerings. Decision needed.
+
 ### Remaining known deltas (logged for Sean's call)
 
 1. **Prompts index — flat searchable pc-grid vs category-first prompt-grid.** Mockup uses 12 `.pc` cards in a flat grid with `pc-type-toggle` filter buttons; Astro uses featured-card + per-category prompt-grid. Deliberate restructure carried over from earlier passes. The flat pc-grid + filter buttons are NOT reimplemented. Decision: keep current Astro design OR revert to flat pc-grid as a future pass.

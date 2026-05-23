@@ -10,9 +10,12 @@ const recos = (await getCollection('recos')).filter((r) => !r.data.draft);
 
 // Slug → paper-craft asset. Files live in public/section-rooms/recos-*.png.
 const COVER_MAP: Record<string, string> = {
-  'tools-i-use-daily':   '/section-rooms/recos-tools.png',
-  'books-that-compound': '/section-rooms/recos-books.png',
-  'newsletters-i-read':  '/section-rooms/recos-newsletters.png',
+  'tools-i-use-daily':     '/section-rooms/recos-tools.png',
+  'books-that-compound':   '/section-rooms/recos-books.png',
+  'newsletters-i-read':    '/section-rooms/recos-newsletters.png',
+  'courses-id-take-again': '/section-rooms/recos-courses.png',
+  'apps-i-wont-quit':      '/section-rooms/recos-apps.png',
+  'hardware-that-holds-up':'/section-rooms/recos-hardware.png',
 };
 function coverFor(slug: string) {
   return COVER_MAP[slug] || '/section-rooms/recos-landing.png';

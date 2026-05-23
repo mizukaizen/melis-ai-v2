@@ -5,18 +5,26 @@ import FeaturedProductCard from '../../components/FeaturedProductCard.astro';
 import { getCollection } from 'astro:content';
 import { PRODUCTS_HERO } from '../../data/products-hero';
 import { PRODUCTS_CATEGORIES } from '../../data/products-categories';
-import { landingHero } from '../../lib/hero-image';
+import { landingHero, itemHero } from '../../lib/hero-image';
 
 export const prerender = true;
 
-const products = (await getCollection('products')).filter((p) => !p.data.draft);
-const byCategory = new Map<string, typeof products>();
-for (const p of products) {
-  const cat = p.data.category || 'Other';
-  if (!byCategory.has(cat)) byCategory.set(cat, [] as never);
-  byCategory.get(cat)!.push(p);
-}
+// Curated mockup order: featured Complete Arsenal first, then by
+// PRODUCTS_CATEGORIES declaration order (mockup-canonical priority).
+const all = (await getCollection('products')).filter((p) => !p.data.draft);
+const arsenal = all.find((p) => p.slug === 'complete-arsenal');
+const others = all
+  .filter((p) => p.slug !== 'complete-arsenal')
+  .sort((a, b) => {
+    const ai = PRODUCTS_CATEGORIES.findIndex((c) => c.title === (a.data.category || ''));
+    const bi = PRODUCTS_CATEGORIES.findIndex((c) => c.title === (b.data.category || ''));
+    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+  });
 
+function coverFor(p: { data: { title: string; cover?: string }; slug: string }) {
+  if (p.data.cover && p.data.cover.startsWith('/')) return p.data.cover;
+  return itemHero('products', p.data.title.replace(/<[^>]+>/g, ''), p.slug);
+}
 function priceLabel(cents: number) { return `$${(cents / 100).toFixed(0)}`; }
 ---
 
@@ -34,38 +42,30 @@ function priceLabel(cents: number) { return `$${(cents / 100).toFixed(0)}`; }
   />
 
   <section class="section-body">
-    <h2 class="h2">Things I made because I needed them — <em>then</em> packaged so you can use them too.</h2>
-    <p class="body-lead">Every product started as a tool I built for real client work, then refined enough times that it became reusable. Nothing here is theoretical.</p>
+    <div class="landing-intro">
+      <h2 class="h2">Things I made because I needed them — <em>then</em> packaged so you can use them too.</h2>
+      <p class="body-lead">Every product started as a tool I built for real client work, then refined enough times that it became reusable. Nothing here is theoretical.</p>
+    </div>
 
     <FeaturedProductCard slug={PRODUCTS_HERO.id} hero={PRODUCTS_HERO} />
 
-    {PRODUCTS_CATEGORIES.map((cat) => {
-      const items = byCategory.get(cat.title) ?? [];
-      return (
-        <section class="product-category-section">
-          <header class="product-category-header">
-            <div class="pch-sigil">{cat.sigil}</div>
-            <h2 class="pch-title">{cat.title}</h2>
-            <p class="pch-line">{cat.line}</p>
-          </header>
-          <div class="product-grid">
-            {items.map((p) => (
-              <a class="product-card" href={`/products/${p.slug}/`}>
-                <div class="pp-title">{p.data.title}</div>
-                <div class="pp-hook">{p.data.lede}</div>
-                <div class="pp-price">{priceLabel(p.data.price)}</div>
-              </a>
-            ))}
-            {items.length === 0 && (
-              <div class="product-card product-card-empty">
-                <div class="pp-title">Coming soon</div>
-                <div class="pp-hook">{cat.line}</div>
-              </div>
-            )}
+    {/* Uniform paper-craft image-card grid below the featured Arsenal —
+        no per-category sections (mockup pattern, restored in scorecard pass). */}
+    <div class="room-grid">
+      {others.map((p) => (
+        <a class="room-card" href={`/products/${p.slug}/`}>
+          <div class="room-card-img" style={`background-image: url('${coverFor(p)}');`}></div>
+          <div class="room-card-veil"></div>
+          <div class="room-card-group-pill is-muted">{priceLabel(p.data.price)}</div>
+          <div class="room-card-arrow">↗</div>
+          <div class="room-card-meta">
+            <div class="room-card-eyebrow">{p.data.category}</div>
+            <div class="room-card-title">{p.data.title}</div>
+            <div class="room-card-line">{p.data.lede}</div>
           </div>
-        </section>
-      );
-    })}
+        </a>
+      ))}
+    </div>
   </section>
 
   <div class="footer">

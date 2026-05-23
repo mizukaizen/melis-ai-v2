@@ -1,11 +1,8 @@
 ---
-// All newsletter issues in sb2 — live + coming-soon — sorted publishedAt desc.
-// Mockup-canonical styling:
-//   - Uppercase violet channel eyebrow above each title (Soul of the Machine /
-//     Operator's Brief / Hive Doctrine / Dispatch)
-//   - Date format DD/MM short in sb2 ONLY (cards keep ISO)
-//   - One-row metadata layout
-//   - Coming-soon items render as <div> (non-clickable) with badge.
+// Mockup-canonical sb2 pattern (matches Sidebar2Articles):
+//   .sb2-item > .sb2-row{ name (left), count (right) } + .sb2-desc (below)
+// Real data per Astro:
+//   name = title, count = DD/MM date, desc = lowercase channel name.
 import { getCollection } from 'astro:content';
 
 const items = (await getCollection('newsletter'))
@@ -19,16 +16,12 @@ function formatDateShort(iso?: string) {
 }
 
 function channelFor(data: { byline?: string; eyebrow?: string }) {
-  // Mockup byline format: "Sean · Channel · Issue 12"
-  // Mockup eyebrow format: "Channel · 2026-04-28" OR "Newsletter · Channel · Issue 047"
   if (data.byline) {
     const parts = data.byline.split('·').map((s) => s.trim());
     if (parts[1]) return parts[1];
   }
   if (data.eyebrow) {
     const parts = data.eyebrow.split('·').map((s) => s.trim());
-    // "Newsletter · Soul of the Machine · Issue 047" → 2nd
-    // "Soul of the Machine · 2026-04-28" → 1st (skip if it looks like a date)
     const dateLike = /^\d{4}-\d{2}-\d{2}$/;
     for (const p of parts) {
       if (p && !dateLike.test(p) && p.toLowerCase() !== 'newsletter' && !/^issue/i.test(p)) {
@@ -55,17 +48,19 @@ function channelFor(data: { byline?: string; eyebrow?: string }) {
         <div class="sb2-desc">Every dispatch</div>
       </a>
       {items.map((n) => {
-        const channel = channelFor(n.data);
+        const channel = channelFor(n.data).toLowerCase();
         const date = formatDateShort(n.data.publishedAt);
         const isComingSoon = n.data.status === 'coming-soon';
+        const desc = isComingSoon
+          ? (channel ? `coming soon · ${channel}` : 'coming soon')
+          : channel;
         const inner = (
           <>
-            {channel && <div class="sb2-eyebrow">{channel}</div>}
             <div class="sb2-row">
               <div class="sb2-name">{n.data.title}</div>
-              {date && <div class="sb2-date">{date}</div>}
+              {date && <div class="sb2-count">{date}</div>}
             </div>
-            {isComingSoon && <div class="sb2-badge">Coming soon</div>}
+            {desc && <div class="sb2-desc">{desc}</div>}
           </>
         );
         return isComingSoon ? (
@@ -77,4 +72,3 @@ function channelFor(data: { byline?: string; eyebrow?: string }) {
     </div>
   </div>
 </aside>
-
