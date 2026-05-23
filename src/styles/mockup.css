@@ -3043,9 +3043,9 @@
     background: rgba(251, 146, 60, 0.12);
   }
   .pane .room-card-group-pill.is-muted {
-    color: rgba(255, 255, 255, 0.6);
-    border-color: rgba(255, 255, 255, 0.18);
-    background: rgba(20, 20, 24, 0.62);
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.4);
+    background: rgba(251, 191, 36, 0.14);
   }
 
   /* ── Dossiers category landing (dossier-card grid + key-concept-table) ── */
