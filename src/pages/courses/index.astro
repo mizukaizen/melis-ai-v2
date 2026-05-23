@@ -3,7 +3,7 @@ import AppLayout from '../../layouts/AppLayout.astro';
 import SectionHero from '../../components/SectionHero.astro';
 import FeaturedCourseCard from '../../components/FeaturedCourseCard.astro';
 import { getCollection } from 'astro:content';
-import { landingHero } from '../../lib/hero-image';
+import { landingHero, itemHero } from '../../lib/hero-image';
 
 export const prerender = true;
 
@@ -31,59 +31,45 @@ const otherLive = live.filter((c) => c !== flagship);
   />
 
   <section class="section-body">
-    <h2 class="h2">For operators already <em>in the work</em> — not beginners.</h2>
-    <p class="body-lead">One flagship live and recording right now. Seven more in the pipeline.</p>
+    <div class="landing-intro">
+      <h2 class="h2">For operators already <em>in the work</em> — not beginners.</h2>
+      <p class="body-lead">One flagship live and recording right now. Seven more in the pipeline.</p>
+    </div>
 
     {flagship && <FeaturedCourseCard item={flagship} />}
 
-    {otherLive.length > 0 && (
-      <section class="course-section">
-        <h2 class="h2">Other <em>live</em> courses</h2>
-        <div class="course-grid">
-          {otherLive.map((c) => (
-            <a class="course-card" href={`/courses/${c.slug}/`}>
-              <div class="cc-badge">LIVE</div>
-              <div class="cc-title">{c.data.title}</div>
-              <div class="cc-lede">{c.data.lede}</div>
-            </a>
-          ))}
-        </div>
-      </section>
-    )}
-
-    {comingSoon.length > 0 && (
-      <section class="course-section">
-        <h2 class="h2"><em>Coming soon</em></h2>
-        <div class="course-grid">
-          {comingSoon.map((c) => (
-            <a class="course-card course-card-soon" href={`/courses/${c.slug}/`}>
-              <div class="cc-badge">SOON</div>
-              <div class="cc-title">{c.data.title}</div>
-              <div class="cc-lede">{c.data.lede}</div>
-            </a>
-          ))}
-        </div>
-      </section>
-    )}
+    <div class="room-grid">
+      {otherLive.map((c) => (
+        <a class="room-card" href={`/courses/${c.slug}/`}>
+          <div class="room-card-img" style={`background-image: url('${itemHero('courses', c.data.title.replace(/<[^>]+>/g, ''), c.slug)}');`}></div>
+          <div class="room-card-veil"></div>
+          <div class="room-card-group-pill is-signal">LIVE</div>
+          <div class="room-card-arrow">↗</div>
+          <div class="room-card-meta">
+            <div class="room-card-eyebrow">Course · live</div>
+            <div class="room-card-title" set:html={c.data.titleHtml || c.data.title}></div>
+            <div class="room-card-line">{c.data.lede}</div>
+          </div>
+        </a>
+      ))}
+      {comingSoon.map((c) => (
+        <a class="room-card" href={`/courses/${c.slug}/`}>
+          <div class="room-card-img" style={`background-image: url('${itemHero('courses', c.data.title.replace(/<[^>]+>/g, ''), c.slug)}');`}></div>
+          <div class="room-card-veil"></div>
+          <div class="room-card-group-pill is-muted">SOON</div>
+          <div class="room-card-arrow">↗</div>
+          <div class="room-card-meta">
+            <div class="room-card-eyebrow">Course · coming soon</div>
+            <div class="room-card-title" set:html={c.data.titleHtml || c.data.title}></div>
+            <div class="room-card-line">{c.data.lede}</div>
+          </div>
+        </a>
+      ))}
+    </div>
   </section>
 
   <div class="footer">
     <div>melis.ai · 2026</div>
     <div>Operator-built · Australia</div>
   </div>
-
-  <style>
-    .course-section { margin-bottom: 4em; }
-    .course-section .h2 { font-family: var(--font-display); font-size: 32px; font-weight: 500; color: var(--text-1); margin: 0 0 1.2em; }
-    .course-section .h2 :global(em) { color: var(--accent); font-style: italic; }
-    .course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
-    .course-card { display: flex; flex-direction: column; padding: 24px 26px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 12px; text-decoration: none; color: inherit; transition: border-color 0.2s var(--ease), transform 0.2s var(--ease); }
-    .course-card:hover { border-color: rgba(168, 85, 247, 0.3); transform: translateY(-2px); }
-    .course-card-soon { filter: grayscale(0.7); opacity: 0.85; }
-    .course-card-soon:hover { filter: none; opacity: 1; }
-    .cc-badge { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; color: var(--accent); margin-bottom: 12px; }
-    .course-card-soon .cc-badge { color: var(--text-3); }
-    .cc-title { font-family: var(--font-display); font-size: 22px; color: var(--text-1); margin: 0 0 8px; }
-    .cc-lede { font-family: var(--font-body); font-size: 14px; color: var(--text-2); line-height: 1.55; margin: 0; }
-  </style>
 </AppLayout>
