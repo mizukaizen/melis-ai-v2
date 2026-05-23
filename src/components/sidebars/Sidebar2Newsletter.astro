@@ -9,10 +9,9 @@ const items = (await getCollection('newsletter'))
   .sort((a, b) => (b.data.publishedAt || '').localeCompare(a.data.publishedAt || ''));
 
 function formatDate(iso?: string) {
+  // Mockup-canonical format: ISO YYYY-MM-DD.
   if (!iso) return '';
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' });
+  return iso.slice(0, 10);
 }
 
 function tagFor(byline?: string) {
