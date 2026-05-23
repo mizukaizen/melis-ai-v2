@@ -399,3 +399,59 @@ Pass 9 left a dead-click problem: sb2 listed 5 mockup-canonical entries (Strateg
 ### Pre-merge sign-off
 
 Phase 1 → ready to merge. Every deferred item from pass 9 has an explicit Sean decision. Three items move to Phase 2 (recos affiliate schema, Tailwind 4 refactor, second dossier batch). Build + astro check both green. Branch state pushed to `origin/feat/initial-port`. Sean merges manually.
+
+---
+
+## Pass 11 — push from 83% to ~92% (2026-05-23)
+
+Traffic-light report (`_cowork/outputs/website-rebrand/audit/TRAFFIC-LIGHT.md`) scored the site 83% before this pass. Four workstreams closed:
+
+### Issue 1 — Dossier category card grid
+
+`/dossiers/[category]/` was rendering the KCT (Key Concept Table) as the only content. Mockup has a 3-col paper-craft card grid above it for the first 6 fleshed dossiers. Added the grid using fleshed entries from the content collection, sorted via `libraryNormalise()`. Cards are 3:4 portrait with per-book paper-craft cover (path `/dossier-rooms/lib-<cat>-<slug>.png` with `onerror` fallback to the category cover), title + author byline overlay on a gradient veil. Applies automatically across all 14 categories.
+
+### Issue 2 — Sb2 normalisation
+
+- **Sidebar2Articles** rewritten to render actual ARTICLES_LIST entries from the live MDX collection (sorted by `publishedAt` desc) instead of abstract category placeholders. Each row links to its detail page; `syncSb2Active` from pass 7 highlights the current article.
+- **Sidebar2Newsletter** — same pattern. NEWSLETTER_LIST entries link to their detail pages.
+- **Sidebar2Courses** — Claude Cowork for Professionals special-cased to render the mockup-canonical "RECORDING" badge instead of the generic "SOON". Other coming-soon courses keep SOON.
+
+### Issue 3 — Featured-card price chip + violet CTA
+
+Verified Products + Courses featured cards already render `$197 + Buy bundle →` and `$29 + Enrol — be the first →` (pass 10 added the chip row for AI Mastery; pass 7 wired FeaturedProductCard). Audit complaint was on a stale capture.
+
+Upgraded the **Prompts featured card** — switched from a flat linear-gradient block to a paper-craft scene background (`/card-products-v1.png`) with bottom-aligned veil. Footer row now has a violet price chip ("Free") + violet CTA pill ("Open the prompt →") matching the other two featured cards.
+
+### Issue 4 — Capture-mockup for article-detail / newsletter-detail / lab-landing
+
+`openDetail` is module-scoped in the mockup (not on `window`), so direct `page.evaluate('openDetail(...)')` calls fail. Worked around by triggering the mockup's natural click flow: `showPane('articles')` → wait 400ms for the article list to render + click handlers to wire → click the first `.flat-card`. Same pattern for newsletter. Lab-landing already wired to projects pane in pass 9.
+
+Added `newsletter-detail` entry to `annotate-comparison.py` PAGES with empty annotations — produces a side-by-side render. Article-detail PAGES entry already wired in pass 9; mockup image now correct.
+
+### Expected traffic-light delta
+
+| Page | Before | After (est.) |
+|---|------:|------:|
+| Home | 92 | 92 |
+| Articles landing | 80 | 87 |
+| Dossiers · Books | 72 | 88 |
+| Newsletter landing | 75 | 85 |
+| Prompts landing | 72 | 86 |
+| Courses landing | 78 | 84 |
+| Other yellows | avg ~83 | avg ~87 |
+
+**Overall estimate: 83% → ~91%.**
+
+### Commits on `feat/initial-port` (pass 11)
+
+```
+eaedbe5 fix(pass11): dossier card grid + sb2 normalisation + prompts featured paper-craft
++ (capture-mockup.py + annotate-comparison.py changes — script-only)
+```
+
+### Verification
+
+- `pnpm build` → 0 errors, 164 prerendered routes
+- `pnpm exec astro check` → 0 errors, 0 warnings, 3 pre-existing hints
+- 29 pages × 2 viewports = 58 live captures; 27 mockup captures; 25 annotated comparisons
+- Live HTML inspection confirms `dossier-card-grid` rendered with 6 cards on `/dossiers/books/`; AI Mastery chip row HTML present on `/courses/`; prompts featured card has `fpc-bg` + `fpc-cta` elements.
