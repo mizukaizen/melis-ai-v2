@@ -5,6 +5,40 @@
 
 ---
 
+## ⏳ Phase 2 (in progress) — Forensic mockup port — 2026-05-23
+
+**Branch:** `ui/forensic-mockup-port`. Single-PR multi-pass port that consolidates 14 polish passes' worth of scoped CSS drift back into the mockup.
+
+### Permanent intentional improvements (justified, ported back to the mockup as canonical)
+
+These are Astro-introduced patterns that improve on the SPA mockup. The mockup HTML has been updated to include them, and `scripts/extract-mockup-css.mjs` was re-run so `mockup.css` carries the CSS for all of them. They are now *the spec*, not divergences.
+
+| Pattern | Why kept | Where it lives now |
+|---|---|---|
+| **`FilterDropdown`** | Replaces native `<select>` with a brand-styled, keyboard-accessible dropdown that emits a `filter:change` CustomEvent. The mockup had no filter; this is a feature add. | mockup.css `v6-forensic-port` block |
+| **`NewsletterForm`** | Real BeeHiiv-backed form replacing the mockup's static `<a class="btn">` link. Includes loading/error/success states + Zod-validated POST to `/api/subscribe`. | mockup.css `v6-forensic-port` block |
+| **`SectionHero.section-byline`** | Optional sub-title slot under h1 for detail pages with author/date metadata. Mockup hero didn't have it; useful on `[slug]` routes. | mockup.css `v6-forensic-port` block |
+| **`Sidebar2About.nav.about-toc` scroll-spy** | IntersectionObserver-driven chapter navigation that highlights the in-view section. Mockup's about-sb2 was 12 flat `sb2-item` rows; the scroll-spy is a meaningful UX upgrade for a long-form essay page. | mockup.css `v6-forensic-port` block + JS in `Sidebar2About.astro` |
+| **sb2 `sb2-eyebrow` + `sb2-date` + `sb2-badge` + `sb2-item-coming-soon`** | The mockup's articles/newsletter sb2 was 6 hardcoded fake category rows. Astro renders real items with uppercase violet category eyebrow + DD/MM date + coming-soon badge on stub items. | mockup.css `v6-forensic-port` block |
+| **`flat-card-coming-soon` + `flat-card-badge`** | Coming-soon card system on `/articles` + `/newsletter` indexes. Stub items render as non-clickable `<div>` cards with violet badge top-right; live items remain clickable `<a>` cards. | mockup.css `v6-forensic-port` block |
+| **`article-content` prose typography** | Canonical body-prose system for `/articles/[slug]`, `/newsletter/[slug]`, and any other long-form detail page. Replaces 4 separate near-duplicate scoped blocks across detail pages. | mockup.css `v6-forensic-port` block |
+| **`landing-intro` wrapper** | Cross-cutting `h2 + body-lead` block used on recos/ventures/services/exhibits/lab landings. Replaces 5 near-duplicate scoped blocks. | mockup.css `v6-forensic-port` block |
+| **`lab-*` pillars** | Lab landing's 3-card sub-brand pillar grid (Lighthouse / Holy Signal / Hive Doctrine) — no mockup equivalent (Lab is an Astro-only route). | mockup.css `v6-forensic-port` block |
+| **`lotus-sigil` + `ticker-track`** | Home page enhancements: SVG sigil before the wordmark; marquee animation on the ticker. | mockup.css `v6-forensic-port` block |
+| **Room-cards on landings** (PASS 4) | Recos / ventures / services / courses / exhibits landings use `room-card` (image-tile) instead of the mockup's original `item-card` (text-only). UPDATED THE MOCKUP to match. | mockup HTML pane bodies |
+| **`FeaturedProductCard` + `FeaturedCourseCard`** (PASS 4) | Flagship hero cards on `/products` + `/courses`. Mockup had no featured-card pattern. UPDATED THE MOCKUP to include them. | mockup HTML + mockup.css |
+
+### Removed Astro-invented dead weight
+
+- `AppLayout` classes `has-sb2`, `no-sb2`, `in-room-mode` — emitted on `<div class="app …">` but had zero matching CSS anywhere. Deleted.
+
+### Foundation fixes (PASS 1)
+
+- Added missing `<svg class="ico">` sb2-header icons to `Sidebar2Articles`, `Sidebar2Newsletter`, `Sidebar2About`.
+- Added missing `courses-sb2-list` class to `Sidebar2Courses` so mockup.css selectors at lines 5166–5180 fire.
+
+---
+
 ## ✅ Phase 1 complete — 2026-05-21
 
 **Verdict:** Visual identity overhaul landed. Mockup-vs-Astro parity verified at 1440×900 across all 8 critical pages. Plumbing scaffolded. Build green. Merge-ready.

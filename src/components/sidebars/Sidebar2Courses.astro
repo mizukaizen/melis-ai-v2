@@ -10,9 +10,10 @@ const currentSlug = Astro.url.pathname.match(/\/courses\/([^/]+)/)?.[1];
 <aside class="sidebar-2" transition:persist="sb2-courses">
   <div class="sb2-pane active" data-pane="courses">
     <div class="sb2-header">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 17V7a2 2 0 0 1 2-2h6v14H5a2 2 0 0 1-2-2zM21 17V7a2 2 0 0 0-2-2h-6v14h6a2 2 0 0 0 2-2z"/></svg>
       <div class="sb2-title"><em>Courses</em></div>
     </div>
-    <div class="sb2-list">
+    <div class="sb2-list courses-sb2-list">
       <a class="sb2-item" class:list={[{ active: !currentSlug }]} href="/courses/">
         <div class="sb2-row">
           <div class="sb2-name">All Courses</div>

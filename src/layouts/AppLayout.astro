@@ -34,11 +34,12 @@ const paneMode = pane === 'home' ? '' : (inRoom ? 'in-room' : 'is-direct-view');
 const paneClass = ['pane', 'active', paneMode].filter(Boolean).join(' ');
 // Home is sb1-only per the mockup. Every other route gets the contextual sb2.
 const hasSb2 = pane !== 'home';
+// `is-home` + `is-landing-mode` are mockup-canonical and used by mockup.css.
+// `has-sb2` / `no-sb2` / `in-room-mode` were Astro-invented hooks with zero CSS — removed.
 const appClass = [
   'app',
-  hasSb2 ? 'has-sb2' : 'no-sb2',
   pane === 'home' ? 'is-home' : '',
-  inRoom ? 'in-room-mode' : 'is-landing-mode',
+  inRoom ? '' : 'is-landing-mode',
 ].filter(Boolean).join(' ');
 ---
 
