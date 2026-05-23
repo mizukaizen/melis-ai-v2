@@ -7,7 +7,9 @@ import { landingHero } from '../../lib/hero-image';
 export const prerender = true;
 
 export async function getStaticPaths() {
-  const items = await getCollection('articles');
+  // Only `status: 'live'` entries get a detail route. Coming-soon entries
+  // render on the index as non-clickable cards with a badge.
+  const items = (await getCollection('articles')).filter((a) => a.data.status === 'live');
   return items.map((item) => ({
     params: { slug: item.slug },
     props: { item },
