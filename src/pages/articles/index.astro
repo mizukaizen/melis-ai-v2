@@ -14,10 +14,9 @@ const articles = (await getCollection('articles'))
 const categories = ['All', ...new Set(articles.map((a) => a.data.category).filter((c): c is string => Boolean(c)))];
 
 function formatDate(iso?: string) {
+  // Mockup-canonical format: ISO YYYY-MM-DD. Sort-friendly + semantic.
   if (!iso) return '';
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  return iso.slice(0, 10);
 }
 
 function fallbackCover(i: number) {
@@ -41,7 +40,6 @@ function fallbackCover(i: number) {
   <section class="section-body">
     <div class="flat-list-header">
       <div>
-        <div class="section-eyebrow-small">{articles.length} articles · essays + field notes</div>
         <h2 class="h2">Operator notes from <em>inside</em> the work.</h2>
       </div>
       <FilterDropdown id="articles-filter" options={categories} />
