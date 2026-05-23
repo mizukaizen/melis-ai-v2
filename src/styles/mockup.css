@@ -2906,6 +2906,53 @@
     to   { transform: translateX(-50%); }
   }
 
+  /* ── Featured room-cards (products + courses landing flagship) ── */
+  .room-card-featured {
+    grid-column: 1 / -1;
+    min-height: 280px !important;
+  }
+  .room-card-featured .room-card-title {
+    font-size: clamp(28px, 3.4vw, 42px) !important;
+    line-height: 1.1 !important;
+  }
+  .room-card-featured .room-card-line { font-size: 15px !important; max-width: 56ch; }
+  .room-card-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 3;
+    padding: 5px 12px;
+    background: rgba(168, 85, 247, 0.22);
+    color: #c4b5fd;
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    backdrop-filter: blur(6px);
+  }
+  .room-card-cta {
+    margin-top: 12px;
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+  }
+  .room-card-chips {
+    margin: 8px 0;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--text-3);
+    text-transform: uppercase;
+  }
+
   /* ── v6-detail extension: course-detail ── */
   .v6-detail.course-detail .course-subtitle { max-width: 920px; margin: 0 auto 2em; text-align: center; }
   .v6-detail.course-detail .cs-eyebrow {
