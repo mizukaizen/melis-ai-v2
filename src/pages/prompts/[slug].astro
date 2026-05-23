@@ -37,6 +37,10 @@ const promptPlain = promptHtml.replace(/<span class="pv-var">([^<]*)<\/span>/g, 
   />
 
   <section class="section-body">
+    <div class="landing-intro">
+      <h2 class="h2">Operator prompts — <em>tested in real work</em>.</h2>
+      <p class="body-lead">Every prompt here started as something I needed for a real client problem, then got refined enough to reuse. Grouped by the job it does. Copy, fill the [brackets], ship.</p>
+    </div>
     <div class="room-prompt-card">
       <div class="room-prompt-meta">
         <span class="room-prompt-cat">{data.category}</span>
@@ -70,6 +74,10 @@ const promptPlain = promptHtml.replace(/<span class="pv-var">([^<]*)<\/span>/g, 
     .room-prompt-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; }
     .room-prompt-copy, .room-prompt-expand { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: rgba(168, 85, 247, 0.08); color: var(--accent); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 6px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em; cursor: pointer; transition: background 0.18s var(--ease); }
     .room-prompt-copy:hover, .room-prompt-expand:hover { background: rgba(168, 85, 247, 0.18); }
+    .landing-intro { max-width: 720px; margin: 0 auto 2em; }
+    .landing-intro .h2 { font-family: var(--font-display); font-size: clamp(28px, 3vw, 42px); font-weight: 500; line-height: 1.15; color: var(--text-1); margin: 0 0 14px; }
+    .landing-intro .h2 :global(em) { font-style: italic; color: var(--accent); }
+    .landing-intro .body-lead { font-family: var(--font-body); font-size: 16px; color: var(--text-2); line-height: 1.7; margin: 0 0 24px; max-width: 60ch; }
   </style>
 
   <script>
