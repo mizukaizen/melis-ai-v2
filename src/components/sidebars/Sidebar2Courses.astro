@@ -29,15 +29,23 @@ const currentSlug = Astro.url.pathname.match(/\/courses\/([^/]+)/)?.[1];
           {c.data.subtitle1 && <div class="sb2-desc">{c.data.subtitle1}</div>}
         </a>
       ))}
-      {soon.map((c) => (
-        <a class="sb2-item" class:list={[{ active: c.slug === currentSlug }]} href={`/courses/${c.slug}/`}>
-          <div class="sb2-row">
-            <div class="sb2-name">{c.data.title.replace(/<[^>]+>/g, '')}</div>
-            <div class="sb2-count">SOON</div>
-          </div>
-          {c.data.subtitle1 && <div class="sb2-desc">{c.data.subtitle1}</div>}
-        </a>
-      ))}
+      {soon.map((c) => {
+        // Mockup flags Claude Cowork as "RECORDING" rather than the
+        // generic "SOON" — it's the flagship-in-flight. All other
+        // coming-soon courses keep the SOON badge.
+        const isRecording = c.slug === 'claude-cowork-for-professionals';
+        const badgeLabel = isRecording ? 'RECORDING' : 'SOON';
+        const badgeClass = isRecording ? 'badge-recording' : 'badge-soon';
+        return (
+          <a class="sb2-item" class:list={[{ active: c.slug === currentSlug }]} href={`/courses/${c.slug}/`}>
+            <div class="sb2-row">
+              <div class="sb2-name">{c.data.title.replace(/<[^>]+>/g, '')}</div>
+              <div class={`sb2-count ${badgeClass}`}>{badgeLabel}</div>
+            </div>
+            {c.data.subtitle1 && <div class="sb2-desc">{c.data.subtitle1}</div>}
+          </a>
+        );
+      })}
     </div>
   </div>
 </aside>

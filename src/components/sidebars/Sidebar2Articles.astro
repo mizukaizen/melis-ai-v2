@@ -1,20 +1,20 @@
 ---
-// Mockup-canonical sb2 entries (lines 5148-5195 of melis-ai-spa-v6-astro-content.html).
-// Items link to the landing — the mockup's pane-swap behaviour is collapsed in Astro;
-// category filtering is a Phase 2 follow-up.
+// Pass 11 — render actual ARTICLES_LIST entries (live MDX collection),
+// not abstract categories. Each item links to its detail page; the
+// `syncSb2Active()` script in AppLayout.astro highlights the row whose
+// href matches location.pathname.
 import { getCollection } from 'astro:content';
 
-const items = (await getCollection('articles')).filter((a) => !a.data.draft);
-const total = items.length;
+const items = (await getCollection('articles'))
+  .filter((a) => !a.data.draft)
+  .sort((a, b) => (b.data.publishedAt || '').localeCompare(a.data.publishedAt || ''));
 
-const ENTRIES: { name: string; count: string; desc: string }[] = [
-  { name: 'Latest',      count: '06', desc: 'Most recent dispatches' },
-  { name: 'Essays',      count: '12', desc: 'Long-form thinking' },
-  { name: 'Tutorials',   count: '18', desc: 'Step-by-step guides' },
-  { name: 'Field Notes', count: '24', desc: "What I'm building right now" },
-  { name: 'Tear-downs',  count: '08', desc: 'How things actually work' },
-  { name: 'Archive',     count: '82', desc: "Everything I've written" },
-];
+function formatDate(iso?: string) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' });
+}
 ---
 
 <aside class="sidebar-2" transition:persist="sb2-articles">
@@ -26,19 +26,23 @@ const ENTRIES: { name: string; count: string; desc: string }[] = [
       <a class="sb2-item" href="/articles/">
         <div class="sb2-row">
           <div class="sb2-name">All Articles</div>
-          <div class="sb2-count">{total}</div>
+          <div class="sb2-count">{items.length}</div>
         </div>
         <div class="sb2-desc">Every essay + field note</div>
       </a>
-      {ENTRIES.map((e) => (
-        <a class="sb2-item" href="/articles/">
-          <div class="sb2-row">
-            <div class="sb2-name">{e.name}</div>
-            <div class="sb2-count">{e.count}</div>
-          </div>
-          <div class="sb2-desc">{e.desc}</div>
-        </a>
-      ))}
+      {items.map((a) => {
+        const tag = a.data.category || a.data.tags?.[0] || '';
+        const date = formatDate(a.data.publishedAt);
+        const meta = [tag, date].filter(Boolean).join(' · ');
+        return (
+          <a class="sb2-item" href={`/articles/${a.slug}/`}>
+            <div class="sb2-row">
+              <div class="sb2-name">{a.data.title}</div>
+            </div>
+            {meta && <div class="sb2-desc">{meta}</div>}
+          </a>
+        );
+      })}
     </div>
   </div>
 </aside>

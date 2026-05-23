@@ -1,18 +1,25 @@
 ---
-// Mockup-canonical sb2 entries (lines 5197-5244 of melis-ai-spa-v6-astro-content.html).
+// Pass 11 — render actual NEWSLETTER_LIST entries from the live MDX
+// collection. Each issue links to its detail page; AppLayout's
+// `syncSb2Active()` highlights the row whose href matches the URL.
 import { getCollection } from 'astro:content';
 
-const items = (await getCollection('newsletter')).filter((n) => !n.data.draft);
-const total = items.length;
+const items = (await getCollection('newsletter'))
+  .filter((n) => !n.data.draft)
+  .sort((a, b) => (b.data.publishedAt || '').localeCompare(a.data.publishedAt || ''));
 
-const ENTRIES: { name: string; count: string; desc: string }[] = [
-  { name: 'Latest dispatch',     count: '01', desc: 'Sent this week' },
-  { name: 'Soul of the Machine', count: '47', desc: 'The flagship Sunday email' },
-  { name: "Operator's Brief",    count: '23', desc: 'Tuesday tactical newsletter' },
-  { name: 'Hive Doctrine',       count: '12', desc: 'Cinematic essays on intelligence' },
-  { name: 'Subscribe',           count: '—',  desc: 'Join 6,400+ operators' },
-  { name: 'Archive',             count: '82', desc: 'Browse every issue' },
-];
+function formatDate(iso?: string) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' });
+}
+
+function tagFor(byline?: string) {
+  if (!byline) return '';
+  const parts = byline.split('·').map((s) => s.trim());
+  return parts[1] || parts[0] || '';
+}
 ---
 
 <aside class="sidebar-2" transition:persist="sb2-newsletter">
@@ -24,19 +31,23 @@ const ENTRIES: { name: string; count: string; desc: string }[] = [
       <a class="sb2-item" href="/newsletter/">
         <div class="sb2-row">
           <div class="sb2-name">All Issues</div>
-          <div class="sb2-count">{total}×</div>
+          <div class="sb2-count">{items.length}</div>
         </div>
         <div class="sb2-desc">Every dispatch</div>
       </a>
-      {ENTRIES.map((e) => (
-        <a class="sb2-item" href="/newsletter/">
-          <div class="sb2-row">
-            <div class="sb2-name">{e.name}</div>
-            <div class="sb2-count">{e.count}</div>
-          </div>
-          <div class="sb2-desc">{e.desc}</div>
-        </a>
-      ))}
+      {items.map((n) => {
+        const tag = tagFor(n.data.byline);
+        const date = formatDate(n.data.publishedAt);
+        const meta = [tag, date].filter(Boolean).join(' · ');
+        return (
+          <a class="sb2-item" href={`/newsletter/${n.slug}/`}>
+            <div class="sb2-row">
+              <div class="sb2-name">{n.data.title}</div>
+            </div>
+            {meta && <div class="sb2-desc">{meta}</div>}
+          </a>
+        );
+      })}
     </div>
   </div>
 </aside>

@@ -34,6 +34,20 @@ function libraryNormalise(s: string): string {
   return s.replace(/^(the|a|an)\s+/i, '').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '');
 }
 const sortedCatalog = [...catalog].sort((a, b) => libraryNormalise(a).localeCompare(libraryNormalise(b)));
+
+// Fleshed dossiers as ordered list (mockup shows first 6 as cards).
+const fleshedList = Array.from(fleshedByTitle.entries())
+  .map(([title, entry]) => ({ title, entry }))
+  .sort((a, b) => libraryNormalise(a.title).localeCompare(libraryNormalise(b.title)));
+const featuredCards = fleshedList.slice(0, 6);
+
+// Per-book paper-craft cover; falls back to the category cover if no
+// dedicated per-book image exists. Pattern matches mockup's
+// /dossier-rooms/lib-<category>-<slug>.png convention.
+function bookCover(slug: string): string {
+  return `/dossier-rooms/lib-${category}-${slug}.png`;
+}
+const categoryCover = dossierCategoryHero(category);
 ---
 
 <AppLayout title={cat.title} pane="library" inRoom description={cat.line}>
@@ -51,6 +65,35 @@ const sortedCatalog = [...catalog].sort((a, b) => libraryNormalise(a).localeComp
       <h2 class="h2">A working operator's <em>{cat.title.toLowerCase()}</em>.</h2>
       <p class="body-lead">Every entry is an AI-led breakdown — the work, why it matters, the key concepts, and how to take them forward. Fleshed dossiers link through; the rest are catalogued for future passes.</p>
     </div>
+
+    {featuredCards.length > 0 && (
+      <div class="dossier-card-grid">
+        {featuredCards.map(({ title, entry }) => {
+          const cover = bookCover(entry.slug);
+          // Falls back to the category cover when no per-book asset
+          // exists yet — handled by the <img onerror> below.
+          return (
+            <a class="dossier-card" href={`/dossiers/${category}/${entry.slug}/`}>
+              <img
+                class="dc-img"
+                src={cover}
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+                onerror={`this.src='${categoryCover}'`}
+              />
+              <div class="dc-veil"></div>
+              <div class="dc-meta">
+                <div class="dc-title">{title}</div>
+                {entry.data.byline && (
+                  <div class="dc-byline">{entry.data.byline.split('·')[0].trim()}</div>
+                )}
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    )}
 
     <div class="key-concept-table">
       <div class="kct-header">
@@ -96,6 +139,77 @@ const sortedCatalog = [...catalog].sort((a, b) => libraryNormalise(a).localeComp
 
   <style>
     .kct-headstrip { max-width: 1100px; margin: 0 auto 32px; }
+
+    /* Dossier category card grid — 3-col paper-craft hook above the KCT.
+       Cards are 3:4 portrait per the mockup's book-cover proportions. */
+    .dossier-card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 1100px;
+      margin: 0 auto 3em;
+    }
+    @media (max-width: 880px) {
+      .dossier-card-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .dossier-card-grid { grid-template-columns: 1fr; }
+    }
+    .dossier-card {
+      position: relative;
+      display: block;
+      aspect-ratio: 3 / 4;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border-2);
+      text-decoration: none;
+      color: inherit;
+      isolation: isolate;
+      transition: transform 0.2s var(--ease), border-color 0.2s var(--ease);
+    }
+    .dossier-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(168, 85, 247, 0.35);
+    }
+    .dc-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+    .dc-veil {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg,
+        rgba(5, 5, 5, 0.10) 30%,
+        rgba(5, 5, 5, 0.70) 75%,
+        rgba(5, 5, 5, 0.92) 100%);
+      z-index: 1;
+    }
+    .dc-meta {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 18px;
+      z-index: 2;
+    }
+    .dc-title {
+      font-family: var(--font-display);
+      font-size: clamp(18px, 1.7vw, 22px);
+      font-weight: 500;
+      line-height: 1.2;
+      color: var(--text-1);
+      margin-bottom: 6px;
+    }
+    .dc-byline {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--text-3);
+      text-transform: uppercase;
+    }
     .key-concept-table {
       max-width: 1100px;
       margin: 0 auto;
