@@ -2906,6 +2906,157 @@
     to   { transform: translateX(-50%); }
   }
 
+  /* ── v6-detail extension: course-detail ── */
+  .v6-detail.course-detail .course-subtitle { max-width: 920px; margin: 0 auto 2em; text-align: center; }
+  .v6-detail.course-detail .cs-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .v6-detail.course-detail .cs-h2 {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 3.4vw, 44px);
+    font-weight: 500;
+    line-height: 1.15;
+    color: var(--text-1);
+    margin: 0;
+  }
+  .v6-detail.course-detail .course-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+    max-width: 920px;
+    margin: 0 auto 3em;
+    padding: 24px;
+    background: rgba(20, 20, 24, 0.45);
+    border: 1px solid var(--border-2);
+    border-radius: 12px;
+  }
+  .v6-detail.course-detail .cs-stat { text-align: center; }
+  .v6-detail.course-detail .cs-stat i { font-size: 20px; color: var(--accent); opacity: 0.6; }
+  .v6-detail.course-detail .cs-val { font-family: var(--font-display); font-size: 28px; color: var(--text-1); }
+  .v6-detail.course-detail .cs-lbl {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-3);
+    letter-spacing: 0.06em;
+  }
+  .v6-detail.course-detail .course-problem,
+  .v6-detail.course-detail .course-outcomes,
+  .v6-detail.course-detail .course-fit { max-width: 920px; margin: 0 auto 3em; }
+  .v6-detail.course-detail .course-bullets {
+    list-style: none; padding: 0; margin: 0;
+    display: grid; gap: 10px;
+  }
+  .v6-detail.course-detail .course-bullets li {
+    position: relative;
+    padding-left: 24px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+  .v6-detail.course-detail .course-bullets li::before {
+    content: '✓';
+    position: absolute; left: 0; top: 0;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 14px;
+  }
+  .v6-detail.course-detail .course-bullets.is-against li::before { content: '✕'; color: var(--text-3); }
+  .v6-detail.course-detail .outcome-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .v6-detail.course-detail .outcome-card {
+    padding: 22px 24px;
+    background: rgba(20, 20, 24, 0.45);
+    border: 1px solid var(--border-2);
+    border-radius: 10px;
+  }
+  .v6-detail.course-detail .outcome-icon {
+    font-size: 22px;
+    color: var(--accent);
+    opacity: 0.7;
+    display: block;
+    margin-bottom: 10px;
+  }
+  .v6-detail.course-detail .outcome-card h4 {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text-1);
+    margin: 0 0 8px;
+  }
+  .v6-detail.course-detail .outcome-card p {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.55;
+    margin: 0;
+  }
+  .v6-detail.course-detail .fit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+  }
+  .v6-detail.course-detail .fit-h4 {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin: 0 0 14px;
+  }
+  .v6-detail.course-detail .course-soon {
+    max-width: 720px;
+    margin: 0 auto 3em;
+    padding: 22px 26px;
+    background: rgba(168, 85, 247, 0.08);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-radius: 10px;
+  }
+  .v6-detail.course-detail .cs-soon-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .v6-detail.course-detail .course-soon p {
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--text-2);
+    margin: 0;
+    line-height: 1.55;
+  }
+  .v6-detail.course-detail .course-content { max-width: 720px; margin: 0 auto 3em; }
+  .v6-detail.course-detail .course-closing {
+    max-width: 720px;
+    margin: 0 auto 1.5em;
+    text-align: center;
+  }
+  .v6-detail.course-detail .cs-closing-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .v6-detail.course-detail .course-cta { margin: 0 auto 3em; max-width: 540px; text-align: center; }
+  .v6-detail.course-detail .course-waitlist h3 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--text-1);
+    margin: 0 0 12px;
+  }
+
 
 /* ──────── v5-brand-overrides ──────── */
 /* ── v5 BRAND-FINAL (loaded after v4) ─────────────────────

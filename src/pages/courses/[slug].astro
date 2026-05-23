@@ -39,101 +39,103 @@ const subtitleLine = [detail?.subtitle1, detail?.subtitle2].filter(Boolean).join
   />
 
   <section class="section-body">
-    {subtitleLine && (
-      <div class="course-subtitle">
-        <div class="cs-eyebrow">{data.eyebrow}</div>
-        <h2 class="cs-h2" set:html={subtitleLine}></h2>
-      </div>
-    )}
+    <div class="v6-detail course-detail">
+      {subtitleLine && (
+        <div class="course-subtitle">
+          <div class="cs-eyebrow">{data.eyebrow}</div>
+          <h2 class="cs-h2" set:html={subtitleLine}></h2>
+        </div>
+      )}
 
-    {data.stats && data.stats.length > 0 && (
-      <div class="course-stats">
-        {data.stats.map((s) => (
-          <div class="cs-stat">
-            {s.icon && <i class={`ph ${s.icon}`}></i>}
-            <div class="cs-val">{s.val}</div>
-            <div class="cs-lbl">{s.lbl}</div>
-          </div>
-        ))}
-      </div>
-    )}
-
-    {detail?.problem && (
-      <section class="course-problem">
-        <div class="section-eyebrow-small">{detail.problem.eyebrow}</div>
-        <h2 class="h2">{detail.problem.h2}</h2>
-        <p class="body-lead">{detail.problem.lede}</p>
-        <ul class="course-bullets">
-          {detail.problem.items.map((line) => <li>{line}</li>)}
-        </ul>
-      </section>
-    )}
-
-    {detail?.outcomes && (
-      <section class="course-outcomes">
-        <div class="section-eyebrow-small">{detail.outcomes.eyebrow}</div>
-        <h2 class="h2">{detail.outcomes.h2}</h2>
-        <div class="outcome-grid">
-          {detail.outcomes.cards.map((c) => (
-            <div class="outcome-card">
-              <i class={`ph ${c.icon} outcome-icon`} aria-hidden="true"></i>
-              <h4>{c.title}</h4>
-              <p>{c.body}</p>
+      {data.stats && data.stats.length > 0 && (
+        <div class="course-stats">
+          {data.stats.map((s) => (
+            <div class="cs-stat">
+              {s.icon && <i class={`ph ${s.icon}`}></i>}
+              <div class="cs-val">{s.val}</div>
+              <div class="cs-lbl">{s.lbl}</div>
             </div>
           ))}
         </div>
-      </section>
-    )}
+      )}
 
-    {detail?.fit && (
-      <section class="course-fit">
-        <div class="section-eyebrow-small">{detail.fit.eyebrow}</div>
-        <h2 class="h2">{detail.fit.h2}</h2>
-        <div class="fit-grid">
-          <div>
-            <h4 class="fit-h4">For you if</h4>
-            <ul class="course-bullets">
-              {detail.fit.forYou.map((line) => <li>{line}</li>)}
-            </ul>
+      {detail?.problem && (
+        <section class="vd-section course-problem">
+          <div class="section-eyebrow-small">{detail.problem.eyebrow}</div>
+          <h3 class="vd-h3">{detail.problem.h2}</h3>
+          <div class="vd-prose"><p>{detail.problem.lede}</p></div>
+          <ul class="course-bullets">
+            {detail.problem.items.map((line) => <li>{line}</li>)}
+          </ul>
+        </section>
+      )}
+
+      {detail?.outcomes && (
+        <section class="vd-section course-outcomes">
+          <div class="section-eyebrow-small">{detail.outcomes.eyebrow}</div>
+          <h3 class="vd-h3">{detail.outcomes.h2}</h3>
+          <div class="outcome-grid">
+            {detail.outcomes.cards.map((c) => (
+              <div class="outcome-card">
+                <i class={`ph ${c.icon} outcome-icon`} aria-hidden="true"></i>
+                <h4>{c.title}</h4>
+                <p>{c.body}</p>
+              </div>
+            ))}
           </div>
-          <div>
-            <h4 class="fit-h4">Not for you if</h4>
-            <ul class="course-bullets is-against">
-              {detail.fit.notForYou.map((line) => <li>{line}</li>)}
-            </ul>
+        </section>
+      )}
+
+      {detail?.fit && (
+        <section class="vd-section course-fit">
+          <div class="section-eyebrow-small">{detail.fit.eyebrow}</div>
+          <h3 class="vd-h3">{detail.fit.h2}</h3>
+          <div class="fit-grid">
+            <div>
+              <h4 class="fit-h4">For you if</h4>
+              <ul class="course-bullets">
+                {detail.fit.forYou.map((line) => <li>{line}</li>)}
+              </ul>
+            </div>
+            <div>
+              <h4 class="fit-h4">Not for you if</h4>
+              <ul class="course-bullets is-against">
+                {detail.fit.notForYou.map((line) => <li>{line}</li>)}
+              </ul>
+            </div>
           </div>
-        </div>
-      </section>
-    )}
+        </section>
+      )}
 
-    {detail?.comingSoon && detail.soonLine && (
-      <div class="course-soon">
-        <div class="cs-soon-eyebrow">{detail.flagship ? 'RECORDING · FLAGSHIP' : 'COMING SOON'}</div>
-        <p>{detail.soonLine}</p>
-      </div>
-    )}
-
-    <article class="course-content">
-      <Content />
-    </article>
-
-    {detail?.closing && (
-      <div class="course-closing">
-        <div class="cs-closing-eyebrow">{detail.closing.eyebrow}</div>
-        <h3>{detail.closing.h3}</h3>
-        <p>{detail.closing.line}</p>
-      </div>
-    )}
-
-    <div class="course-cta">
-      {isLive && data.stripePriceEnvKey ? (
-        <StripeBuyButton productSlug={item.slug} label={detail?.closing?.btn || data.ctas?.primary?.label || 'Enrol now →'} />
-      ) : (
-        <div class="course-waitlist">
-          <h3>Get notified when this opens.</h3>
-          <NewsletterForm />
+      {detail?.comingSoon && detail.soonLine && (
+        <div class="course-soon">
+          <div class="cs-soon-eyebrow">{detail.flagship ? 'RECORDING · FLAGSHIP' : 'COMING SOON'}</div>
+          <p>{detail.soonLine}</p>
         </div>
       )}
+
+      <article class="article-content course-content">
+        <Content />
+      </article>
+
+      {detail?.closing && (
+        <div class="vd-cta course-closing">
+          <div class="cs-closing-eyebrow">{detail.closing.eyebrow}</div>
+          <div class="vd-cta-title">{detail.closing.h3}</div>
+          <div class="vd-cta-line">{detail.closing.line}</div>
+        </div>
+      )}
+
+      <div class="course-cta">
+        {isLive && data.stripePriceEnvKey ? (
+          <StripeBuyButton productSlug={item.slug} label={detail?.closing?.btn || data.ctas?.primary?.label || 'Enrol now →'} />
+        ) : (
+          <div class="course-waitlist">
+            <h3>Get notified when this opens.</h3>
+            <NewsletterForm />
+          </div>
+        )}
+      </div>
     </div>
   </section>
 
@@ -141,47 +143,4 @@ const subtitleLine = [detail?.subtitle1, detail?.subtitle2].filter(Boolean).join
     <div>melis.ai · 2026</div>
     <div>Operator-built · Australia</div>
   </div>
-
-  <style>
-    .course-subtitle { max-width: 920px; margin: 0 auto 2em; text-align: center; }
-    .cs-eyebrow { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
-    .cs-h2 { font-family: var(--font-display); font-size: clamp(28px, 3.4vw, 44px); font-weight: 500; line-height: 1.15; color: var(--text-1); margin: 0; }
-    .course-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; max-width: 920px; margin: 0 auto 3em; padding: 24px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 12px; }
-    .cs-stat { text-align: center; }
-    .cs-stat i { font-size: 20px; color: var(--accent); opacity: 0.6; }
-    .cs-val { font-family: var(--font-display); font-size: 28px; color: var(--text-1); }
-    .cs-lbl { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); letter-spacing: 0.06em; }
-
-    .course-problem, .course-outcomes, .course-fit { max-width: 920px; margin: 0 auto 3em; }
-    .course-problem .h2, .course-outcomes .h2, .course-fit .h2 { font-family: var(--font-display); font-size: clamp(28px, 3vw, 38px); font-weight: 500; line-height: 1.2; color: var(--text-1); margin: 0 0 14px; }
-    .course-problem .body-lead { font-family: var(--font-body); font-size: 17px; color: var(--text-2); line-height: 1.65; margin: 0 0 24px; max-width: 720px; }
-    .course-bullets { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
-    .course-bullets li { position: relative; padding-left: 24px; font-family: var(--font-body); font-size: 15px; color: var(--text-2); line-height: 1.55; }
-    .course-bullets li::before { content: '✓'; position: absolute; left: 0; top: 0; color: var(--accent); font-family: var(--font-mono); font-size: 14px; }
-    .course-bullets.is-against li::before { content: '✕'; color: var(--text-3); }
-
-    .outcome-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
-    .outcome-card { padding: 22px 24px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 10px; }
-    .outcome-icon { font-size: 22px; color: var(--accent); opacity: 0.7; display: block; margin-bottom: 10px; }
-    .outcome-card h4 { font-family: var(--font-display); font-size: 18px; font-weight: 500; color: var(--text-1); margin: 0 0 8px; }
-    .outcome-card p { font-family: var(--font-body); font-size: 14px; color: var(--text-2); line-height: 1.55; margin: 0; }
-
-    .fit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
-    .fit-h4 { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-3); margin: 0 0 14px; }
-
-    .course-soon { max-width: 720px; margin: 0 auto 3em; padding: 22px 26px; background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 10px; }
-    .cs-soon-eyebrow { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
-    .course-soon p { font-family: var(--font-body); font-size: 15px; color: var(--text-2); margin: 0; line-height: 1.55; }
-
-    .course-content { max-width: 720px; margin: 0 auto 3em; }
-    .course-content :global(p) { font-family: var(--font-body); font-size: 17px; line-height: 1.7; color: var(--text-1); margin: 0 0 1.4em; }
-
-    .course-closing { max-width: 720px; margin: 0 auto 1.5em; text-align: center; }
-    .cs-closing-eyebrow { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
-    .course-closing h3 { font-family: var(--font-display); font-size: 26px; color: var(--text-1); margin: 0 0 8px; }
-    .course-closing p { font-family: var(--font-body); font-size: 15px; color: var(--text-2); margin: 0; }
-
-    .course-cta { margin: 0 auto 3em; max-width: 540px; text-align: center; }
-    .course-waitlist h3 { font-family: var(--font-display); font-size: 22px; color: var(--text-1); margin: 0 0 12px; }
-  </style>
 </AppLayout>

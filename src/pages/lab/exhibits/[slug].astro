@@ -36,40 +36,30 @@ const META = data.title === 'Lessons'
   />
 
   <section class="section-body">
-    <div class="exhibit-meta">
-      <div class="em-cell"><div class="em-lbl">Works</div><div class="em-val">{META.works}</div></div>
-      <div class="em-cell"><div class="em-lbl">Format</div><div class="em-val">{META.format}</div></div>
-      <div class="em-cell"><div class="em-lbl">Year</div><div class="em-val">{META.year}</div></div>
-      <div class="em-cell"><div class="em-lbl">Status</div><div class="em-val">{META.status}</div></div>
-    </div>
-
-    <section class="exhibit-inside">
-      <div class="section-eyebrow-small">What's inside?</div>
-      <h2 class="h2">A scroll-experience, paper-craft front to back.</h2>
-      <p class="body-lead">{data.lede}</p>
-    </section>
-
-    {data.liveUrl && (
-      <div class="exhibit-cta">
-        <a class="ec-link" href={data.liveUrl} target="_blank" rel="noopener">View the exhibit ↗</a>
+    <div class="v6-detail">
+      <div class="vd-strip">
+        <div class="vd-strip-item"><div class="lbl">Works</div><div class="val">{META.works}</div></div>
+        <div class="vd-strip-item"><div class="lbl">Format</div><div class="val">{META.format}</div></div>
+        <div class="vd-strip-item"><div class="lbl">Year</div><div class="val">{META.year}</div></div>
+        <div class="vd-strip-item"><div class="lbl">Status</div><div class="val">{META.status}</div></div>
       </div>
-    )}
+
+      <section class="vd-section">
+        <h3 class="vd-h3">A scroll-experience, paper-craft front to back.</h3>
+        <div class="vd-prose"><p>{data.lede}</p></div>
+      </section>
+
+      {data.liveUrl && (
+        <div class="vd-cta">
+          <div class="vd-cta-title">View the exhibit</div>
+          <a class="vd-cta-btn" href={data.liveUrl} target="_blank" rel="noopener">Open ↗</a>
+        </div>
+      )}
+    </div>
   </section>
 
   <div class="footer">
     <div>melis.ai · 2026</div>
     <div>Operator-built · Australia</div>
   </div>
-
-  <style>
-    .exhibit-meta { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; max-width: 920px; margin: 0 auto 3em; padding: 22px 26px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 12px; }
-    .em-lbl { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); letter-spacing: 0.06em; margin-bottom: 6px; }
-    .em-val { font-family: var(--font-display); font-size: 18px; color: var(--text-1); }
-    .exhibit-inside { max-width: 720px; margin: 0 auto 3em; }
-    .exhibit-inside .h2 { font-family: var(--font-display); font-size: clamp(24px, 2.4vw, 32px); font-weight: 500; color: var(--text-1); margin: 0 0 12px; }
-    .exhibit-inside p { font-family: var(--font-body); font-size: 16px; color: var(--text-2); line-height: 1.7; margin: 0; }
-    .exhibit-cta { text-align: center; margin: 3em 0; }
-    .ec-link { display: inline-block; padding: 14px 28px; background: var(--accent); color: white; border-radius: 8px; font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.04em; text-decoration: none; }
-    .ec-link:hover { background: #9333ea; }
-  </style>
 </AppLayout>
