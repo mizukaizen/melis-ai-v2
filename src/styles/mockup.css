@@ -2906,6 +2906,23 @@
     to   { transform: translateX(-50%); }
   }
 
+  /* ── Room-card group-pill colour modifiers (for status labels) ── */
+  .pane .room-card-group-pill.is-signal {
+    color: #5eead4;
+    border-color: rgba(94, 234, 212, 0.4);
+    background: rgba(94, 234, 212, 0.12);
+  }
+  .pane .room-card-group-pill.is-orange {
+    color: #fb923c;
+    border-color: rgba(251, 146, 60, 0.4);
+    background: rgba(251, 146, 60, 0.12);
+  }
+  .pane .room-card-group-pill.is-muted {
+    color: rgba(255, 255, 255, 0.6);
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(20, 20, 24, 0.62);
+  }
+
   /* ── Dossiers category landing (dossier-card grid + key-concept-table) ── */
   .pane[data-pane="library"] .kct-headstrip { max-width: 1100px; margin: 0 auto 32px; }
   .pane[data-pane="library"] .dossier-card-grid {

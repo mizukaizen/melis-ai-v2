@@ -37,6 +37,19 @@ These are Astro-introduced patterns that improve on the SPA mockup. The mockup H
 - Added missing `<svg class="ico">` sb2-header icons to `Sidebar2Articles`, `Sidebar2Newsletter`, `Sidebar2About`.
 - Added missing `courses-sb2-list` class to `Sidebar2Courses` so mockup.css selectors at lines 5166–5180 fire.
 
+### Visual verification
+
+- Side-by-side comparison HTML at `~/Documents/_cowork/outputs/website-rebrand/forensic-pass-comparison.html`. 24 surfaces captured at 1440×900 (live vs mockup pane). Open in a browser — it's local-only, not deployed.
+- 18 surfaces tagged `clean` (mockup-equivalent or intentional improvement)
+- 2 surfaces tagged `minor` (Astro expansion beyond mockup pattern — prompts index featured+category grid, dossiers category/detail Astro expansion)
+- 4 surfaces tagged `known-delta` (mockup has no per-slug detail panes — article/newsletter/product/newsletter details compare against in-room pane pattern; `lab` is an Astro-only route)
+
+### Remaining known deltas (logged for Sean's call)
+
+1. **Prompts index — flat searchable pc-grid vs category-first prompt-grid.** Mockup uses 12 `.pc` cards in a flat grid with `pc-type-toggle` filter buttons; Astro uses featured-card + per-category prompt-grid. Deliberate restructure carried over from earlier passes. The flat pc-grid + filter buttons are NOT reimplemented. Decision: keep current Astro design OR revert to flat pc-grid as a future pass.
+2. **Mockup item-list "ten more projects" block on ventures pane** — not reflected on the Astro `/ventures` (which shows only sub-brand room-cards). Sean to decide whether to add a numbered-list block below the room-grid on /ventures.
+3. **Mockup `cta-panel` blocks** (on products, courses, services panes) — not present on the Astro landings. Decision: keep dropped OR add a uniform CTA panel pattern to landings.
+
 ---
 
 ## ✅ Phase 1 complete — 2026-05-21
