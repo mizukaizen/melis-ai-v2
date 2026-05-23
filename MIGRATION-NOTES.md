@@ -509,3 +509,71 @@ Pixel-diff stays high (~24% mean) because **structural drift dominates**. The mo
 2. Open `_cowork/outputs/website-rebrand/audit/FIX-LIST.md` for the actionable CRITICAL + HIGH residue.
 3. Decide on the "per-item-hero vs section-hero" pattern (above). Pass 13 can flip it.
 4. Review + merge the `ui/visual-regression-pass` PR.
+
+---
+
+## Pass 13 — final perfection sweep (2026-05-23)
+
+Branch: `ui/pass-13-perfect`. Walked the FIX-LIST. Per Sean's brief, classified each item as one of:
+1. **Intentional divergence** — preserve live, log here. (10 categories in brief.)
+2. **Genuine fix** — lift mockup verbatim. Per-fix commit.
+3. **Defer to Phase 2** — too granular for this pass.
+4. **Structural / extractor artefact** — unfixable without modifying the pipeline or rewriting Astro.
+
+### Permanent intentional divergences (DO NOT REVERT)
+
+These are deliberate improvements made across passes 4-12. The visual-regression extractor flags them as "extra on live" or "missing on live" — they are not bugs.
+
+1. **Featured Product Card on `/products/`** — Complete Arsenal hero with paper-craft bg + `$197` chip + "Buy bundle →" CTA. Mockup uses a flat card.
+2. **Featured Course Card on `/courses/`** — AI Mastery 2026 hero with paper-craft bg + chip row (`28h · LIVE · 2026 · PREMIUM · LECTURE 1.2`) + `$29` + "Enrol — be the first" CTA.
+3. **Featured Prompt Card on `/prompts/`** — Sean's Edge flagship with paper-craft bg + `Free` chip + "Open the prompt →" CTA.
+4. **Dossier hero byline** — live renders `JAMES CLEAR · 2018 · 12 MIN`; mockup byline slot is empty.
+5. **Per-item info in detail-page heroes** — e.g. "STARTER KITS" eyebrow on `/products/<slug>/`. Mockup keeps section-level eyebrow; live elevates per-item for context.
+6. **Newsletter landing inline subscribe form** — confirmed keep in pass 10.
+7. **AI Mastery metadata chips** — schema-driven; canonical from pass 10.
+8. **Courses sb2 LIVE / SOON / RECORDING status badges** — live UX signal; mockup doesn't carry them.
+9. **5-card services sb2 with Fractional Operator + Speaking coming-soon stubs** — pass 10 reconciliation.
+10. **`⌘K` search button in sb1** — modal stubbed (Phase 2). Button stays visible.
+
+Additionally, these classes of FIX-LIST entries are extractor false positives that aren't fixable without modifying the pipeline (which is out of scope per Sean's brief):
+
+- **SPA bleed-through on detail pages.** Mockup keeps the LANDING `body-h2` + `body-lead` in DOM under the active product/course/dossier room because the SPA never unmounts. Astro per-route detail pages don't render landing copy. Logged as INTENTIONAL across `product-detail-*`, `course-detail-*`, `dossier-*`, `ventures-detail-*`, `services-detail-*`.
+- **Class-name divergence.** Mockup uses `.room-card`; live uses `.flat-card` / `.featured-course-card` / `.dossier-card` / `.featured-product-card`. The role extractor sees them as different roles. Fixed for the first 3 cards via merged-card-selector but variants beyond `card-0/1/2` still mismatch.
+- **Content-volume drift.** "Articles 13" vs "Articles 6", "All Products 36" vs "All Products 35" — live's MDX collection has grown since the mockup snapshot. Sb1/sb2 counts drift accordingly. Normalised in `dom-diff.py` via `text_normalise_label`.
+
+### Fixed in Pass 13 (8 commits on `ui/pass-13-perfect`)
+
+- **Issue A (Articles ordering + content)** — investigated, classified as intentional. Live has 3 extra articles Sean drafted (`how-i-run-9-agents-from-helsinki`, `on-the-two-way-door`, `the-operator-s-toolkit`) that interleave with the mockup's curated 10 by `publishedAt desc`. Live set is canonical. No code change.
+- **Issue B (date format)** — flipped `formatDate()` to ISO `YYYY-MM-DD` (mockup canonical) across articles landing, newsletter landing, Sidebar2Articles, Sidebar2Newsletter. Was localised "8 May 26".
+- **Issue C (Products sb2 ordering)** — replaced alphabetical sort with arsenal-first + by-`PRODUCTS_CATEGORIES`-index. Restores the mockup's editorial priority.
+- **Issue D (Prompts + Recos detail body)** — lifted the landing intro block (h2 + body-lead) onto both detail templates. Recos also gets the "The list" eyebrow above the tools.
+- **Issue E (Lab landing pillars)** — added a 3-card room-grid of the canonical sub-brands (Lighthouse / Holy Signal / Hive Doctrine) above the existing Ventures+Exhibits routing cards.
+- **Articles eyebrow trim** — removed the `{articles.length} articles · essays + field notes` eyebrow that drifted with content volume.
+
+### Issue F walk — outcome
+
+For each remaining CRITICAL after Issues A-E, classification:
+
+| Item kind | Count | Action |
+|---|---:|---|
+| Intentional divergence | ~9 | Logged here. No-op. |
+| SPA bleed-through (detail body missing landing copy) | ~16 | Logged. Architectural — correct UX, not a bug. |
+| Extractor class-name false positive | ~10 | Logged. Would need pipeline tweak (out of scope this pass). |
+| Genuine cosmetic eyebrow ("PAST CLIENTS · A SAMPLE" on services, "·" on recos) | ~3 | Deferred to Phase 2 (would need content/asset work). |
+
+### Delta after Pass 13
+
+| Metric | Pre-13 | Post-13 | Δ |
+|---|---:|---:|---:|
+| Total CRITICAL | ~50 | ~45 | −5 |
+| Total HIGH | ~177 | ~178 | flat |
+| Pages CRITICAL = 0 | 7 | 11 | +4 |
+| Pixel-diff mean | 24.4% | 24.4% | flat |
+
+The CRITICAL < 10 target from the brief is not reachable without either reverting intentional improvements or modifying the pipeline. The 11 pages now at CRITICAL = 0 (home, articles, dossiers, dossiers-books, newsletter, newsletter-detail, prompts-detail, ventures, exhibits, lab, about-sean, about-melis-ai) are the realistic target.
+
+### Build + check
+
+- `pnpm build` → 0 errors, 165 prerendered routes
+- `pnpm exec astro check` → 0 errors, 0 warnings, 3 pre-existing hints
+- Branch `ui/pass-13-perfect` opened as PR — Sean reviews + merges manually.
