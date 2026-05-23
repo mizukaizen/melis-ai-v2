@@ -1,18 +1,23 @@
 ---
-// Pass 11 — render actual ARTICLES_LIST entries (live MDX collection),
-// not abstract categories. Each item links to its detail page; the
-// `syncSb2Active()` script in AppLayout.astro highlights the row whose
-// href matches location.pathname.
+// All articles in sb2 — live + coming-soon — sorted publishedAt desc.
+// Mockup-canonical styling:
+//   - Uppercase violet category eyebrow above each title (Field Notes /
+//     Essays / Tutorials / Tear-downs)
+//   - Date format DD/MM short in sb2 ONLY (cards keep ISO)
+//   - One-row metadata layout
+//   - Coming-soon items render as <div> (non-clickable) with a "Coming soon"
+//     badge — same treatment as the index cards.
 import { getCollection } from 'astro:content';
 
 const items = (await getCollection('articles'))
-  .filter((a) => !a.data.draft)
   .sort((a, b) => (b.data.publishedAt || '').localeCompare(a.data.publishedAt || ''));
 
-function formatDate(iso?: string) {
-  // Mockup-canonical format: ISO YYYY-MM-DD.
+function formatDateShort(iso?: string) {
+  // sb2 format: DD/MM (mockup-canonical for sidebar)
   if (!iso) return '';
-  return iso.slice(0, 10);
+  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return iso;
+  return `${m[3]}/${m[2]}`;
 }
 ---
 
@@ -30,18 +35,60 @@ function formatDate(iso?: string) {
         <div class="sb2-desc">Every essay + field note</div>
       </a>
       {items.map((a) => {
-        const tag = a.data.category || a.data.tags?.[0] || '';
-        const date = formatDate(a.data.publishedAt);
-        const meta = [tag, date].filter(Boolean).join(' · ');
-        return (
-          <a class="sb2-item" href={`/articles/${a.slug}/`}>
+        const cat = a.data.category || a.data.tags?.[0] || '';
+        const date = formatDateShort(a.data.publishedAt);
+        const isComingSoon = a.data.status === 'coming-soon';
+        const inner = (
+          <>
+            {cat && <div class="sb2-eyebrow">{cat}</div>}
             <div class="sb2-row">
               <div class="sb2-name">{a.data.title}</div>
+              {date && <div class="sb2-date">{date}</div>}
             </div>
-            {meta && <div class="sb2-desc">{meta}</div>}
-          </a>
+            {isComingSoon && <div class="sb2-badge">Coming soon</div>}
+          </>
+        );
+        return isComingSoon ? (
+          <div class="sb2-item sb2-item-coming-soon">{inner}</div>
+        ) : (
+          <a class="sb2-item" href={`/articles/${a.slug}/`}>{inner}</a>
         );
       })}
     </div>
   </div>
 </aside>
+
+<style>
+  .sb2-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #c4b5fd;
+    margin-bottom: 4px;
+  }
+  .sb2-date {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-3);
+    letter-spacing: 0.04em;
+    margin-left: 8px;
+    flex-shrink: 0;
+  }
+  .sb2-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .sb2-item-coming-soon { cursor: default; opacity: 0.72; }
+  .sb2-item-coming-soon:hover { background: transparent; }
+  .sb2-badge {
+    display: inline-block;
+    margin-top: 4px;
+    background: rgba(168, 85, 247, 0.18);
+    color: #c4b5fd;
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+</style>

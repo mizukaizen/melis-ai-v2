@@ -8,8 +8,9 @@ import { landingHero } from '../../lib/hero-image';
 
 export const prerender = true;
 
+// Show ALL issues (live + coming-soon) on the index, sorted publishedAt desc.
+// Coming-soon entries render as non-clickable cards with a badge.
 const issues = (await getCollection('newsletter'))
-  .filter((n) => !n.data.draft)
   .sort((a, b) => (b.data.publishedAt || '').localeCompare(a.data.publishedAt || ''));
 
 const filters = ['All', 'Soul of the Machine', "Operator's Brief", 'Hive Doctrine'];
@@ -43,7 +44,6 @@ function tagFor(byline?: string) {
     eyebrow="Channel · three threads"
     title="Soul of the Machine"
     titleHtml="Soul of the <em>Machine</em>"
-    lede="What kind of writing — three threads, one tight signal-to-noise."
   />
 
   <section class="section-body">
@@ -62,19 +62,31 @@ function tagFor(byline?: string) {
     <div class="flat-list-grid" id="newsletter-list">
       {issues.map((n, i) => {
         const cover = n.data.cover || newsletterCover(n.slug, i);
-        const tag = tagFor(n.data.byline);
+        // Newsletter `tag` source order: byline (if present), then eyebrow (mockup
+        // format "Soul of the Machine · 2026-04-28" — second part is the date,
+        // first part is the channel). Falls back to empty string.
+        let tag = tagFor(n.data.byline);
+        if (!tag && n.data.eyebrow) {
+          tag = n.data.eyebrow.split('·')[0].trim();
+        }
         const date = formatDate(n.data.publishedAt);
         const tagLine = [tag, date].filter(Boolean).join(' · ');
+        const isComingSoon = n.data.status === 'coming-soon';
+        const Tag = isComingSoon ? 'div' : 'a';
+        const cardProps = isComingSoon
+          ? { class: 'flat-card flat-card-coming-soon', 'data-category': tag }
+          : { class: 'flat-card', href: `/newsletter/${n.slug}/`, 'data-category': tag };
         return (
-          <a class="flat-card" href={`/newsletter/${n.slug}/`} data-category={tag}>
+          <Tag {...cardProps}>
             <div class="flat-card-img" style={`background-image: url('${cover}');`}></div>
             <div class="flat-card-veil"></div>
+            {isComingSoon && <div class="flat-card-badge">Coming soon</div>}
             <div class="flat-card-meta">
               {tagLine && <div class="flat-card-tag">{tagLine}</div>}
               <div class="flat-card-title">{n.data.title}</div>
               {n.data.lede && <div class="flat-card-line">{n.data.lede}</div>}
             </div>
-          </a>
+          </Tag>
         );
       })}
     </div>
@@ -87,6 +99,25 @@ function tagFor(byline?: string) {
 
   <style>
     .newsletter-subscribe-block { max-width: 540px; margin-top: 12px; }
+    .flat-card { position: relative; }
+    .flat-card-coming-soon { cursor: default; opacity: 0.78; }
+    .flat-card-coming-soon:hover { transform: none; }
+    .flat-card-badge {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 4;
+      background: rgba(168, 85, 247, 0.18);
+      color: #c4b5fd;
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      backdrop-filter: blur(6px);
+    }
   </style>
 
   <script>
@@ -96,7 +127,7 @@ function tagFor(byline?: string) {
       if (!sel || !list) return;
       sel.addEventListener('filter:change', (e) => {
         const val = (e as CustomEvent).detail as string;
-        list.querySelectorAll<HTMLAnchorElement>('a.flat-card').forEach((card) => {
+        list.querySelectorAll<HTMLElement>('.flat-card').forEach((card) => {
           if (val === 'All' || (card.dataset.category || '').includes(val)) {
             card.style.display = '';
           } else {

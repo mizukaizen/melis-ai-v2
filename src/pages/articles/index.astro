@@ -7,8 +7,10 @@ import { landingHero } from '../../lib/hero-image';
 
 export const prerender = true;
 
+// Show ALL articles (live + coming-soon) on the index, sorted publishedAt desc.
+// Coming-soon entries render as non-clickable cards with a badge — no detail
+// route is built for them (see [slug].astro getStaticPaths filter).
 const articles = (await getCollection('articles'))
-  .filter((a) => !a.data.draft)
   .sort((a, b) => (b.data.publishedAt || '').localeCompare(a.data.publishedAt || ''));
 
 const categories = ['All', ...new Set(articles.map((a) => a.data.category).filter((c): c is string => Boolean(c)))];
@@ -34,7 +36,6 @@ function fallbackCover(i: number) {
     eyebrow="Read · 06 · this season"
     title="Articles"
     titleHtml="<em>Articles</em>"
-    lede="Essays and field notes from inside the operation. Honest, slow, sometimes unfinished."
   />
 
   <section class="section-body">
@@ -52,16 +53,22 @@ function fallbackCover(i: number) {
         const tag = a.data.category || '';
         const date = formatDate(a.data.publishedAt);
         const tagLine = [tag, date].filter(Boolean).join(' · ');
+        const isComingSoon = a.data.status === 'coming-soon';
+        const Tag = isComingSoon ? 'div' : 'a';
+        const cardProps = isComingSoon
+          ? { class: 'flat-card flat-card-coming-soon', 'data-category': tag }
+          : { class: 'flat-card', href: `/articles/${a.slug}/`, 'data-category': tag };
         return (
-          <a class="flat-card" href={`/articles/${a.slug}/`} data-category={tag}>
+          <Tag {...cardProps}>
             <div class="flat-card-img" style={`background-image: url('${cover}');`}></div>
             <div class="flat-card-veil"></div>
+            {isComingSoon && <div class="flat-card-badge">Coming soon</div>}
             <div class="flat-card-meta">
               {tagLine && <div class="flat-card-tag">{tagLine}</div>}
               <div class="flat-card-title">{a.data.title}</div>
               {a.data.lede && <div class="flat-card-line">{a.data.lede}</div>}
             </div>
-          </a>
+          </Tag>
         );
       })}
     </div>
@@ -72,6 +79,28 @@ function fallbackCover(i: number) {
     <div>Operator-built · Australia</div>
   </div>
 
+  <style>
+    .flat-card { position: relative; }
+    .flat-card-coming-soon { cursor: default; opacity: 0.78; }
+    .flat-card-coming-soon:hover { transform: none; }
+    .flat-card-badge {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 4;
+      background: rgba(168, 85, 247, 0.18);
+      color: #c4b5fd;
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      backdrop-filter: blur(6px);
+    }
+  </style>
+
   <script>
     function wireFilter() {
       const sel = document.getElementById('articles-filter');
@@ -79,7 +108,7 @@ function fallbackCover(i: number) {
       if (!sel || !list) return;
       sel.addEventListener('filter:change', (e) => {
         const val = (e as CustomEvent).detail as string;
-        list.querySelectorAll<HTMLAnchorElement>('a.flat-card').forEach((card) => {
+        list.querySelectorAll<HTMLElement>('.flat-card').forEach((card) => {
           if (val === 'All' || card.dataset.category === val) {
             card.style.display = '';
           } else {

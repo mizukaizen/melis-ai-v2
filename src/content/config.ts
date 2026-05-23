@@ -21,6 +21,10 @@ const cta = z.object({ icon: z.string().optional(), label: z.string() });
 const pill = z.object({ label: z.string(), cls: z.string().optional() });
 
 // ─── Articles ────────────────────────────────────────────────
+// `status` gates detail-route generation:
+//   live        → real body, /articles/<slug>/ built, card is clickable
+//   coming-soon → stub body, NO detail route built, card shows "Coming soon"
+//                 badge + renders as <div> (non-clickable) on index + sb2.
 const articles = defineCollection({
   type: 'content',
   schema: z
@@ -35,7 +39,7 @@ const articles = defineCollection({
       publishedAt: z.string().optional(),
       readingMinutes: z.number().optional(),
       tags: z.array(z.string()).default([]),
-      draft: z.boolean().default(false),
+      status: z.enum(['live', 'coming-soon']).default('coming-soon'),
     })
     .passthrough(),
 });
@@ -54,7 +58,7 @@ const newsletter = defineCollection({
       issue: z.number().optional(),
       publishedAt: z.string().optional(),
       readingMinutes: z.number().optional(),
-      draft: z.boolean().default(false),
+      status: z.enum(['live', 'coming-soon']).default('coming-soon'),
     })
     .passthrough(),
 });
