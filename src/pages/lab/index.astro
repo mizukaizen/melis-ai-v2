@@ -16,6 +16,10 @@ export const prerender = true;
   />
 
   <section class="section-body">
+    <div class="landing-intro">
+      <h2 class="h2">Things being made — in public, in flight, <em>sometimes parked</em>.</h2>
+      <p class="body-lead">Sub-brands and ventures that started as side projects and grew into something worth shipping. Status is honest: live, in flight, or parked.</p>
+    </div>
     <div class="lab-grid">
       <a class="lab-card" href="/ventures/">
         <div class="lc-eyebrow">42 in flight</div>
@@ -36,6 +40,10 @@ export const prerender = true;
   </div>
 
   <style>
+    .landing-intro { max-width: 720px; margin: 0 auto 2em; }
+    .landing-intro .h2 { font-family: var(--font-display); font-size: clamp(28px, 3vw, 42px); font-weight: 500; line-height: 1.15; color: var(--text-1); margin: 0 0 14px; }
+    .landing-intro .h2 :global(em) { font-style: italic; color: var(--accent); }
+    .landing-intro .body-lead { font-family: var(--font-body); font-size: 16px; color: var(--text-2); line-height: 1.7; margin: 0 0 24px; max-width: 60ch; }
     .lab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; max-width: 1100px; margin: 0 auto; }
     .lab-card { display: flex; flex-direction: column; padding: 32px 36px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 12px; text-decoration: none; color: inherit; transition: border-color 0.2s var(--ease); }
     .lab-card:hover { border-color: rgba(168, 85, 247, 0.3); }
