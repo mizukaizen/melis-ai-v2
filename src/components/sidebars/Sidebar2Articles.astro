@@ -1,19 +1,17 @@
 ---
-// All articles in sb2 — live + coming-soon — sorted publishedAt desc.
-// Mockup-canonical styling:
-//   - Uppercase violet category eyebrow above each title (Field Notes /
-//     Essays / Tutorials / Tear-downs)
-//   - Date format DD/MM short in sb2 ONLY (cards keep ISO)
-//   - One-row metadata layout
-//   - Coming-soon items render as <div> (non-clickable) with a "Coming soon"
-//     badge — same treatment as the index cards.
+// Mockup-canonical sb2 pattern:
+//   .sb2-item > .sb2-row{ .sb2-name (left), .sb2-count (right) }
+//                + .sb2-desc (muted line below)
+// Real data per Astro:
+//   name = title, count = DD/MM date, desc = lowercase category tag.
+// Coming-soon items render as <div> (non-clickable) with opacity dim + a
+// "coming soon" prefix in the desc line. No violet uppercase eyebrow.
 import { getCollection } from 'astro:content';
 
 const items = (await getCollection('articles'))
   .sort((a, b) => (b.data.publishedAt || '').localeCompare(a.data.publishedAt || ''));
 
 function formatDateShort(iso?: string) {
-  // sb2 format: DD/MM (mockup-canonical for sidebar)
   if (!iso) return '';
   const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!m) return iso;
@@ -24,6 +22,7 @@ function formatDateShort(iso?: string) {
 <aside class="sidebar-2" transition:persist="sb2-articles">
   <div class="sb2-pane active" data-pane="articles">
     <div class="sb2-header">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 18 Q 12 13 19 18"/><path d="M5 7 Q 12 12 19 7"/></svg>
       <div class="sb2-title"><em>Articles</em></div>
     </div>
     <div class="sb2-list">
@@ -35,17 +34,19 @@ function formatDateShort(iso?: string) {
         <div class="sb2-desc">Every essay + field note</div>
       </a>
       {items.map((a) => {
-        const cat = a.data.category || a.data.tags?.[0] || '';
+        const cat = (a.data.category || a.data.tags?.[0] || '').toLowerCase();
         const date = formatDateShort(a.data.publishedAt);
         const isComingSoon = a.data.status === 'coming-soon';
+        const desc = isComingSoon
+          ? (cat ? `coming soon · ${cat}` : 'coming soon')
+          : cat;
         const inner = (
           <>
-            {cat && <div class="sb2-eyebrow">{cat}</div>}
             <div class="sb2-row">
               <div class="sb2-name">{a.data.title}</div>
-              {date && <div class="sb2-date">{date}</div>}
+              {date && <div class="sb2-count">{date}</div>}
             </div>
-            {isComingSoon && <div class="sb2-badge">Coming soon</div>}
+            {desc && <div class="sb2-desc">{desc}</div>}
           </>
         );
         return isComingSoon ? (
@@ -57,38 +58,3 @@ function formatDateShort(iso?: string) {
     </div>
   </div>
 </aside>
-
-<style>
-  .sb2-eyebrow {
-    font-family: var(--font-mono);
-    font-size: 9.5px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #c4b5fd;
-    margin-bottom: 4px;
-  }
-  .sb2-date {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--text-3);
-    letter-spacing: 0.04em;
-    margin-left: 8px;
-    flex-shrink: 0;
-  }
-  .sb2-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-  .sb2-item-coming-soon { cursor: default; opacity: 0.72; }
-  .sb2-item-coming-soon:hover { background: transparent; }
-  .sb2-badge {
-    display: inline-block;
-    margin-top: 4px;
-    background: rgba(168, 85, 247, 0.18);
-    color: #c4b5fd;
-    border: 1px solid rgba(168, 85, 247, 0.35);
-    padding: 2px 7px;
-    border-radius: 3px;
-    font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-</style>

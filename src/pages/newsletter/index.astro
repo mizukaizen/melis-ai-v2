@@ -37,7 +37,7 @@ function tagFor(byline?: string) {
 <AppLayout
   title="Newsletter"
   pane="newsletter"
-  description="A daily dispatch from inside the operation. Field notes, observations, and one-line wins from a working studio."
+  description="Bi-weekly dispatches from the studio — Soul of the Machine, Operator's Brief, Hive Doctrine. Three threads, one tight signal-to-noise."
 >
   <SectionHero
     cover={landingHero('newsletter')}
@@ -90,35 +90,49 @@ function tagFor(byline?: string) {
         );
       })}
     </div>
+
+    {/* Mockup-canonical closing section (lifted verbatim from wireSectionDetails JS). */}
+    <div class="landing-closing">
+      <h2 class="h2">The <em>Dispatch</em> — what broke, what worked.</h2>
+      <p class="body-lead">Two threads from the studio. Soul of the Machine ships Sundays (long-form, cinematic). The Operator's Brief ships Tuesdays (tactical, sharp). Both free.</p>
+      <div class="group-block" style="margin-top: 28px;">
+        <div class="group-eyebrow">Recent · 3 issues</div>
+        <div class="v6-detail" style="margin-top:14px;">
+          <div class="vd-rows">
+            <a class="vd-row" href="/newsletter/latest-dispatch/">
+              <div>
+                <div class="vd-row-name">Soul of the Machine · 047</div>
+                <div class="vd-row-attr">Sun 18 May 2026 · 6,432 subs · 47% open</div>
+              </div>
+              <div class="vd-row-take">On voice-locked AI, the Pantheon launch, and the bot wallet rotation that nearly cost me €4,200.</div>
+              <div class="vd-row-cta">Read →</div>
+            </a>
+            <a class="vd-row" href="/newsletter/soul-of-the-machine/">
+              <div>
+                <div class="vd-row-name">Soul of the Machine · 046</div>
+                <div class="vd-row-attr">Sun 11 May 2026 · 6,401 subs · 49% open</div>
+              </div>
+              <div class="vd-row-take">Notes from a week of paying attention to what I pay attention to. One image-gen pipeline and a long aside about Mary Oliver.</div>
+              <div class="vd-row-cta">Read →</div>
+            </a>
+            <a class="vd-row" href="/newsletter/operator-s-brief/">
+              <div>
+                <div class="vd-row-name">Operator's Brief · 023</div>
+                <div class="vd-row-attr">Tue 13 May 2026 · 4,118 subs · 51% open</div>
+              </div>
+              <div class="vd-row-take">Three tactical moves: cleaner inbox-zero pattern, redeploy-without-prayer Vercel checklist, SaaS-finance dashboard.</div>
+              <div class="vd-row-cta">Read →</div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <div class="footer">
     <div>melis.ai · 2026</div>
     <div>Operator-built · Australia</div>
   </div>
-
-  <style>
-    .newsletter-subscribe-block { max-width: 540px; margin-top: 12px; }
-    .flat-card { position: relative; }
-    .flat-card-coming-soon { cursor: default; opacity: 0.78; }
-    .flat-card-coming-soon:hover { transform: none; }
-    .flat-card-badge {
-      position: absolute;
-      top: 14px;
-      right: 14px;
-      z-index: 4;
-      background: rgba(168, 85, 247, 0.18);
-      color: #c4b5fd;
-      border: 1px solid rgba(168, 85, 247, 0.35);
-      padding: 4px 10px;
-      border-radius: 4px;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      backdrop-filter: blur(6px);
-    }
-  </style>
 
   <script>
     function wireFilter() {

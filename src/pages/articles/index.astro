@@ -29,7 +29,7 @@ function fallbackCover(i: number) {
 <AppLayout
   title="Articles"
   pane="articles"
-  description="Essays and field notes from inside the operation. Honest, slow, sometimes unfinished."
+  description="Operator notes from inside the work — essays, field notes, tear-downs and tutorials from a decade of building with AI."
 >
   <SectionHero
     cover={landingHero('articles')}
@@ -72,34 +72,50 @@ function fallbackCover(i: number) {
         );
       })}
     </div>
+
+    {/* Mockup-canonical closing section (lifted verbatim from
+        wireSectionDetails JS, lines 14723+ of the mockup HTML). */}
+    <div class="landing-closing">
+      <h2 class="h2">Field notes from a year of <em>building in the open</em>.</h2>
+      <p class="body-lead">Essays, tear-downs and field notes. Every piece [draft] is something I am working on this quarter — not polished yet, but the substance is real.</p>
+      <div class="group-block" style="margin-top: 28px;">
+        <div class="group-eyebrow">Latest · 3 articles</div>
+        <div class="v6-detail" style="margin-top:14px;">
+          <div class="vd-rows">
+            <a class="vd-row" href="/articles/the-operator-s-toolkit/">
+              <div>
+                <div class="vd-row-name">The Operator's Toolkit</div>
+                <div class="vd-row-attr">22 Mar 2026 · essay · 8 min</div>
+              </div>
+              <div class="vd-row-take">Eleven tools, two principles, and the philosophy that decides which ones survive your spring-clean.</div>
+              <div class="vd-row-cta">Read →</div>
+            </a>
+            <a class="vd-row" href="/articles/how-i-run-9-agents-from-helsinki/">
+              <div>
+                <div class="vd-row-name">How I Run 9 Agents from Helsinki</div>
+                <div class="vd-row-attr">14 Mar 2026 · tear-down · 12 min</div>
+              </div>
+              <div class="vd-row-take">Full architecture write-up — Hetzner, OpenClaw, Telegram, and the L1/L2/L3 tier system.</div>
+              <div class="vd-row-cta">Read →</div>
+            </a>
+            <a class="vd-row" href="/articles/on-the-two-way-door/">
+              <div>
+                <div class="vd-row-name">On the Two-Way Door</div>
+                <div class="vd-row-attr">7 Mar 2026 · field note · 4 min</div>
+              </div>
+              <div class="vd-row-take">Bezos's frame for decision speed. Why most operators reverse it. And the situation where the model breaks.</div>
+              <div class="vd-row-cta">Read →</div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <div class="footer">
     <div>melis.ai · 2026</div>
     <div>Operator-built · Australia</div>
   </div>
-
-  <style>
-    .flat-card { position: relative; }
-    .flat-card-coming-soon { cursor: default; opacity: 0.78; }
-    .flat-card-coming-soon:hover { transform: none; }
-    .flat-card-badge {
-      position: absolute;
-      top: 14px;
-      right: 14px;
-      z-index: 4;
-      background: rgba(168, 85, 247, 0.18);
-      color: #c4b5fd;
-      border: 1px solid rgba(168, 85, 247, 0.35);
-      padding: 4px 10px;
-      border-radius: 4px;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      backdrop-filter: blur(6px);
-    }
-  </style>
 
   <script>
     function wireFilter() {

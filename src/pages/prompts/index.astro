@@ -2,40 +2,26 @@
 import AppLayout from '../../layouts/AppLayout.astro';
 import SectionHero from '../../components/SectionHero.astro';
 import { getCollection } from 'astro:content';
-import { landingHero } from '../../lib/hero-image';
+import { landingHero, itemHero } from '../../lib/hero-image';
 
 export const prerender = true;
 
 const prompts = (await getCollection('prompts')).filter((p) => !p.data.draft);
-const byCategory = new Map<string, typeof prompts>();
-for (const p of prompts) {
-  const c = p.data.category;
-  if (!byCategory.has(c)) byCategory.set(c, [] as never);
-  byCategory.get(c)!.push(p);
-}
 
-// Featured = first Sean's Edge prompt (the flagship). Falls back to the
-// first prompt overall if Sean's Edge isn't present.
-const seansEdge = byCategory.get("Sean's Edge") || [];
-const featured = seansEdge[0] || prompts[0];
+// Filter pill categories — derived from the collection. Keeps mockup's filter
+// behaviour while flattening the underlying grid (no per-category sections).
+const categories = ['All', ...Array.from(new Set(prompts.map((p) => p.data.category)))];
 
-// Per-category Phosphor icon palette (mirrors Sidebar2Prompts CAT_ICON).
-const CAT_ICON: Record<string, { i: string; c: string }> = {
-  "Sean's Edge":        { i: 'ph-lightning',     c: '#ff6b6b' },
-  'Business':           { i: 'ph-handshake',     c: '#fb923c' },
-  'Think & Communicate':{ i: 'ph-compass',       c: '#a78bfa' },
-  'Life & Career':      { i: 'ph-map-trifold',   c: '#fb7185' },
-  'Build':              { i: 'ph-cpu',           c: '#5eead4' },
-};
-function iconFor(cat: string) {
-  return CAT_ICON[cat] || { i: 'ph-sparkle', c: '#a78bfa' };
+function coverFor(p: { data: { category: string; cover?: string }; slug: string }) {
+  if (p.data.cover && p.data.cover.startsWith('/')) return p.data.cover;
+  return itemHero('prompts', p.data.category, p.slug);
 }
 ---
 
 <AppLayout
   title="Prompts"
   pane="prompts"
-  description="A working operator's prompt library — categorised, tested, and ready to copy."
+  description="A working operator's prompt library — flat searchable grid, tested in real work, ready to copy."
 >
   <SectionHero
     cover={landingHero('prompts')}
@@ -48,50 +34,32 @@ function iconFor(cat: string) {
   <section class="section-body">
     <div class="landing-intro">
       <h2 class="h2">Operator prompts — <em>tested in real work</em>.</h2>
-      <p class="body-lead">Every prompt here started as something I needed for a real client problem, then got refined enough to reuse. Grouped by the job it does. Copy, fill the [brackets], ship.</p>
+      <p class="body-lead">Every prompt here started as something I needed for a real client problem, then got refined enough to reuse. Copy, fill the [brackets], ship.</p>
     </div>
-    {featured && (
-      <a class="featured-prompt-card" href={`/prompts/${featured.slug}/`}>
-        <div class="fpc-bg" style="background-image: url('/card-products-v1.png');"></div>
-        <div class="fpc-veil"></div>
-        <div class="fpc-content">
-          <div class="fpc-eyebrow">
-            <i class="ph ph-lightning" aria-hidden="true"></i>
-            Sean's Edge · the flagship
-          </div>
-          <h3 class="fpc-title">{featured.data.title}</h3>
-          <p class="fpc-lede">{featured.data.lede}</p>
-          <div class="fpc-foot">
-            <span class="fpc-price">Free</span>
-            <span class="fpc-cta">Open the prompt →</span>
-          </div>
-        </div>
-      </a>
+
+    {categories.length > 1 && (
+      <div class="pc-type-toggle" id="prompts-filter">
+        {categories.map((c) => (
+          <button class="ptt-btn" class:list={[{ active: c === 'All' }]} type="button" data-filter={c}>{c}</button>
+        ))}
+      </div>
     )}
 
-    {Array.from(byCategory.entries()).map(([category, items]) => {
-      const ic = iconFor(category);
-      const visible = items.filter((p) => p.slug !== featured?.slug);
-      if (visible.length === 0) return null;
-      return (
-        <section class="prompt-category">
-          <div class="prompt-category-head">
-            <i class={`ph ${ic.i}`} style={`color:${ic.c}`} aria-hidden="true"></i>
-            <h2 class="h2">{category}</h2>
-            <span class="prompt-category-count">{items.length}</span>
+    <div class="room-grid" id="prompts-grid">
+      {prompts.map((p) => (
+        <a class="room-card" href={`/prompts/${p.slug}/`} data-category={p.data.category}>
+          <div class="room-card-img" style={`background-image: url('${coverFor(p)}');`}></div>
+          <div class="room-card-veil"></div>
+          <div class="room-card-group-pill is-muted">{p.data.category}</div>
+          <div class="room-card-arrow">↗</div>
+          <div class="room-card-meta">
+            <div class="room-card-eyebrow">Prompt</div>
+            <div class="room-card-title">{p.data.title}</div>
+            <div class="room-card-line">{p.data.lede}</div>
           </div>
-          <div class="prompt-grid">
-            {visible.map((p) => (
-              <a class="prompt-card" href={`/prompts/${p.slug}/`}>
-                <i class={`ph ${ic.i} pc-icon`} style={`color:${ic.c}`} aria-hidden="true"></i>
-                <div class="pc-title">{p.data.title}</div>
-                <div class="pc-line">{p.data.lede}</div>
-              </a>
-            ))}
-          </div>
-        </section>
-      );
-    })}
+        </a>
+      ))}
+    </div>
     {prompts.length === 0 && (
       <p style="text-align:center;color:var(--text-3);">No prompts yet. Check back soon.</p>
     )}
@@ -102,47 +70,24 @@ function iconFor(cat: string) {
     <div>Operator-built · Australia</div>
   </div>
 
-  <style>
-    .landing-intro { max-width: 720px; margin: 0 auto 2em; }
-    .landing-intro .h2 { font-family: var(--font-display); font-size: clamp(28px, 3vw, 42px); font-weight: 500; line-height: 1.15; color: var(--text-1); margin: 0 0 14px; }
-    .landing-intro .h2 :global(em) { font-style: italic; color: var(--accent); }
-    .landing-intro .body-lead { font-family: var(--font-body); font-size: 16px; color: var(--text-2); line-height: 1.7; margin: 0 0 24px; max-width: 60ch; }
-
-    .featured-prompt-card {
-      position: relative;
-      display: block;
-      max-width: 1100px;
-      min-height: 320px;
-      margin: 0 auto 3em;
-      border: 1px solid rgba(255, 107, 107, 0.25);
-      border-radius: 14px;
-      overflow: hidden;
-      text-decoration: none;
-      color: inherit;
-      isolation: isolate;
-      transition: transform 0.2s var(--ease), border-color 0.2s var(--ease);
+  <script>
+    function wirePromptFilter() {
+      const wrap = document.getElementById('prompts-filter');
+      const grid = document.getElementById('prompts-grid');
+      if (!wrap || !grid) return;
+      if (wrap.dataset.wired === '1') return;
+      wrap.dataset.wired = '1';
+      wrap.querySelectorAll<HTMLButtonElement>('.ptt-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const val = btn.dataset.filter || 'All';
+          wrap.querySelectorAll('.ptt-btn').forEach((b) => b.classList.toggle('active', b === btn));
+          grid.querySelectorAll<HTMLElement>('.room-card').forEach((card) => {
+            card.style.display = (val === 'All' || card.dataset.category === val) ? '' : 'none';
+          });
+        });
+      });
     }
-    .featured-prompt-card:hover { transform: translateY(-2px); border-color: rgba(255, 107, 107, 0.55); }
-    .fpc-bg { position: absolute; inset: 0; background-size: cover; background-position: center; z-index: 0; }
-    .fpc-veil { position: absolute; inset: 0; background: linear-gradient(110deg, rgba(5, 5, 5, 0.78) 0%, rgba(5, 5, 5, 0.55) 40%, rgba(5, 5, 5, 0.22) 75%, transparent 100%); z-index: 1; pointer-events: none; }
-    .fpc-content { position: relative; z-index: 2; padding: 36px 40px; max-width: 640px; }
-    .fpc-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: #ff6b6b; margin-bottom: 12px; }
-    .fpc-title { font-family: var(--font-display); font-size: clamp(28px, 3.4vw, 40px); font-weight: 500; line-height: 1.15; color: var(--text-1); margin: 0 0 12px; }
-    .fpc-lede { font-family: var(--font-body); font-size: 16px; color: var(--text-1); line-height: 1.55; margin: 0 0 22px; max-width: 60ch; }
-    .fpc-foot { display: flex; align-items: center; gap: 16px; }
-    .fpc-price { font-family: var(--font-display); font-size: 24px; color: var(--accent); font-weight: 500; padding: 4px 12px; background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 6px; }
-    .fpc-cta { display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; background: var(--accent); color: white; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.06em; font-weight: 500; border-radius: 6px; }
-
-    .prompt-category { margin-bottom: 3em; }
-    .prompt-category-head { display: flex; align-items: center; gap: 10px; margin-bottom: 1em; }
-    .prompt-category-head i { font-size: 18px; }
-    .prompt-category-head .h2 { font-family: var(--font-display); font-size: 26px; font-weight: 500; color: var(--text-1); margin: 0; flex: 1; }
-    .prompt-category-count { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); letter-spacing: 0.1em; }
-    .prompt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
-    .prompt-card { display: flex; flex-direction: column; gap: 8px; padding: 18px 20px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 10px; text-decoration: none; color: inherit; transition: border-color 0.2s var(--ease), transform 0.2s var(--ease); }
-    .prompt-card:hover { border-color: rgba(168, 85, 247, 0.3); transform: translateY(-2px); }
-    .pc-icon { font-size: 18px; opacity: 0.85; }
-    .pc-title { font-family: var(--font-display); font-size: 18px; font-weight: 500; color: var(--text-1); line-height: 1.2; }
-    .pc-line { font-family: var(--font-body); font-size: 13px; color: var(--text-2); line-height: 1.45; }
-  </style>
+    document.addEventListener('astro:page-load', wirePromptFilter);
+    wirePromptFilter();
+  </script>
 </AppLayout>

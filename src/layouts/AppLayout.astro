@@ -34,11 +34,13 @@ const paneMode = pane === 'home' ? '' : (inRoom ? 'in-room' : 'is-direct-view');
 const paneClass = ['pane', 'active', paneMode].filter(Boolean).join(' ');
 // Home is sb1-only per the mockup. Every other route gets the contextual sb2.
 const hasSb2 = pane !== 'home';
+// Mockup-canonical app classes. `is-home` and `is-landing-mode` are mutually
+// exclusive in the mockup — home uses its own `display: flex; height: 100vh`
+// layout (mockup.css line 3875+) while every other landing uses the
+// 3-column grid via `is-landing-mode`. Detail routes get neither.
 const appClass = [
   'app',
-  hasSb2 ? 'has-sb2' : 'no-sb2',
-  pane === 'home' ? 'is-home' : '',
-  inRoom ? 'in-room-mode' : 'is-landing-mode',
+  pane === 'home' ? 'is-home' : (inRoom ? '' : 'is-landing-mode'),
 ].filter(Boolean).join(' ');
 ---
 

@@ -13,8 +13,8 @@ const overrides = ROOM_IMAGE_OVERRIDES as Record<string, SectionMap>;
 const LANDING_FALLBACKS: Record<string, string> = {
   home: '/hero-v1.png',
   courses: '/card-courses-v1.png',       // warm cozy reader scene
-  articles: '/card-articles-v1.png',     // warm reading library
-  newsletter: '/card-articles-v1.png',   // mockup uses card-articles for newsletter too
+  articles: '/section-rooms/articles-landing.png',     // paper-craft library — pass 7 forensic
+  newsletter: '/section-rooms/news-landing.png',       // paper-craft writer's desk — pass 7 forensic
   products: '/card-products-v1.png',     // warm wood-workshop with tools
   prompts: '/card-products-v1.png',      // mockup uses card-products fallback
   recos: '/card-services-v1.png',

@@ -12,7 +12,7 @@ const COVER_MAP: Record<string, string> = {
   'strategy-print-sprint': '/section-rooms/services-strategy.png',
   'business-ai-blueprint': '/section-rooms/services-advisory.png',
   'ai-builds-on-tap':      '/section-rooms/services-build.png',
-  'fractional-operator':   '/section-rooms/services-fractional.png',
+  'operator-coaching':     '/section-rooms/services-fractional.png',
   'speaking':              '/section-rooms/services-speaking.png',
 };
 function coverFor(slug: string) {
@@ -52,6 +52,23 @@ function coverFor(slug: string) {
         </a>
       ))}
     </div>
+
+    <hr class="rule" />
+
+    {/* Mockup-canonical closing section: client list + CTA panel. */}
+    <div class="landing-closing">
+      <div class="section-eyebrow-small">Past clients · a sample</div>
+      <h2 class="h2">Trusted by operators who <em>build for a living</em>.</h2>
+      <p class="body-lead">Mercedes · Kiehl's · Brisbane Lions · Lyre's Spirits · Maybelline NY · Culture Amp · Snap Fitness · Jetts · JustDigitalPeople · JKL College — and a quiet list of solo founders, indie studios, and operators who'd rather not be named.</p>
+
+      <div class="cta-panel">
+        <div class="cta-panel-text">
+          <h3>Want to <em>talk first</em>?</h3>
+          <p>Twenty minutes, no slides. Just walk through what you're working on and what's stuck. I'll tell you whether I'm the right fit honestly.</p>
+        </div>
+        <a class="btn" href="mailto:sean@melis.ai">Email me →</a>
+      </div>
+    </div>
   </section>
 
   <div class="footer">
@@ -59,10 +76,4 @@ function coverFor(slug: string) {
     <div>Operator-built · Australia</div>
   </div>
 
-  <style>
-    .landing-intro { max-width: 720px; margin: 0 auto 2em; }
-    .landing-intro .h2 { font-family: var(--font-display); font-size: clamp(28px, 3vw, 42px); font-weight: 500; line-height: 1.15; color: var(--text-1); margin: 0 0 14px; }
-    .landing-intro .h2 :global(em) { font-style: italic; color: var(--accent); }
-    .landing-intro .body-lead { font-family: var(--font-body); font-size: 16px; color: var(--text-2); line-height: 1.7; margin: 0 0 24px; max-width: 60ch; }
-  </style>
 </AppLayout>
