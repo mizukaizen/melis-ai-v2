@@ -3,9 +3,12 @@ import { ClientRouter } from 'astro:transitions';
 import Sidebar1 from '../components/Sidebar1.astro';
 import Sidebar2 from '../components/Sidebar2.astro';
 // Order matters: mockup.css first (it's the design source-of-truth),
-// global.css last (its post-mockup overrides win).
+// global.css last (its post-mockup overrides win), recos.css after
+// global because it scopes everything under .reco-detail-v7 and the
+// 10 .cover-* palettes — no overlap with other surfaces.
 import '../styles/mockup.css';
 import '../styles/global.css';
+import '../styles/recos.css';
 
 interface Props {
   title: string;
