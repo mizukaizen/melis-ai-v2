@@ -1,0 +1,18 @@
+---
+title: "Write the README that makes people want to use your project"
+eyebrow: "Prompt Library · Coding"
+lede: "README writing that covers setup, usage, contribution, and the 'why this exists' — clear enough that a new user can get started without asking you anything."
+category: "Coding"
+categorySlug: "coding"
+categoryGroup: "Build"
+subcategory: "review"
+payoff: "save"
+icon: "ph-hard-drives"
+tier: "pro"
+sourceId: "dv-13"
+cover: "/section-rooms/prompts-coding.png"
+prompt: "You are an infrastructure and cloud architecture expert. I want to design or migrate infrastructure on a cloud platform.\n\nProject: [WHAT THE SYSTEM IS — WEB APP / API / DATA PIPELINE / ML WORKLOAD]\nTarget platform: [AWS / GCP / AZURE — SPECIFY REGION]\nCurrent infrastructure: [IF MIGRATING — DESCRIBE WHAT EXISTS NOW; IF GREENFIELD — DESCRIBE REQUIREMENTS]\nTraffic profile: [STEADY / BURSTY / BATCH — PEAK AND AVERAGE LOAD]\nBudget target: [MONTHLY BUDGET OR COST SENSITIVITY]\nTeam operational capacity: [MANAGED SERVICES PREFERRED / COMFORTABLE WITH K8S / WANTS MINIMAL OPS]\n\nPlease produce:\n1. Service selection — for each component, the recommended AWS/GCP/Azure service with rationale; managed vs. self-managed trade-off\n2. Network architecture — VPC design, subnets, security groups, load balancer placement\n3. Compute strategy — serverless vs. containers vs. VMs; auto-scaling configuration\n4. Data layer — database service, read replicas, backup strategy, encryption at rest\n5. Cost estimate — rough monthly cost breakdown by component at average and peak load\n6. Terraform skeleton — the key resource blocks for the core infrastructure (not complete, but the important structures)\n7. Migration plan (if applicable) — phases, cutover strategy, rollback capability, zero-downtime approach\n\nCloud architecture is cost architecture. Every decision is also a bill."
+draft: false
+---
+
+README writing that covers setup, usage, contribution, and the 'why this exists' — clear enough that a new user can get started without asking you anything.

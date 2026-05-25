@@ -98,29 +98,42 @@ const appClass = [
         if (!sb2) return;
         const path = location.pathname.replace(/\/$/, '');
         const rows = sb2.querySelectorAll<HTMLAnchorElement>('a.panel-item, a.sb2-item');
-        let matched = false;
+        // Walk twice. First pass: clear all .active to avoid stale state from
+        // a prior page (view-transitions keep the sb2 DOM around).
+        rows.forEach((row) => row.classList.remove('active'));
+        // Pick exactly ONE winner. Prefer exact-match; fall back to the
+        // longest prefix-match (so /dossiers/books/atomic-habits lights up
+        // its "Books" category row when no per-item row exists). Two rows
+        // with identical href? First one wins — that's how the "All …"
+        // sentinel claims the landing path even when other items fall back
+        // to the same landing href.
+        let bestRow: HTMLAnchorElement | null = null;
+        let bestLen = -1;
+        let bestExact = false;
         rows.forEach((row) => {
           const href = (row.getAttribute('href') || '').replace(/\/$/, '');
-          // Exact match wins. Partial-prefix match (path is deeper than href)
-          // also counts so a dossier-detail page lights up its category row
-          // if no per-item row exists. href "" or "/" never matches partials.
-          const isActive =
-            href !== '' &&
-            href !== '/' &&
-            (href === path || (path === '' && href === '/'));
-          row.classList.toggle('active', isActive);
-          if (isActive) {
-            matched = true;
-            const group = row.closest('.panel-group');
-            if (group) group.classList.add('open');
+          if (href === '' || href === '/') return;
+          if (href === path) {
+            if (!bestExact || href.length > bestLen) {
+              bestRow = row;
+              bestLen = href.length;
+              bestExact = true;
+            }
+            return;
+          }
+          if (!bestExact && path.startsWith(href + '/') && href.length > bestLen) {
+            bestRow = row;
+            bestLen = href.length;
           }
         });
-        // Landing-page fallback: light up the "All <section>" sentinel row
-        // (the first panel-item / sb2-item) so the user always sees something
-        // highlighted in sb2.
-        if (!matched) {
-          const all =
-            sb2.querySelector<HTMLAnchorElement>('a.panel-item, a.sb2-item');
+        if (bestRow) {
+          (bestRow as HTMLAnchorElement).classList.add('active');
+          const group = (bestRow as HTMLAnchorElement).closest('.panel-group');
+          if (group) group.classList.add('open');
+        } else {
+          // No exact match — fall back to the first row (typical sentinel
+          // like "All Prompts") so the user always sees something highlighted.
+          const all = sb2.querySelector<HTMLAnchorElement>('a.panel-item, a.sb2-item');
           if (all) all.classList.add('active');
         }
       }

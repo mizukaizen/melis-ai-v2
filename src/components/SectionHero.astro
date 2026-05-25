@@ -1,7 +1,15 @@
 ---
-// Canonical section hero. Renders the paper-craft background image
-// with the eyebrow / title (with <em> emphasis) / byline / lede stacked
-// at the bottom-left. Matches the v6 mockup's .section-header pattern.
+// Canonical section hero.
+//
+// RULES (enforced — do not override per page):
+//   • Renders ONLY: eyebrow + h1 + optional 1-line `byline` sub.
+//   • NEVER renders long descriptions on the cover image. The `lede`
+//     prop is intentionally NOT rendered here — pass long descriptions
+//     to <section class="section-body"> instead so they sit on the felt
+//     and align left with the eyebrow above.
+//   • Background image fades to var(--bg) at the bottom via global
+//     CSS mask-image (see global.css "CANONICAL HERO" section).
+//   • h1 + eyebrow + byline are left-aligned. No centering.
 //
 // `cover` should be a path starting with `/` — e.g. /library-rooms/lib-books.png
 
@@ -11,8 +19,9 @@ interface Props {
   title: string;
   /** title with `<em>...</em>` markup — wins over `title` if provided */
   titleHtml?: string;
+  /** Optional 1-line sub under h1. Use for "8 May 2026 · 6 min read" style metadata.
+      Long descriptions / ledes belong in section-body, not here. */
   byline?: string;
-  lede?: string;
   backHref?: string;
   backLabel?: string;
 }
@@ -23,7 +32,6 @@ const {
   title,
   titleHtml,
   byline,
-  lede,
   backHref,
   backLabel,
 } = Astro.props;
@@ -40,7 +48,6 @@ const {
       {eyebrow && <div class="section-eyebrow">{eyebrow}</div>}
       <h1 class="section-title" set:html={titleHtml || title}></h1>
       {byline && <div class="section-byline">{byline}</div>}
-      {lede && <p class="section-lead">{lede}</p>}
     </div>
   </div>
 </section>

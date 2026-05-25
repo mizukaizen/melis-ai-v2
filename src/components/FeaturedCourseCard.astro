@@ -58,11 +58,11 @@ const chips = [data.duration, data.liveStatus, data.year, data.tier, data.lectur
     display: block;
     width: 100%;
     max-width: 1100px;
-    margin: 0 auto 4em;
+    margin: 0 0 4em;            /* left-align with h2/body, drop auto-centering */
     min-height: 380px;
     border-radius: 14px;
     overflow: hidden;
-    border: 1px solid rgba(168, 85, 247, 0.22);
+    border: 1px solid var(--accent-subtle);
     text-decoration: none;
     color: inherit;
     isolation: isolate;
@@ -70,7 +70,7 @@ const chips = [data.duration, data.liveStatus, data.year, data.tier, data.lectur
   }
   .featured-course-card:hover {
     transform: translateY(-2px);
-    border-color: rgba(168, 85, 247, 0.45);
+    border-color: var(--accent-glow);
   }
   .fcc-bg {
     position: absolute;

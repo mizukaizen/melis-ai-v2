@@ -1,0 +1,18 @@
+---
+title: "Teach a model to behave exactly how you want — with examples"
+eyebrow: "Prompt Library · Prompting"
+lede: "Few-shot example design that communicates the pattern you want through demonstration — the fastest way to get consistent behaviour without fine-tuning."
+category: "Prompting"
+categorySlug: "prompting"
+categoryGroup: "Build"
+subcategory: "build"
+payoff: "save"
+icon: "ph-tree-view"
+tier: "pro"
+sourceId: "pe-04"
+cover: "/section-rooms/prompts-prompting.png"
+prompt: "You are an expert in structured output extraction, information parsing, and getting LLMs to produce reliable, machine-parseable data. I want to extract structured data from unstructured text reliably.\n\nInput type: [EMAILS / DOCUMENTS / TRANSCRIPTS / NEWS ARTICLES / CUSTOMER FEEDBACK / WEB CONTENT]\nDesired output structure: [JSON SCHEMA / MARKDOWN TABLE / CSV / SPECIFIC FIELDS — DESCRIBE]\nCurrent extraction quality: [WHAT'S WRONG — MISSING FIELDS / WRONG TYPES / INCONSISTENT FORMAT / HALLUCINATED VALUES]\nVolume: [ONE-OFF / BATCH PROCESSING / REAL-TIME API]\nModel: [WHICH LLM AND API ACCESS LEVEL]\n\nPlease produce:\n1. JSON schema definition — the exact schema for the target output; include types, required fields, and examples\n2. Extraction prompt — a high-reliability prompt that instructs the model to populate the schema from the input\n3. Few-shot examples — 2–3 input/output pairs that demonstrate exactly what you want\n4. Error handling instructions — how to instruct the model to handle missing data (null vs. empty vs. \"unknown\")\n5. Validation layer — post-extraction checks to run on the output; what to flag for human review\n6. Function calling / tool use approach — if the model supports it, how to use structured outputs / function calling for higher reliability\n7. Fallback strategy — when extraction fails, the graceful degradation approach\n\nStructured extraction is the foundation of LLM-powered automation. Get it right."
+draft: false
+---
+
+Few-shot example design that communicates the pattern you want through demonstration — the fastest way to get consistent behaviour without fine-tuning.

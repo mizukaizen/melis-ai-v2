@@ -1,0 +1,18 @@
+---
+title: "Get more signal into the context window without hitting the limit"
+eyebrow: "Prompt Library · Prompting"
+lede: "Context window optimisation strategies for long documents, complex tasks, and multi-turn conversations — including compression, chunking, and retrieval design."
+category: "Prompting"
+categorySlug: "prompting"
+categoryGroup: "Build"
+subcategory: "control"
+payoff: "save"
+icon: "ph-shuffle"
+tier: "pro"
+sourceId: "pe-10"
+cover: "/section-rooms/prompts-prompting.png"
+prompt: "You are an expert in agentic AI systems, multi-step LLM workflows, and building autonomous AI pipelines. I want to design a multi-step agentic workflow.\n\nThe task I want automated: [DESCRIBE THE END-TO-END TASK — FROM INPUT TO FINAL OUTPUT]\nSteps involved: [LIST THE SUB-TASKS YOU'VE IDENTIFIED — ROUGHLY]\nTools the agent needs: [WEB SEARCH / CODE EXECUTION / FILE ACCESS / API CALLS / DATABASE QUERIES]\nModel: [WHICH LLM AND WHAT TOOL-CALLING CAPABILITIES IT HAS]\nError tolerance: [DOES THIS NEED TO BE 100% RELIABLE OR IS PARTIAL SUCCESS ACCEPTABLE]\n\nPlease produce:\n1. Task decomposition — break the task into atomic steps; the dependency graph between them\n2. Agent architecture — single agent vs. multi-agent; orchestrator vs. worker pattern; rationale for this task\n3. Tool specification — for each tool, the function signature, description, and example call the model should make\n4. Planning prompt — the prompt that makes the agent plan its approach before executing\n5. Error handling and retry logic — how the agent handles tool failures, ambiguous results, and dead ends\n6. State management — how to maintain state across a multi-step workflow; what to persist and how\n7. Evaluation and safety — how to review agent actions before they execute; the human-in-the-loop checkpoints\n\nAgentic systems fail differently from single-shot prompts. Design for the failure modes."
+draft: false
+---
+
+Context window optimisation strategies for long documents, complex tasks, and multi-turn conversations — including compression, chunking, and retrieval design.

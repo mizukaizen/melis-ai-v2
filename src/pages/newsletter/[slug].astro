@@ -32,10 +32,10 @@ const cover = (data.cover && data.cover.startsWith('/'))
     title={data.title}
     titleHtml={data.titleHtml}
     byline={data.byline}
-    lede={data.lede}
   />
 
   <section class="section-body">
+    {data.lede && <p class="body-lead">{data.lede}</p>}
     <article class="article-content">
       <Content />
     </article>

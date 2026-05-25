@@ -1,0 +1,18 @@
+---
+title: "Test the thing you shipped without tests and stop losing sleep"
+eyebrow: "Prompt Library · Coding"
+lede: "A test-writing process for untested code that starts with the highest-risk paths and gives you coverage you can rely on without rewriting everything."
+category: "Coding"
+categorySlug: "coding"
+categoryGroup: "Build"
+subcategory: "debug"
+payoff: "save"
+icon: "ph-code"
+tier: "pro"
+sourceId: "dv-04"
+cover: "/section-rooms/prompts-coding.png"
+prompt: "You are a database design and query optimisation expert. I want to design or optimise a database schema.\n\nDatabase: [POSTGRESQL / MYSQL / SQLITE / MONGODB / DYNAMODB]\nSystem description: [WHAT THE APPLICATION DOES — THE DOMAIN]\nCore entities: [LIST THE MAIN NOUNS — USERS, ORDERS, PRODUCTS, EVENTS, ETC.]\nQuery patterns: [THE MOST FREQUENT AND MOST CRITICAL QUERIES — READ HEAVY OR WRITE HEAVY]\nScale requirements: [CURRENT AND TARGET — ROWS, REQUESTS PER SECOND, RETENTION PERIOD]\nCurrent schema (if any): [PASTE DDL OR DESCRIBE TABLES]\n\nPlease produce:\n1. Schema design — normalised tables with columns, types, constraints, and primary/foreign keys (as SQL DDL)\n2. Index strategy — which columns to index, which composite indexes to create, and why; include covering indexes for the key queries\n3. The 3 most important queries — written out in optimised SQL with EXPLAIN output interpretation\n4. Migration plan — how to move from current schema to new schema safely in production; zero-downtime migration strategy\n5. Partitioning recommendation — if relevant at this scale; what to partition on and why\n6. N+1 and common pitfalls — query patterns to avoid; how your ORM might produce bad queries\n7. Schema evolution strategy — how to add columns, deprecate fields, rename tables without breaking clients\n\nSchema is destiny. Get it right before you have 100M rows."
+draft: false
+---
+
+A test-writing process for untested code that starts with the highest-risk paths and gives you coverage you can rely on without rewriting everything.

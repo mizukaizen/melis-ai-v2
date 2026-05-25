@@ -1,0 +1,18 @@
+---
+title: "Set up the branching strategy that doesn't create merge hell"
+eyebrow: "Prompt Library · Coding"
+lede: "A Git workflow and branching strategy designed for your team size and release cadence — with the conventions that keep the history clean and deployments predictable."
+category: "Coding"
+categorySlug: "coding"
+categoryGroup: "Build"
+subcategory: "ship"
+payoff: "save"
+icon: "ph-brackets-angle"
+tier: "pro"
+sourceId: "dv-14"
+cover: "/section-rooms/prompts-coding.png"
+prompt: "You are an expert in machine learning engineering, model deployment, and MLOps. I want to take an ML model from development to production.\n\nModel context: [WHAT THE MODEL DOES — CLASSIFICATION / REGRESSION / NLP / VISION; FRAMEWORK — SKLEARN / PYTORCH / TENSORFLOW]\nCurrent state: [WHERE IT IS NOW — NOTEBOOK / SCRIPT / EXPERIMENT; ACCURACY METRICS]\nServing requirements: [BATCH / REAL-TIME API; LATENCY TARGET; THROUGHPUT; SCALE]\nInfrastructure: [WHERE YOU WANT TO DEPLOY — AWS / GCP / AZURE / ON-PREM; EXISTING INFRA]\nTeam context: [DATA SCIENTISTS ONLY / HAVE MLOPS ENGINEERS / SMALL TEAM DOING EVERYTHING]\n\nPlease produce:\n1. Productionisation plan — the gap between current state and production-ready; what needs to be built\n2. Model packaging — how to serialize, version, and package this model for deployment\n3. Serving architecture — the inference stack recommendation: REST API wrapper, batch job, or streaming — with code skeleton\n4. Feature pipeline — how to handle feature engineering at inference time; training-serving skew prevention\n5. Monitoring plan — the metrics to track in production: data drift, model drift, prediction distribution, latency\n6. A/B testing and gradual rollout — how to deploy safely and validate in production\n7. MLOps maturity path — the 3-level maturity path from manual to automated; where you are now and the next level\n\nA model in a notebook is a science project. A model in production is engineering."
+draft: false
+---
+
+A Git workflow and branching strategy designed for your team size and release cadence — with the conventions that keep the history clean and deployments predictable.

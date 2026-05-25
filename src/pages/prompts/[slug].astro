@@ -1,8 +1,11 @@
 ---
+// Per-prompt detail page — canonical hero (category cover image) +
+// section-body with the prompt presented as an expanded PromptCard,
+// pre-expanded since the user explicitly requested this prompt.
 import AppLayout from '../../layouts/AppLayout.astro';
 import SectionHero from '../../components/SectionHero.astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { itemHero, landingHero } from '../../lib/hero-image';
+import { landingHero } from '../../lib/hero-image';
 
 export const prerender = true;
 
@@ -17,41 +20,45 @@ export async function getStaticPaths() {
 type Props = { item: CollectionEntry<'prompts'> };
 const { item } = Astro.props as Props;
 const data = item.data;
-const cover = (data.cover && data.cover.startsWith('/'))
-  ? data.cover
-  : itemHero('prompts', data.category, item.slug) || landingHero('prompts');
+const cover = (data.cover && data.cover.startsWith('/')) ? data.cover : landingHero('prompts');
 
-// The MDX stores prompt body with inline `<span class="pv-var">[TOKEN]</span>`
-// markup. Render the body as raw HTML so the spans render styled. For the
-// copy-to-clipboard fallback, strip the spans so the user pastes clean text.
-const promptHtml = data.prompt || '';
-const promptPlain = promptHtml.replace(/<span class="pv-var">([^<]*)<\/span>/g, '$1').replace(/<[^>]+>/g, '');
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function highlightVars(s: string): string {
+  return escapeHtml(s).replace(/\[([^\]]+)\]/g, '<span class="pv-var">[$1]</span>');
+}
+
+const promptHtml = highlightVars(data.prompt || '');
+const promptPlain = data.prompt || '';
+const categorySlug = data.categorySlug || '';
+const categoryHref = categorySlug ? `/prompts/${categorySlug}/` : '/prompts/';
 ---
 
 <AppLayout title={data.title} pane="prompts" inRoom description={data.lede}>
   <SectionHero
     cover={cover}
-    eyebrow={data.eyebrow || data.category}
+    eyebrow={data.eyebrow || `Prompt Library · ${data.category}`}
     title={data.title}
-    lede={data.lede}
   />
 
   <section class="section-body">
-    <div class="room-prompt-card">
-      <div class="room-prompt-eyebrow">{data.category}</div>
-      <div class="room-prompt-title">{data.title}</div>
-      {data.lede && <div class="room-prompt-line">{data.lede}</div>}
-      <pre class="room-prompt-pre" id="prompt-pre" set:html={promptHtml}></pre>
-      <div class="room-prompt-footer">
-        <button class="room-prompt-copy" id="copy-btn" data-text={promptPlain}>
-          <i class="ph ph-copy" aria-hidden="true"></i>
-          <span id="copy-label">Copy prompt</span>
-        </button>
-        <button class="room-prompt-expand" id="expand-btn" type="button">
-          <i class="ph ph-arrows-out-line-vertical" aria-hidden="true"></i>
-          <span id="expand-label">Expand</span>
-        </button>
+    {data.lede && <p class="body-lead">{data.lede}</p>}
+
+    <div class="single-prompt-card">
+      <div class="spc-header">
+        <span class="spc-cat">{data.category}</span>
+        <span class="spc-payoff">Payoff · {data.payoff}</span>
       </div>
+      <pre class="spc-pre" set:html={promptHtml}></pre>
+      <div class="spc-footer">
+        <button class="spc-copy" type="button" id="single-copy">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5"/></svg>
+          <span id="single-copy-label">Copy prompt</span>
+        </button>
+        <a class="spc-back" href={categoryHref}>← back to {data.category}</a>
+      </div>
+      <div class="spc-raw" hidden>{promptPlain}</div>
     </div>
   </section>
 
@@ -61,33 +68,102 @@ const promptPlain = promptHtml.replace(/<span class="pv-var">([^<]*)<\/span>/g, 
   </div>
 
   <script>
-    function wirePromptRoom() {
-      const copyBtn = document.getElementById('copy-btn') as HTMLButtonElement | null;
-      const copyLabel = document.getElementById('copy-label');
-      const expandBtn = document.getElementById('expand-btn') as HTMLButtonElement | null;
-      const expandLabel = document.getElementById('expand-label');
-      const card = document.querySelector<HTMLDivElement>('.room-prompt-card');
-      if (!copyBtn || !copyLabel || !expandBtn || !expandLabel || !card) return;
-      if (copyBtn.dataset.wired === '1') return;
-      copyBtn.dataset.wired = '1';
-
-      copyBtn.addEventListener('click', async () => {
-        const text = copyBtn.dataset.text || '';
+    function wireSinglePrompt() {
+      const btn = document.getElementById('single-copy') as HTMLButtonElement | null;
+      const label = document.getElementById('single-copy-label');
+      if (!btn || !label || btn.dataset.wired === '1') return;
+      btn.dataset.wired = '1';
+      btn.addEventListener('click', async () => {
+        const raw = document.querySelector<HTMLElement>('.spc-raw')?.textContent || '';
         try {
-          await navigator.clipboard.writeText(text);
-          copyLabel.textContent = 'Copied';
-          setTimeout(() => (copyLabel.textContent = 'Copy prompt'), 1600);
+          await navigator.clipboard.writeText(raw);
+          label.textContent = 'Copied';
+          setTimeout(() => (label.textContent = 'Copy prompt'), 1500);
         } catch {
-          copyLabel.textContent = 'Select manually';
+          label.textContent = 'Select & copy';
         }
       });
-
-      expandBtn.addEventListener('click', () => {
-        const expanded = card.classList.toggle('is-expanded');
-        expandLabel.textContent = expanded ? 'Collapse' : 'Expand';
-      });
     }
-    document.addEventListener('astro:page-load', wirePromptRoom);
-    wirePromptRoom();
+    wireSinglePrompt();
+    document.addEventListener('astro:page-load', wireSinglePrompt);
   </script>
+
+  <style>
+    .single-prompt-card {
+      margin-top: 8px;
+      padding: 28px 32px;
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: var(--r-lg);
+      max-width: 960px;
+    }
+    .spc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .spc-cat {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .spc-payoff {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+    .spc-pre {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-1);
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      margin: 0 0 24px;
+      max-height: none;
+    }
+    .spc-pre :global(.pv-var) {
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .spc-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border-2);
+    }
+    .spc-copy {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .spc-copy:hover { background: color-mix(in srgb, var(--accent) 88%, white 12%); }
+    .spc-back {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--text-2);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding-bottom: 1px;
+    }
+    .spc-back:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  </style>
 </AppLayout>

@@ -1,0 +1,18 @@
+---
+title: "Grade AI responses with criteria so you know what 'good' looks like"
+eyebrow: "Prompt Library · Prompting"
+lede: "An evaluation rubric for AI output that defines quality explicitly — so you can compare responses, improve prompts, and stop judging by feel."
+category: "Prompting"
+categorySlug: "prompting"
+categoryGroup: "Build"
+subcategory: "optimise"
+payoff: "save"
+icon: "ph-stack-simple"
+tier: "pro"
+sourceId: "pe-08"
+cover: "/section-rooms/prompts-prompting.png"
+prompt: "You are an expert in retrieval-augmented generation (RAG), knowledge grounding, and reducing LLM hallucinations. I want to build or improve a RAG system.\n\nUse case: [WHAT THE RAG SYSTEM DOES — DOCUMENT Q&A / CUSTOMER SUPPORT / KNOWLEDGE BASE / LEGAL RESEARCH]\nKnowledge source: [WHAT DOCUMENTS ARE IN THE KNOWLEDGE BASE — TYPE, SIZE, UPDATE FREQUENCY]\nCurrent RAG quality problems: [HALLUCINATION / WRONG SOURCES / IRRELEVANT RETRIEVAL / POOR SYNTHESIS]\nStack: [EMBEDDING MODEL / VECTOR DB / LLM — WHAT YOU'RE USING]\nQuery types: [WHAT USERS TYPICALLY ASK — FACTUAL / COMPLEX / MULTI-PART / AMBIGUOUS]\n\nPlease produce:\n1. RAG architecture critique — assessment of the current approach; where the failures are likely occurring (retrieval vs. generation)\n2. Chunking strategy — the right chunk size and overlap for this document type; why it matters\n3. Retrieval optimisation — hybrid search (semantic + keyword), reranking, metadata filtering — what to implement\n4. RAG prompt design — the system prompt that instructs the model to use only the retrieved context; how to handle \"not in sources\"\n5. Citation and grounding — how to get the model to cite sources; how to verify answers against retrieved chunks\n6. Evaluation framework — how to measure RAG quality: answer relevance, faithfulness, context relevance; the evaluation prompts\n7. Advanced techniques — self-RAG, multi-hop retrieval, query decomposition — which is worth implementing for this use case\n\nMost RAG failures are retrieval failures, not generation failures. Fix retrieval first."
+draft: false
+---
+
+An evaluation rubric for AI output that defines quality explicitly — so you can compare responses, improve prompts, and stop judging by feel.

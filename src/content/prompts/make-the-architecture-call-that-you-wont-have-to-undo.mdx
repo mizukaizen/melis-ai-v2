@@ -1,0 +1,18 @@
+---
+title: "Make the architecture call that you won't have to undo"
+eyebrow: "Prompt Library · Product"
+lede: "A structured analysis for any significant system architecture decision — trade-offs, constraints, alternatives considered, and the reasoning documented."
+category: "Product"
+categorySlug: "product-tech"
+categoryGroup: "Build"
+subcategory: "build"
+payoff: "money"
+icon: "ph-bug-beetle"
+tier: "pro"
+sourceId: "pr-06"
+cover: "/section-rooms/prompts-product.png"
+prompt: "You are a senior software architect with deep experience in system design, scalability, and technical decision-making. I want to design the architecture for a new system.\n\nSystem purpose: [WHAT IT DOES, WHO USES IT, APPROXIMATE SCALE — USERS / REQUESTS PER DAY]\nKey functional requirements: [THE CORE THINGS IT MUST DO]\nNon-functional requirements: [LATENCY / AVAILABILITY / CONSISTENCY / SECURITY / COMPLIANCE REQUIREMENTS]\nTech stack constraints: [PREFERRED LANGUAGES, CLOUD PROVIDER, EXISTING INFRASTRUCTURE TO INTEGRATE WITH]\nTeam context: [TEAM SIZE, EXPERIENCE LEVEL, OPERATIONAL CAPACITY]\n\nPlease produce:\n1. Architecture overview — the high-level components and how they interact (describe as ASCII diagram or component list)\n2. Component breakdown — for each major component: responsibility, tech choice and rationale, scalability approach\n3. Data model — key entities, relationships, and storage technology choices with rationale\n4. API design principles — REST vs. GraphQL vs. gRPC; versioning strategy; authentication approach\n5. Scalability strategy — how the system handles 10x growth; what will break first and why\n6. Key technical risks and mitigations — the top 3 architectural decisions that could hurt you later\n7. Phased implementation plan — what to build in Phase 1 to validate core assumptions vs. what to defer\n\nGood architecture is about trade-offs explicitly made, not perfection."
+draft: false
+---
+
+A structured analysis for any significant system architecture decision — trade-offs, constraints, alternatives considered, and the reasoning documented.

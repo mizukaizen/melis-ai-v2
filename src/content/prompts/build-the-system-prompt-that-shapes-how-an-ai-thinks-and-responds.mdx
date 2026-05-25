@@ -1,0 +1,18 @@
+---
+title: "Build the system prompt that shapes how an AI thinks and responds"
+eyebrow: "Prompt Library · Prompting"
+lede: "A system prompt architecture for agents, assistants, and bots — covering persona, constraints, output format, and the guardrails that keep behaviour consistent."
+category: "Prompting"
+categorySlug: "prompting"
+categoryGroup: "Build"
+subcategory: "build"
+payoff: "save"
+icon: "ph-list-numbers"
+tier: "pro"
+sourceId: "pe-03"
+cover: "/section-rooms/prompts-prompting.png"
+prompt: "You are an expert in role prompting, persona injection, and system prompt design. I want to build a system prompt that reliably produces outputs from a specific expert persona.\n\nThe persona I want: [DESCRIBE THE EXPERT — ROLE, EXPERTISE, COMMUNICATION STYLE, VALUES]\nTask domain: [WHAT WILL THIS PERSONA BE ASKED TO DO]\nModel: [WHICH LLM AND WHETHER YOU HAVE SYSTEM PROMPT ACCESS]\nQuality standard: [WHAT DOES A GREAT OUTPUT LOOK LIKE IN THIS DOMAIN]\nProblem with current approach: [IF ANY — WHAT THE MODEL DOES WRONG WITHOUT THE PERSONA]\n\nPlease produce:\n1. Persona design principles — what makes a role prompt effective vs. generic; the 5 dimensions to specify\n2. System prompt draft — a complete, richly specified system prompt for this persona including: role, expertise, communication style, values, what to avoid\n3. Behavioral constraints — how to prevent the persona from breaking character or reverting to default behaviour\n4. User prompt template — the instruction format that works best with this system prompt\n5. Persona stress tests — the inputs most likely to cause the persona to fail; how to handle them\n6. Multi-turn consistency — how to maintain persona consistency across a long conversation\n7. Model-specific tuning — differences in how Claude vs. GPT-4 vs. Gemini respond to role prompting; adjustments for your model\n\nThe best persona prompts don't tell the model to pretend. They describe who the model is."
+draft: false
+---
+
+A system prompt architecture for agents, assistants, and bots — covering persona, constraints, output format, and the guardrails that keep behaviour consistent.

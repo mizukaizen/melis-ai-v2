@@ -1,0 +1,18 @@
+---
+title: "Build the dashboard that answers the question your boss always asks"
+eyebrow: "Prompt Library · Data"
+lede: "A dashboard designed around a specific audience and decision — with the right metrics, the right visualisations, and nothing that's just there because it's available."
+category: "Data"
+categorySlug: "data"
+categoryGroup: "Build"
+subcategory: "visualise"
+payoff: "save"
+icon: "ph-funnel-simple"
+tier: "pro"
+sourceId: "da-04"
+cover: "/section-rooms/prompts-data.png"
+prompt: "You are a SQL expert and data engineering specialist. I want to write complex, optimised SQL queries.\n\nDatabase: [POSTGRESQL / BIGQUERY / SNOWFLAKE / MYSQL / SQLITE]\nTables available: [LIST TABLES WITH KEY COLUMNS — TABLE: (col1 type, col2 type, ...)]\nBusiness question: [WHAT DO YOU NEED TO KNOW — BE SPECIFIC]\nPerformance requirements: [TABLE SIZE, QUERY FREQUENCY, ACCEPTABLE LATENCY]\nExisting query (if any):\n```sql\n[PASTE CURRENT QUERY OR LEAVE EMPTY]\n```\n\nPlease produce:\n1. Query decomposition — break the business question into logical sub-problems; which CTEs or subqueries are needed\n2. The optimised query — clean, well-commented SQL that answers the question; use CTEs for readability\n3. Performance analysis — EXPLAIN plan interpretation; where the slow parts are; index recommendations\n4. Edge cases handled — NULLs, duplicates, division by zero, missing data — how the query handles each\n5. Alternative approach — if there's a meaningfully different way to answer the same question, show it and compare\n6. Window functions used (if appropriate) — explain the window function logic in plain English\n7. Testing the query — how to validate the output is correct; spot-check queries to run\n\nSQL is the language of data. Write it like you'd write production code."
+draft: false
+---
+
+A dashboard designed around a specific audience and decision — with the right metrics, the right visualisations, and nothing that's just there because it's available.

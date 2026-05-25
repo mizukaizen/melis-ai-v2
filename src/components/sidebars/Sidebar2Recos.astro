@@ -1,16 +1,49 @@
 ---
-// Mockup-canonical sb2 entries (lines 5262-5310 of melis-ai-spa-v6-astro-content.html).
+// Sidebar2Recos — ported from v1 panels.js `resources` panel (lines 103-117).
+// v1 used 10 categories under "Sean's Recos": Software / Gear / Books /
+// Newsletters / Communities / YouTubers / Podcasts / TV Shows / Movies /
+// Music Sets. Plus 2 extras already in the v2 content collection
+// (Apps / Courses) appended at the bottom.
+//
+// Where an existing /content/recos/*.mdx maps to a v1 category, the row
+// links to the detail page; categories not yet ported render as muted
+// "Coming Soon" divs (non-clickable). Sean can flesh these out later.
 
-const ENTRIES: { name: string; count: string; desc: string }[] = [
-  { name: 'Tools I use daily',     count: '18', desc: 'The stack that runs my life' },
-  { name: 'Books worth your time', count: '47', desc: 'Curated reading list' },
-  { name: 'People worth following',count: '32', desc: 'Operators and thinkers' },
-  { name: 'Newsletters',           count: '16', desc: 'Inboxes worth your attention' },
-  { name: 'Podcasts',              count: '12', desc: 'Audio I actually finish' },
-  { name: 'Software',              count: '24', desc: 'Apps and services I pay for' },
+import { getCollection } from 'astro:content';
+
+const liveSlugs = new Set((await getCollection('recos')).filter((r) => !r.data.draft).map((r) => r.slug));
+
+type Row =
+  | { kind: 'live'; slug: string; title: string; meta: string; count: string; icon: string; color: string; bg: string }
+  | { kind: 'soon'; title: string; meta: string; count: string; icon: string; color: string; bg: string };
+
+function mk(title: string, slug: string | null, meta: string, count: string, icon: string, color: string, bg: string): Row[] {
+  if (slug && liveSlugs.has(slug)) return [{ kind: 'live', slug, title, meta, count, icon, color, bg }];
+  return [{ kind: 'soon', title, meta, count, icon, color, bg }];
+}
+
+// v1 categories in v1 order. Each maps to its v2 MDX slug — including
+// stub pages for the 6 categories Sean is still filling in (those stubs
+// render a "Coming soon" body but the sb2 row is a proper anchor, not
+// a dead muted div, so navigation never lands on /recos/ for nothing).
+const ROWS: Row[] = [
+  ...mk('Software',    'tools-i-use-daily',      'Tools I actually use',        '18', 'ph-desktop-tower', '#5eead4', 'rgba(94,234,212,0.15)'),
+  ...mk('Gear',        'hardware-that-holds-up', 'Hardware & peripherals',      '12', 'ph-wrench',        '#60a5fa', 'rgba(96,165,250,0.15)'),
+  ...mk('Books',       'books-that-compound',    'Worth reading cover to cover','15', 'ph-books',         '#a78bfa', 'rgba(167,139,250,0.15)'),
+  ...mk('Newsletters', 'newsletters-i-read',     'Signal over noise picks',     '7',  'ph-newspaper',     '#fbbf24', 'rgba(251,191,36,0.15)'),
+  ...mk('Communities', 'communities',            'Worth your time & energy',    '6',  'ph-users-three',   '#4ade80', 'rgba(74,222,128,0.15)'),
+  ...mk('YouTubers',   'youtubers',              'Channels worth watching',     '8',  'ph-youtube-logo',  '#fb923c', 'rgba(251,146,60,0.15)'),
+  ...mk('Podcasts',    'podcasts',               'What I listen to',            '8',  'ph-microphone',    '#f472b6', 'rgba(244,114,182,0.15)'),
+  ...mk('TV Shows',    'tv-shows',               'Currently watching',          '9',  'ph-television',    '#38bdf8', 'rgba(56,189,248,0.15)'),
+  ...mk('Movies',      'movies',                 'Worth your time',             '9',  'ph-film-strip',    '#c084fc', 'rgba(192,132,252,0.15)'),
+  ...mk('Music Sets',  'music-sets',             'What I build to',             '8',  'ph-music-note',    '#fb7185', 'rgba(251,113,133,0.15)'),
+  // v2 extras (not in v1 panel) appended at the bottom
+  ...mk('Apps',        'apps-i-wont-quit',        "Software that earned a spot", '6',  'ph-app-window',    '#e879f9', 'rgba(232,121,249,0.15)'),
+  ...mk('Courses',     'courses-id-take-again',   "Online courses I'd retake",   '8',  'ph-graduation-cap','#a3e635', 'rgba(163,230,53,0.15)'),
 ];
 
-const TOTAL_COUNT = '53';
+const path = Astro.url.pathname;
+const isLanding = path === '/recos/' || path === '/recos';
 ---
 
 <aside class="sidebar-2" transition:persist="sb2-recos">
@@ -18,23 +51,59 @@ const TOTAL_COUNT = '53';
     <div class="sb2-header">
       <div class="sb2-title">Sean's <em>Recos</em></div>
     </div>
-    <div class="sb2-list">
-      <a class="sb2-item" href="/recos/">
-        <div class="sb2-row">
-          <div class="sb2-name">All Recommendations</div>
-          <div class="sb2-count">{TOTAL_COUNT}</div>
+    <div class="panel-list" style="padding: 8px 0; flex: 1; overflow-y: auto;">
+
+      <a class:list={['panel-item', { active: isLanding }]} href="/recos/">
+        <i class="ph ph-star pi-icon" style="color:#fbbf24;opacity:0.85"></i>
+        <div class="pi-body">
+          <div class="pi-title">All Recommendations</div>
+          <div class="pi-meta">Everything I actually use</div>
         </div>
-        <div class="sb2-desc">Everything I actually use</div>
+        <div class="pi-dot" style="background:rgba(251,191,36,0.15);color:#fbbf24">53</div>
       </a>
-      {ENTRIES.map((e) => (
-        <a class="sb2-item" href="/recos/">
-          <div class="sb2-row">
-            <div class="sb2-name">{e.name}</div>
-            <div class="sb2-count">{e.count}</div>
+
+      {ROWS.map((row) => row.kind === 'live' ? (
+        <a class="panel-item" href={`/recos/${row.slug}/`}>
+          <i class={`ph ${row.icon} pi-icon`} style={`color:${row.color};opacity:0.85`}></i>
+          <div class="pi-body">
+            <div class="pi-title">{row.title}</div>
+            <div class="pi-meta">{row.meta}</div>
           </div>
-          <div class="sb2-desc">{e.desc}</div>
+          <div class="pi-dot" style={`background:${row.bg};color:${row.color}`}>{row.count}</div>
         </a>
+      ) : (
+        <div class="panel-item is-soon">
+          <i class={`ph ${row.icon} pi-icon`} style={`color:${row.color};opacity:0.45`}></i>
+          <div class="pi-body">
+            <div class="pi-title">{row.title}</div>
+            <div class="pi-meta">{row.meta} <span class="pi-soon-tag">soon</span></div>
+          </div>
+          <div class="pi-dot" style={`background:${row.bg};color:${row.color};opacity:0.55`}>{row.count}</div>
+        </div>
       ))}
+
     </div>
   </div>
 </aside>
+
+<style>
+  .sb2-pane[data-pane="recos"] .panel-item.is-soon {
+    opacity: 0.55;
+    cursor: default;
+  }
+  .sb2-pane[data-pane="recos"] .panel-item.is-soon:hover {
+    background: transparent;
+  }
+  .sb2-pane[data-pane="recos"] .pi-soon-tag {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-left: 4px;
+    padding: 1px 5px;
+    border: 1px solid var(--border-2);
+    border-radius: 3px;
+    vertical-align: middle;
+  }
+</style>

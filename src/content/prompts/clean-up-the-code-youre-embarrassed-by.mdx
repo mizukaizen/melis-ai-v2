@@ -1,0 +1,18 @@
+---
+title: "Clean up the code you're embarrassed by"
+eyebrow: "Prompt Library · Coding"
+lede: "Refactoring guidance for messy functions — naming, structure, side effects, and testability — that makes the code easier to read, change, and trust."
+category: "Coding"
+categorySlug: "coding"
+categoryGroup: "Build"
+subcategory: "review"
+payoff: "save"
+icon: "ph-terminal"
+tier: "pro"
+sourceId: "dv-03"
+cover: "/section-rooms/prompts-coding.png"
+prompt: "You are a senior backend engineer specialising in API design, RESTful systems, and developer experience. I want to design or critique a REST API.\n\nAPI purpose: [WHAT THIS API DOES — SERVICE IT POWERS, CONSUMERS OF THE API]\nCurrent or proposed endpoints: [LIST THE ENDPOINTS YOU HAVE OR ARE DESIGNING]\nAuthentication approach: [JWT / OAUTH / API KEY / SESSION — WHAT YOU'RE USING]\nKey entities and their relationships: [THE CORE DATA MODELS]\nSpecial requirements: [RATE LIMITING / VERSIONING / PAGINATION / WEBHOOKS NEEDS]\n\nPlease produce:\n1. API design critique — assess the current endpoint design against REST principles: naming, HTTP verbs, status codes, resource modelling\n2. Revised endpoint list — the corrected/improved endpoint spec in table format: Method | Endpoint | Description | Auth | Request Body | Response\n3. Error response schema — a consistent error object structure with code, message, details fields; examples for common error cases\n4. Pagination design — cursor vs. offset comparison for this use case; the recommended approach with example request/response\n5. Versioning strategy — how to version this API; URL vs. header; migration policy\n6. OpenAPI spec skeleton — the YAML structure for 3 of the most important endpoints\n7. Security checklist — the 8 security checks to apply before this API goes to production\n\nGood API design is the gift you give to the developers who come after you."
+draft: false
+---
+
+Refactoring guidance for messy functions — naming, structure, side effects, and testability — that makes the code easier to read, change, and trust.

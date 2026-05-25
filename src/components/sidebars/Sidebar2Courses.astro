@@ -1,10 +1,29 @@
 ---
+// Mockup-canonical structure (mockup HTML sb2-pane[data-pane="courses"]):
+//   - All Courses (active on landing)
+//   - AI Mastery 2026 — flagship LIVE, top-level (no group wrapper)
+//   - "Coming Soon" panel-group (open by default) with the 7 mockup SOON entries
+//   - NO Archived group — explicitly dropped per Sean
+//
+// Coming-Soon items are rendered in mockup-canonical order with mockup-canonical
+// taglines (sb2-desc lines) instead of pulling from frontmatter subtitle1, which
+// previously rendered inconsistent lengths.
 import { getCollection } from 'astro:content';
 
-const items = (await getCollection('courses')).filter((a) => !a.data.draft);
-const live = items.filter((c) => c.data.status === 'live');
-const soon = items.filter((c) => c.data.status === 'coming-soon');
+const items = (await getCollection('courses')).filter((c) => !c.data.draft);
+const total = items.length;
 const currentSlug = Astro.url.pathname.match(/\/courses\/([^/]+)/)?.[1];
+
+// Coming-soon roster — mockup order + verbatim taglines.
+const SOON: { slug: string; name: string; desc: string; badge: 'RECORDING' | 'SOON' }[] = [
+  { slug: 'claude-cowork-for-professionals', name: 'Claude Cowork for Professionals', desc: 'Cowork mode, Skills, MCPs, agents',     badge: 'RECORDING' },
+  { slug: 'ai-for-management-consultants',   name: 'AI for Management Consultants',   desc: 'Decks, data analysis & client work',     badge: 'SOON' },
+  { slug: 'ai-for-creatives',                name: 'AI for Creatives',                desc: 'Figma, Firefly, image gen & video',      badge: 'SOON' },
+  { slug: 'ai-audio-voice-music-and-sound',  name: 'AI Audio: Voice, Music & Sound',  desc: 'ElevenLabs, Suno & AI sound design',     badge: 'SOON' },
+  { slug: 'build-your-first-ai-agent',       name: 'Build Your First AI Agent',       desc: 'Automate your business without code',    badge: 'SOON' },
+  { slug: 'vibe-coding',                     name: 'Vibe Coding',                     desc: 'Build a real app without code',          badge: 'SOON' },
+  { slug: 'ai-for-solopreneurs',             name: 'AI for Solopreneurs',             desc: 'Run your business with OpenClaw agents', badge: 'SOON' },
+];
 ---
 
 <aside class="sidebar-2" transition:persist="sb2-courses">
@@ -14,39 +33,41 @@ const currentSlug = Astro.url.pathname.match(/\/courses\/([^/]+)/)?.[1];
       <div class="sb2-title"><em>Courses</em></div>
     </div>
     <div class="sb2-list courses-sb2-list">
+
       <a class="sb2-item" class:list={[{ active: !currentSlug }]} href="/courses/">
         <div class="sb2-row">
           <div class="sb2-name">All Courses</div>
-          <div class="sb2-count">{items.length}</div>
+          <div class="sb2-count">{total}</div>
         </div>
         <div class="sb2-desc">The full catalogue</div>
       </a>
-      {live.map((c) => (
-        <a class="sb2-item" class:list={[{ active: c.slug === currentSlug }]} href={`/courses/${c.slug}/`}>
-          <div class="sb2-row">
-            <div class="sb2-name">{c.data.title.replace(/<[^>]+>/g, '')}</div>
-            <div class="sb2-count badge-live">LIVE</div>
-          </div>
-          {c.data.subtitle1 && <div class="sb2-desc">{c.data.subtitle1}</div>}
-        </a>
-      ))}
-      {soon.map((c) => {
-        // Mockup flags Claude Cowork as "RECORDING" rather than the
-        // generic "SOON" — it's the flagship-in-flight. All other
-        // coming-soon courses keep the SOON badge.
-        const isRecording = c.slug === 'claude-cowork-for-professionals';
-        const badgeLabel = isRecording ? 'RECORDING' : 'SOON';
-        const badgeClass = isRecording ? 'badge-recording' : 'badge-soon';
-        return (
-          <a class="sb2-item" class:list={[{ active: c.slug === currentSlug }]} href={`/courses/${c.slug}/`}>
-            <div class="sb2-row">
-              <div class="sb2-name">{c.data.title.replace(/<[^>]+>/g, '')}</div>
-              <div class={`sb2-count ${badgeClass}`}>{badgeLabel}</div>
-            </div>
-            {c.data.subtitle1 && <div class="sb2-desc">{c.data.subtitle1}</div>}
-          </a>
-        );
-      })}
+
+      <a class="sb2-item" class:list={[{ active: currentSlug === 'ai-mastery-2026' }]} href="/courses/ai-mastery-2026/">
+        <div class="sb2-row">
+          <div class="sb2-name">AI Mastery 2026</div>
+          <div class="sb2-count badge-live">LIVE</div>
+        </div>
+        <div class="sb2-desc">Future-proof your career, income &amp; decisions</div>
+      </a>
+
+      <div class="panel-group open courses-panel-group" data-group="coming-soon">
+        <div class="panel-group-header">
+          <span class="pgh-label">Coming Soon</span>
+          <svg class="pgh-chevron" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="panel-group-items">
+          {SOON.map((c) => (
+            <a class="sb2-item" class:list={[{ active: c.slug === currentSlug }]} href={`/courses/${c.slug}/`}>
+              <div class="sb2-row">
+                <div class="sb2-name">{c.name}</div>
+                <div class={`sb2-count ${c.badge === 'RECORDING' ? 'badge-recording' : 'badge-soon'}`}>{c.badge}</div>
+              </div>
+              <div class="sb2-desc">{c.desc}</div>
+            </a>
+          ))}
+        </div>
+      </div>
+
     </div>
   </div>
 </aside>

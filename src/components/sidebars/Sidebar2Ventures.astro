@@ -1,44 +1,172 @@
 ---
-// Mockup-canonical sb2 entries (lines 5353-5428 of melis-ai-spa-v6-astro-content.html).
-// The three with live Astro detail pages (lighthouse / holy-signal / phantom-ink)
-// link to their detail routes; the rest link to /ventures/ landing.
+// Sidebar2Ventures — ported from v1 panels.js `lab` panel (lines 132-184).
+// v1 lists 40 ventures grouped: Live (10), Building (15), Research (12),
+// Paused (1), Archived (1), Past (1). Plus a top "Overview" sentinel.
+//
+// Where an existing /content/ventures/*.mdx maps to a v1 venture, the row
+// becomes a real anchor to the detail page; the rest render as muted
+// "soon" divs (non-clickable). Sean can flesh out detail pages later.
 
-const ENTRIES: { name: string; count: string; desc: string; href?: string }[] = [
-  { name: 'Lighthouse',      count: 'live', desc: 'AI-native publishing platform',  href: '/ventures/lighthouse/' },
-  { name: 'Holy Signal',     count: 'beta', desc: 'Newsletter analytics for operators', href: '/ventures/holy-signal/' },
-  { name: 'Phantom Ink',     count: 'live', desc: 'Editorial AI for serious writers',   href: '/ventures/phantom-ink/' },
-  { name: 'Nightglass',      count: 'beta', desc: 'Multi-agent observability' },
-  { name: 'Hive Doctrine',   count: 'live', desc: 'Cinematic essay series' },
-  { name: 'Motif',           count: 'beta', desc: 'Brand-locked image generation' },
-  { name: 'NexusOS',         count: 'wip',  desc: 'Personal AI operating system' },
-  { name: 'Pantheon',        count: 'live', desc: 'Persona-driven content network' },
-  { name: 'Polymarket Bots', count: 'live', desc: 'Algorithmic trading fleet' },
-  { name: 'OpenClaw Skills', count: 'live', desc: 'Published agent capabilities' },
+import { getCollection } from 'astro:content';
+
+const allVentures = (await getCollection('ventures')).filter((v) => !v.data.draft);
+// stubSlugs = ventures whose detail page is just a "coming soon" callout.
+// liveSlugs = ventures with real detail content. Both render as anchors;
+// stubs render with a hollow circle indicator instead of a filled one.
+const stubSlugs = new Set(allVentures.filter((v) => v.data.status === 'coming-soon').map((v) => v.slug));
+const liveSlugs = new Set(allVentures.filter((v) => v.data.status !== 'coming-soon').map((v) => v.slug));
+const knownSlugs = new Set([...stubSlugs, ...liveSlugs]);
+
+type Status = 'Live' | 'Building' | 'Research' | 'Paused' | 'Archived' | 'Past';
+type Venture = { slug: string; name: string; meta: string; status: Status };
+
+// v1 panel verbatim, with slugs lifted from the page filenames already
+// present in v1 src/pages/lab/. Missing-from-v2 ventures still render but
+// non-clickable until /content/ventures/<slug>.mdx is added.
+const VENTURES: Venture[] = [
+  // Live
+  { slug: 'hive-doctrine',       name: 'Hive Doctrine',          meta: 'saas · marketplace',          status: 'Live' },
+  { slug: 'polymarket-bots',     name: 'Polymarket Bots',        meta: 'bot · 4 markets live',        status: 'Live' },
+  { slug: 'dossier',             name: 'Dossier',                meta: 'saas · pre-revenue',          status: 'Live' },
+  { slug: 'nexusos',             name: 'NexusOS Dashboard',      meta: 'infra · ops command centre',  status: 'Live' },
+  { slug: 'openclaw',            name: 'OpenClaw',               meta: 'infra · 12 agents',           status: 'Live' },
+  { slug: 'holy-signal',         name: 'Holy Signal',            meta: 'saas · launch ready',         status: 'Live' },
+  { slug: 'prompt-bakery',       name: 'Prompt Bakery',          meta: 'saas · 360 prompts',          status: 'Live' },
+  { slug: 'lila-park',           name: 'Lila Park',              meta: 'content · wellness persona',  status: 'Live' },
+  { slug: 'miru',                name: 'Miru',                   meta: 'tool · habit watcher',        status: 'Live' },
+  { slug: 'ai-usage-tracker',    name: 'AI Usage Tracker',       meta: 'tool · mac app',              status: 'Live' },
+  // Building
+  { slug: 'cowork-course',       name: 'AI Mastery 2026',        meta: 'edu · 31 lessons',            status: 'Building' },
+  { slug: 'lighthouse',          name: 'Lighthouse',             meta: 'saas · 82% complete',         status: 'Building' },
+  { slug: 'swarm',               name: 'Project SWARM',          meta: 'saas · $10K target',          status: 'Building' },
+  { slug: 'pantheon',            name: 'Pantheon Market',        meta: 'saas · 11 agents',            status: 'Building' },
+  { slug: 'aetherboard',         name: 'Aetherboard',            meta: 'saas · canvas tool',          status: 'Building' },
+  { slug: 'melissai-pantheon',   name: 'Melissai Pantheon',      meta: 'content · persona system',    status: 'Building' },
+  { slug: 'multi-agent-trading', name: 'Multi-Agent Trading',    meta: 'infra · trading intelligence',status: 'Building' },
+  { slug: 'molt-swarm',          name: 'Molt Swarm',             meta: 'infra · API vending machine', status: 'Building' },
+  { slug: 'capturekit',          name: 'CaptureKit',             meta: 'api · screenshot service',    status: 'Building' },
+  { slug: 'agentcanvas',         name: 'AgentCanvas',            meta: 'saas · infinite canvas',      status: 'Building' },
+  { slug: 'tldraw-board',        name: 'Tldraw Board',           meta: 'app · whiteboard',            status: 'Building' },
+  { slug: 'unicorn-factory',     name: 'Autonomous Unicorn Factory', meta: 'methodology · playbook', status: 'Building' },
+  { slug: 'x402-mcp',            name: 'x402-mcp-starter',       meta: 'infra · MCP starter kit',     status: 'Building' },
+  { slug: 'nightglass',          name: 'Nightglass',             meta: 'saas · web capture',          status: 'Building' },
+  { slug: 'phantom-ink',         name: 'Phantom Ink',            meta: 'saas · in build',             status: 'Building' },
+  // Research
+  { slug: 'agent-seo',           name: 'Agent SEO Machine',      meta: 'content · high signal',       status: 'Research' },
+  { slug: 'ai-sdr',              name: 'AI SDR',                 meta: 'saas · build-ready',          status: 'Research' },
+  { slug: 'consultantos',        name: 'ConsultantOS',           meta: 'saas · concept stage',        status: 'Research' },
+  { slug: 'dreamwith',           name: 'Dreamwith',              meta: 'saas · future vision',        status: 'Research' },
+  { slug: 'spell-stories',       name: 'Spell Stories',          meta: 'app · specs done',            status: 'Research' },
+  { slug: 'altar',               name: 'Altar App',              meta: 'app · research phase',        status: 'Research' },
+  { slug: 'physical-products',   name: 'Melissai Physical Products', meta: 'commerce · concept',     status: 'Research' },
+  { slug: 'skool-community',     name: 'Skool Community',        meta: 'community · research',        status: 'Research' },
+  { slug: 'turnkey-agents',      name: 'Turnkey Agents',         meta: 'saas · niche bundles',        status: 'Research' },
+  { slug: 'melissae-philosophy', name: 'Melissae Philosophy',    meta: 'book · philosophy',           status: 'Research' },
+  { slug: 'motif',               name: 'Motif',                  meta: 'saas · aesthetic OS',         status: 'Research' },
+  { slug: 'clawhub-skills',      name: 'ClawHub Skills',         meta: 'marketplace · publishing',    status: 'Research' },
+  // Paused
+  { slug: 'ai-dads',             name: 'AI for Dads',            meta: 'edu · course · paused',       status: 'Paused' },
+  // Archived
+  { slug: 'bothello',            name: 'bot·hello',              meta: '2016–2023',                    status: 'Archived' },
+  // Past
+  { slug: 'past-ventures',       name: 'Past Ventures',          meta: 'the arc · 2007 → today',       status: 'Past' },
 ];
+
+const ORDER: Status[] = ['Live', 'Building', 'Research', 'Paused', 'Archived', 'Past'];
+const STATUS_DEFAULT_OPEN: Record<Status, boolean> = {
+  Live: true, Building: false, Research: false, Paused: false, Archived: false, Past: false,
+};
+
+const path = Astro.url.pathname;
+const isLanding = path === '/ventures/' || path === '/ventures';
+const slugOnPage = path.match(/^\/ventures\/([^/]+)/)?.[1];
+const activeStatus = slugOnPage ? VENTURES.find((v) => v.slug === slugOnPage)?.status : null;
+
+const COUNTS: Record<Status, number> = { Live: 0, Building: 0, Research: 0, Paused: 0, Archived: 0, Past: 0 };
+VENTURES.forEach((v) => { COUNTS[v.status]++; });
+const TOTAL = VENTURES.length;
+const LIVE_COUNT = liveSlugs.size;
+
+function statusColor(s: Status): string {
+  return s === 'Live' ? '#5eead4'
+    : s === 'Building' ? '#fb923c'
+    : s === 'Research' ? '#a78bfa'
+    : s === 'Paused' ? '#facc15'
+    : s === 'Archived' ? '#94a3b8'
+    : '#64748b';
+}
 ---
 
 <aside class="sidebar-2" transition:persist="sb2-ventures">
   <div class="sb2-pane active" data-pane="projects">
     <div class="sb2-header">
-      <div class="sb2-title"><em>Projects</em></div>
+      <div class="sb2-title"><em>Ventures</em></div>
     </div>
-    <div class="sb2-list">
-      <a class="sb2-item" href="/ventures/">
-        <div class="sb2-row">
-          <div class="sb2-name">All Ventures</div>
-          <div class="sb2-count">39</div>
+    <div class="panel-list" style="padding: 8px 0; flex: 1; overflow-y: auto;">
+
+      <a class:list={['panel-item', { active: isLanding }]} href="/ventures/">
+        <i class="ph ph-squares-four pi-icon" style="color:#a78bfa;opacity:0.85"></i>
+        <div class="pi-body">
+          <div class="pi-title">All Ventures</div>
+          <div class="pi-meta">{TOTAL} total · {LIVE_COUNT} with detail</div>
         </div>
-        <div class="sb2-desc">Live + in-progress</div>
+        <div class="pi-dot" style="background:rgba(167,139,250,0.15);color:#a78bfa">{TOTAL}</div>
       </a>
-      {ENTRIES.map((e) => (
-        <a class="sb2-item" href={e.href || '/ventures/'}>
-          <div class="sb2-row">
-            <div class="sb2-name">{e.name}</div>
-            <div class="sb2-count">{e.count}</div>
+
+      {ORDER.map((status) => {
+        const items = VENTURES.filter((v) => v.status === status);
+        if (items.length === 0) return null;
+        const open = STATUS_DEFAULT_OPEN[status] || activeStatus === status;
+        return (
+          <div class:list={['panel-group', { open }]}>
+            <div class="panel-group-header">
+              <span class="pgh-label">{status} · <span class="pgh-count">{items.length}</span></span>
+              <svg class="pgh-chevron" viewBox="0 0 10 6" fill="none">
+                <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="panel-group-items">
+              {items.map((v) => {
+                if (!knownSlugs.has(v.slug)) {
+                  // No MDX exists at all — leave non-clickable
+                  return (
+                    <div class="panel-item is-soon">
+                      <i class="ph ph-circle pi-icon" style={`color:${statusColor(status)};opacity:0.45;font-size:8px`}></i>
+                      <div class="pi-body">
+                        <div class="pi-title">{v.name}</div>
+                        <div class="pi-meta">{v.meta}</div>
+                      </div>
+                    </div>
+                  );
+                }
+                const isStub = stubSlugs.has(v.slug);
+                return (
+                  <a class:list={['panel-item', { 'is-stub': isStub }]} href={`/ventures/${v.slug}/`}>
+                    <i class={`ph ${isStub ? 'ph-circle' : 'ph-circle-fill'} pi-icon`} style={`color:${statusColor(status)};opacity:${isStub ? '0.55' : '0.85'};font-size:8px`}></i>
+                    <div class="pi-body">
+                      <div class="pi-title">{v.name}</div>
+                      <div class="pi-meta">{v.meta}</div>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
           </div>
-          <div class="sb2-desc">{e.desc}</div>
-        </a>
-      ))}
+        );
+      })}
+
     </div>
   </div>
 </aside>
+
+<style>
+  .sb2-pane[data-pane="projects"] .panel-item.is-soon { opacity: 0.55; cursor: default; }
+  .sb2-pane[data-pane="projects"] .panel-item.is-soon:hover { background: transparent; }
+  .sb2-pane[data-pane="projects"] .pgh-count {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-3);
+    margin-left: 4px;
+  }
+</style>
+

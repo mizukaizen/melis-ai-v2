@@ -1,0 +1,46 @@
+---
+title: "The MCP servers worth installing"
+eyebrow: "Articles · Tools"
+byline: "Sean Melis · 7 min read"
+lede: "A curated list of MCP servers that are actually worth your time."
+publishedAt: "2026-03-07"
+readingMinutes: 7
+status: "live"
+sourceV1: true
+draft: false
+---
+MCP — Model Context Protocol — is the thing that turns a language model into something that can actually operate in the world. It gives Claude (and other models) the ability to read files, call APIs, interact with apps, and run code. When it works, it's the closest thing to a genuinely autonomous assistant I've used.
+
+The ecosystem moved fast in early 2026. There are now thousands of MCP servers. Most of them aren't worth your time. Here are the ones that are.
+
+### For productivity and files
+
+**Filesystem MCP.** Read and write files on your local machine. This is the foundation. Without it, you're working with a model that can't touch anything you've actually built. Install this first.
+
+**Google Drive MCP.** If your docs live in Drive, this is how Claude gets access to them. Useful for research, document summarisation, and drafting in context.
+
+**Notion MCP.** I use Notion as a knowledge base. This server lets Claude read and write Notion pages — which means it can update my agent memory files, pull project context, and write deliverables directly into the right place.
+
+### For communication
+
+**Gmail MCP.** Search, read, and draft emails. The pattern I use: Claude triages my inbox in the morning, flags anything time-sensitive, and drafts responses for things it can handle. I review, edit if needed, send. Probably saves 30–40 minutes daily.
+
+**Google Calendar MCP.** Read calendar events, find free time, create events. Combined with the Gmail server, you get an assistant that can actually manage scheduling rather than just talking about it.
+
+### For development
+
+**GitHub MCP.** Read repos, create issues, manage pull requests. Useful if you're working on code-heavy projects and want context from the codebase without copying and pasting.
+
+**Supabase MCP.** Read and query your Supabase database directly from Claude. I use this for ad-hoc analysis on my bot P&L data — asking questions in plain English instead of writing SQL every time.
+
+### The setup cost is real
+
+I'll be direct: setting up MCP servers takes time and some technical comfort. You're editing JSON config files, managing API keys, debugging connection issues. It's not plug-and-play for most people yet.
+
+But the payoff is an AI assistant that actually knows your environment — your files, your calendar, your email, your data. That's a qualitatively different tool than a model that can only see what you paste into a chat window.
+
+### Where to start
+
+Filesystem and Gmail. Get those two working and spend a week figuring out what becomes possible. Build from there. Don't try to install everything at once — that's a great way to spend two days debugging and get nothing useful done.
+
+The bottleneck isn't the technology. It's the time required to figure out your actual workflow. Start small, find what sticks, and add from there.

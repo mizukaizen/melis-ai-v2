@@ -1,0 +1,40 @@
+---
+// Payoff-tag filter pills row. The "All" pill is active by default;
+// clicking any pill filters the .pc cards in #pc-grid by data-uvp.
+// Wired up by the inline script in pages/prompts/index.astro.
+
+interface Pill {
+  label: string;
+  tag: string;
+  icon?: string;
+}
+
+interface Props {
+  pills?: Pill[];
+  activeTag?: string;
+}
+
+const DEFAULT_PILLS: Pill[] = [
+  { label: 'All',           tag: 'all' },
+  { label: 'Save hours',    tag: 'save',   icon: 'ph-timer' },
+  { label: 'Make money',    tag: 'money',  icon: 'ph-trend-up' },
+  { label: 'Decide better', tag: 'decide', icon: 'ph-compass' },
+  { label: 'Write & create',tag: 'create', icon: 'ph-pen-nib' },
+  { label: 'Level up',      tag: 'grow',   icon: 'ph-rocket-launch' },
+];
+
+const { pills = DEFAULT_PILLS, activeTag = 'all' } = Astro.props;
+---
+
+<div class="pc-type-toggle" id="pcTypeToggle">
+  {pills.map((p) => (
+    <button
+      class:list={['ptt-btn', { active: p.tag === activeTag }]}
+      type="button"
+      data-uvp={p.tag}
+    >
+      {p.icon && <i class={`ph ${p.icon}`} style="font-size:12px;margin-right:3px"></i>}
+      <span>{p.label}</span>
+    </button>
+  ))}
+</div>

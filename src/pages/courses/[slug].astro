@@ -35,16 +35,17 @@ const subtitleLine = [detail?.subtitle1, detail?.subtitle2].filter(Boolean).join
     eyebrow={data.eyebrow}
     title={data.title}
     titleHtml={data.titleHtml}
-    lede={data.lede}
   />
 
   <section class="section-body">
     <div class="v6-detail course-detail">
       {subtitleLine && (
         <div class="course-subtitle">
-          <div class="cs-eyebrow">{data.eyebrow}</div>
           <h2 class="cs-h2" set:html={subtitleLine}></h2>
         </div>
+      )}
+      {data.lede && (
+        <p class="body-lead course-lede">{data.lede}</p>
       )}
 
       {data.stats && data.stats.length > 0 && (

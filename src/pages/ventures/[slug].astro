@@ -37,41 +37,107 @@ const cover = (data.cover && data.cover.startsWith('/'))
     eyebrow={eyebrow}
     title={data.title}
     titleHtml={titleHtml}
-    lede={lede}
   />
 
   <section class="section-body">
     <div class="v6-detail">
-      {pill && (
-        <span class={`vd-pill ${pill.cls}`}>{pill.label}</span>
-      )}
+      {data.status === 'coming-soon' ? (
+        <div class="venture-stub">
+          {data.groupV1 && (
+            <span class="venture-stub-status">{data.groupV1}</span>
+          )}
+          <h2 class="h2">Detail page coming.</h2>
+          <p class="body-lead">{data.lede || 'This venture is in flight — check back soon, or browse the live ventures.'}</p>
+          <p class="body-lead">
+            For the full picture, jump into <a href="/ventures/" style="color: var(--accent); border-bottom: 1px solid currentColor;">the ventures index</a> or have a look at the live ones below.
+          </p>
+          <div class="venture-stub-live">
+            <div class="section-eyebrow-small">Live now</div>
+            <ul class="venture-stub-live-list">
+              <li><a href="/ventures/lighthouse/">Lighthouse — AI-native intelligence briefings</a></li>
+              <li><a href="/ventures/holy-signal/">Holy Signal — Newsletter analytics for operators</a></li>
+              <li><a href="/ventures/phantom-ink/">Phantom Ink — Editorial AI for serious writers</a></li>
+            </ul>
+          </div>
+        </div>
+      ) : (
+        <>
+          {pill && (
+            <span class={`vd-pill ${pill.cls}`}>{pill.label}</span>
+          )}
 
-      {strip.length > 0 && (
-        <div class="vd-strip">
-          {strip.map((s) => (
-            <div class="vd-strip-item">
-              <div class="lbl">{s.lbl}</div>
-              <div class="val">{s.val}</div>
+          {strip.length > 0 && (
+            <div class="vd-strip">
+              {strip.map((s) => (
+                <div class="vd-strip-item">
+                  <div class="lbl">{s.lbl}</div>
+                  <div class="val">{s.val}</div>
+                </div>
+              ))}
             </div>
+          )}
+
+          {sections.map((s) => (
+            <section class="vd-section">
+              <h3 class="vd-h3" set:html={s.h}></h3>
+              <div class="vd-prose"><p>{s.body}</p></div>
+            </section>
           ))}
-        </div>
-      )}
 
-      {sections.map((s) => (
-        <section class="vd-section">
-          <h3 class="vd-h3" set:html={s.h}></h3>
-          <div class="vd-prose"><p>{s.body}</p></div>
-        </section>
-      ))}
-
-      {cta && (
-        <div class="vd-cta">
-          <div class="vd-cta-title">{cta.title}</div>
-          <div class="vd-cta-line">{cta.line}</div>
-        </div>
+          {cta && (
+            <div class="vd-cta">
+              <div class="vd-cta-title">{cta.title}</div>
+              <div class="vd-cta-line">{cta.line}</div>
+            </div>
+          )}
+        </>
       )}
     </div>
   </section>
+
+  <style>
+    .venture-stub {
+      padding: 28px 0;
+    }
+    .venture-stub-status {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      padding: 4px 10px;
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+    .venture-stub .h2 { margin: 8px 0 12px; }
+    .venture-stub .body-lead { margin: 0 0 14px; }
+    .venture-stub-live {
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-2);
+    }
+    .venture-stub-live-list {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 0;
+    }
+    .venture-stub-live-list li {
+      padding: 6px 0;
+    }
+    .venture-stub-live-list a {
+      color: var(--text-1);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-2);
+      padding-bottom: 1px;
+      transition: color 0.15s ease, border-color 0.15s ease;
+    }
+    .venture-stub-live-list a:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+  </style>
 
   <div class="footer">
     <div>melis.ai · 2026</div>

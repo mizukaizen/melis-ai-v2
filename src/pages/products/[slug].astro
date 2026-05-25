@@ -40,7 +40,6 @@ const isBundle = item.slug === 'complete-arsenal';
     eyebrow={data.eyebrow || data.category}
     title={data.title}
     titleHtml={data.titleHtml}
-    lede={data.lede}
   />
 
   <section class="section-body">
@@ -72,7 +71,7 @@ const isBundle = item.slug === 'complete-arsenal';
   </div>
 
   <style>
-    .product-breakdown { max-width: 720px; margin: 0 auto 2.5em; padding: 22px 26px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 12px; }
+    .product-breakdown { max-width: 720px; margin: 0 0 2.5em; padding: 22px 26px; background: rgba(20, 20, 24, 0.45); border: 1px solid var(--border-2); border-radius: 12px; }
     .product-breakdown h3 { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-3); margin: 0 0 14px; }
     .product-breakdown ul { list-style: none; padding: 0; margin: 0; }
     .product-breakdown li { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border-1); font-family: var(--font-body); font-size: 14px; }
@@ -80,7 +79,7 @@ const isBundle = item.slug === 'complete-arsenal';
     .bn { color: var(--text-1); }
     .bc { color: var(--text-3); font-family: var(--font-mono); font-size: 12px; }
 
-    .product-mdx-body { max-width: 720px; margin: 2.5em auto 0; }
+    .product-mdx-body { max-width: 720px; margin: 2.5em 0 0; }
     .product-mdx-body :global(p) { font-family: var(--font-body); font-size: 15px; line-height: 1.7; color: var(--text-2); margin: 0 0 1.2em; }
   </style>
 </AppLayout>

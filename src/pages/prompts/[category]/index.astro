@@ -1,0 +1,169 @@
+---
+// Per-category view: same layout as /prompts/ but pre-filtered to one
+// category, with that category's cover image as the hero. Pill filters
+// still work (within the category).
+import AppLayout from '../../../layouts/AppLayout.astro';
+import SectionHero from '../../../components/SectionHero.astro';
+import PromptCard from '../../../components/PromptCard.astro';
+import PromptFilterPills from '../../../components/PromptFilterPills.astro';
+import { getCollection } from 'astro:content';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const all = (await getCollection('prompts')).filter((p) => !p.data.draft);
+  const grouped = new Map<string, typeof all>();
+  for (const p of all) {
+    const slug = p.data.categorySlug;
+    if (!slug) continue;
+    if (!grouped.has(slug)) grouped.set(slug, [] as never);
+    grouped.get(slug)!.push(p);
+  }
+  return Array.from(grouped.entries()).map(([slug, prompts]) => ({
+    params: { category: slug },
+    props: {
+      categorySlug: slug,
+      categoryLabel: prompts[0]?.data.category || slug,
+      prompts: prompts.sort((a, b) => (a.data.sourceId || '').localeCompare(b.data.sourceId || '')),
+      cover: prompts[0]?.data.cover || '/section-rooms/prompts-landing.png',
+    },
+  }));
+}
+
+// Per-category descriptors (from v1 src/data/category-headings.json)
+const CAT_HEADINGS: Record<string, { title: string; sub: string }> = {
+  'ai-tools':      { title: 'AI Tools Prompts',     sub: 'Get more from Claude, Cursor, ChatGPT, and every AI tool in your stack. Setup, workflows, and system prompts that actually work.' },
+  'strategy':      { title: 'Strategy Prompts',     sub: 'Pressure-test decisions, find your moat, and build plans that survive contact with reality. Think clearer, decide faster.' },
+  'frameworks':    { title: 'Framework Prompts',    sub: 'First principles, SWOT, Eisenhower, Pareto, and more — applied properly to real problems instead of slapped on as decoration.' },
+  'sales':         { title: 'Sales Prompts',        sub: "Cold outreach that gets replies, discovery calls that close, and follow-ups that don't feel desperate. Close deals without the cringe." },
+  'marketing':     { title: 'Marketing Prompts',    sub: 'Content, campaigns, copy, and positioning. Right audience, right message, right channel — no spray-and-pray.' },
+  'finance':       { title: 'Finance Prompts',      sub: 'Cashflow, pricing, forecasting, and reporting. Know your numbers so you can own your money.' },
+  'operations':    { title: 'Operations Prompts',   sub: 'SOPs, systems, and the boring infrastructure that lets a business run without you holding it together.' },
+  'hiring':        { title: 'Hiring Prompts',       sub: 'Job specs, interview loops, references, and onboarding. Find people who actually deliver, then keep them.' },
+  'writing':       { title: 'Writing Prompts',      sub: 'Business writing, persuasion, and thought leadership. Faster, clearer, in your voice.' },
+  'research':      { title: 'Research Prompts',     sub: 'Market research, customer discovery, and competitive intel. Deep dives in minutes, not days.' },
+  'life-design':   { title: 'Life Design Prompts',  sub: 'Reflect, design, and act. Prompts for the life you want to be living, not just the one you fell into.' },
+  'goals':         { title: 'Goals Prompts',        sub: 'Setting goals, building habits, reviewing progress. Goals you will actually hit.' },
+  'communication': { title: 'Communication Prompts',sub: 'Difficult conversations, presentations, and team alignment. Say what you mean and get the result.' },
+  'product-tech':  { title: 'Product Prompts',      sub: 'Specs, builds, and maintenance for things people actually use. From idea to shipped.' },
+  'creative':      { title: 'Creative Prompts',     sub: 'Brand, ideas, craft. Unlock and refine creative output without losing the spark.' },
+  'coding':        { title: 'Coding Prompts',       sub: 'Reviews, debugging, scaling. Ship better code, faster, with fewer surprises.' },
+  'data':          { title: 'Data Prompts',         sub: 'Define, analyse, and visualise. Turn numbers into decisions, not dashboards no one reads.' },
+  'legal':         { title: 'Legal Prompts',        sub: 'Contracts, compliance, and protection. Legal basics for operators who can\'t expense a lawyer for every question.' },
+  'customer':      { title: 'Customer Prompts',     sub: 'Onboarding, retention, and insight. Understand and delight the people who pay you.' },
+  'prompting':     { title: 'Prompting Prompts',    sub: 'Meta-prompts: how to build, control, and optimise prompts themselves. Get better outputs from any AI.' },
+  'seans-edge':    { title: "Sean's Edge",          sub: "AI-first thinking, cognitive amplification, and the prompts I wouldn't share publicly. Think deeper, see further, build smarter." },
+  'career':        { title: 'Career Prompts',       sub: 'Get hired, get paid, get promoted — and figure out what to do when you get stuck.' },
+};
+
+interface Props {
+  categorySlug: string;
+  categoryLabel: string;
+  prompts: any[];
+  cover: string;
+}
+
+const { categorySlug, categoryLabel, prompts, cover } = Astro.props as Props;
+const heading = CAT_HEADINGS[categorySlug] || { title: `${categoryLabel} Prompts`, sub: '' };
+---
+
+<AppLayout
+  title={`${categoryLabel} — Prompt Library`}
+  pane="prompts"
+  inRoom
+  description={heading.sub}
+>
+  <SectionHero
+    cover={cover}
+    eyebrow={`Prompt Library · ${categoryLabel}`}
+    title={heading.title}
+  />
+
+  <section class="section-body">
+    {heading.sub && <p class="body-lead" set:html={heading.sub}></p>}
+
+    <PromptFilterPills />
+
+    <div class="pc-grid" id="pc-grid">
+      {prompts.map((p) => (
+        <PromptCard
+          prompt={p.data.prompt}
+          title={p.data.title}
+          description={p.data.lede || ''}
+          category={p.data.category}
+          categorySlug={p.data.categorySlug || ''}
+          payoff={p.data.payoff || 'save'}
+          subcategory={p.data.subcategory || ''}
+          icon={p.data.icon || 'ph-chat-dots'}
+          slug={p.slug}
+          sourceId={p.data.sourceId || ''}
+        />
+      ))}
+    </div>
+
+    <p style="margin: 32px 0 0; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-3);"><a href="/prompts/" style="color: var(--text-2); border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 1px;">← back to all 335 prompts</a></p>
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
+
+  <script>
+    // Same wire-up as /prompts/ index — pills, expand, copy.
+    function wirePrompts() {
+      const grid = document.getElementById('pc-grid');
+      if (!grid || (grid as HTMLElement).dataset.wired === '1') return;
+      (grid as HTMLElement).dataset.wired = '1';
+
+      const pills = document.querySelectorAll<HTMLButtonElement>('#pcTypeToggle .ptt-btn');
+      let activeTag = 'all';
+      function applyFilter() {
+        grid!.querySelectorAll<HTMLElement>('.pc').forEach((card) => {
+          const uvp = card.dataset.uvp || '';
+          card.style.display = activeTag === 'all' || uvp === activeTag ? '' : 'none';
+        });
+      }
+      pills.forEach((pill) => {
+        pill.addEventListener('click', () => {
+          pills.forEach((b) => b.classList.remove('active'));
+          pill.classList.add('active');
+          activeTag = pill.dataset.uvp || 'all';
+          applyFilter();
+        });
+      });
+
+      grid.addEventListener('click', async (ev) => {
+        const target = ev.target as HTMLElement;
+        const card = target.closest<HTMLElement>('.pc');
+        if (!card) return;
+
+        const expandBtn = target.closest<HTMLButtonElement>('[data-pc-expand]');
+        if (expandBtn) {
+          const expanded = card.classList.toggle('is-expanded');
+          expandBtn.textContent = expanded ? 'Hide full prompt ↑' : 'Show full prompt ↓';
+          return;
+        }
+
+        const copyBtn = target.closest<HTMLButtonElement>('[data-pc-copy]');
+        if (copyBtn) {
+          const raw = card.querySelector<HTMLElement>('.pc-raw')?.textContent || '';
+          try {
+            await navigator.clipboard.writeText(raw);
+            const original = copyBtn.innerHTML;
+            copyBtn.classList.add('is-copied');
+            copyBtn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><path d="M3 8l3 3 7-7"/></svg> Copied';
+            setTimeout(() => {
+              copyBtn.classList.remove('is-copied');
+              copyBtn.innerHTML = original;
+            }, 1500);
+          } catch {
+            copyBtn.textContent = 'Select & copy';
+          }
+        }
+      });
+    }
+    wirePrompts();
+    document.addEventListener('astro:page-load', wirePrompts);
+  </script>
+</AppLayout>

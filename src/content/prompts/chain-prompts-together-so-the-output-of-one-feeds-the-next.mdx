@@ -1,0 +1,18 @@
+---
+title: "Chain prompts together so the output of one feeds the next"
+eyebrow: "Prompt Library · Prompting"
+lede: "Multi-step pipeline design that breaks complex tasks into stages, passes outputs between steps, and handles the edge cases that break naive chaining approaches."
+category: "Prompting"
+categorySlug: "prompting"
+categoryGroup: "Build"
+subcategory: "build"
+payoff: "save"
+icon: "ph-warning-circle"
+tier: "pro"
+sourceId: "pe-11"
+cover: "/section-rooms/prompts-prompting.png"
+prompt: "You are an expert in prompt templates, prompt libraries, and building reusable prompt infrastructure. I want to build a systematic prompt library for my team or product.\n\nUse context: [INTERNAL TEAM TOOL / PRODUCT FEATURE / API SERVICE — DESCRIBE WHAT IT'S FOR]\nNumber of prompt types: [ROUGH COUNT OF DISTINCT TASK TYPES YOU'RE PROMPTING FOR]\nTeam: [WHO WRITES AND USES PROMPTS — ENGINEERS ONLY / ENGINEERS + PMs / NON-TECHNICAL]\nCurrent prompt management: [HARDCODED IN CODE / SPREADSHEET / PROMPT MANAGEMENT TOOL / NOTHING]\nVersioning needs: [DO YOU NEED PROMPT VERSION CONTROL — AND HOW OFTEN THEY CHANGE]\n\nPlease produce:\n1. Prompt template structure — the schema for a well-structured prompt template: variables, defaults, validation rules\n2. Template syntax recommendation — how to handle variable injection: {variable} vs. {{variable}} vs. Jinja — the choice and why\n3. Prompt library architecture — the file/folder structure or database schema for storing and retrieving prompts\n4. Version control strategy — how to version prompts; semantic versioning applied to prompts; rollback capability\n5. Testing and staging pipeline — how to test a new prompt version before putting it in production\n6. Tooling options — Langchain / LlamaIndex / Promptflow / custom — comparison for this use case\n7. Governance model — who can create, edit, and delete prompts; the review and approval process\n\nPrompt management at scale is software engineering. Treat it that way."
+draft: false
+---
+
+Multi-step pipeline design that breaks complex tasks into stages, passes outputs between steps, and handles the edge cases that break naive chaining approaches.

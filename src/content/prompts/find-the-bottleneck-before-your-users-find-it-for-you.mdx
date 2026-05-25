@@ -1,0 +1,18 @@
+---
+title: "Find the bottleneck before your users find it for you"
+eyebrow: "Prompt Library · Coding"
+lede: "A performance optimisation brief that profiles, identifies the real constraint, and prioritises the changes with the best effort-to-improvement ratio."
+category: "Coding"
+categorySlug: "coding"
+categoryGroup: "Build"
+subcategory: "debug"
+payoff: "save"
+icon: "ph-cpu"
+tier: "pro"
+sourceId: "dv-08"
+cover: "/section-rooms/prompts-coding.png"
+prompt: "You are a performance engineering expert with experience in profiling, optimisation, and scaling distributed systems. I have a performance problem.\n\nThe system: [DESCRIBE WHAT IT IS AND HOW IT'S DEPLOYED]\nThe symptom: [WHAT IS SLOW — LATENCY / THROUGHPUT / MEMORY / CPU — WITH NUMBERS]\nCurrent performance: [WHAT YOU'RE MEASURING NOW — E.G. P99 LATENCY: 800ms]\nTarget performance: [WHAT YOU NEED IT TO BE AND WHY]\nWhat you've already tried: [LIST OPTIMISATION ATTEMPTS AND THEIR RESULTS]\nRelevant code or architecture: [PASTE BOTTLENECK CODE OR DESCRIBE ARCHITECTURE]\n\nPlease produce:\n1. Profiling plan — before optimising, how to measure precisely; the exact commands/tools to use for this stack\n2. Bottleneck hypothesis — based on the symptoms, the most likely bottleneck; the reasoning\n3. Optimisation candidates — ranked list of changes to try, from fastest-win to most invasive, with expected impact for each\n4. The dangerous optimisation — the change that would give the most improvement but carries the most risk; how to de-risk it\n5. Code-level changes — specific implementations of the top 2 optimisations\n6. Caching strategy — where and how to cache; TTL policy; cache invalidation approach\n7. Load test plan — how to validate that the optimisation worked under realistic load; the test script structure\n\nMeasure twice. Optimise once."
+draft: false
+---
+
+A performance optimisation brief that profiles, identifies the real constraint, and prioritises the changes with the best effort-to-improvement ratio.

@@ -1,0 +1,18 @@
+---
+title: "Write the query without spending two hours on Stack Overflow"
+eyebrow: "Prompt Library · Data"
+lede: "SQL query writing assistance for the specific data retrieval, transformation, or aggregation task you're stuck on — with explanations so you understand what it does."
+category: "Data"
+categorySlug: "data"
+categoryGroup: "Build"
+subcategory: "define"
+payoff: "save"
+icon: "ph-chart-polar"
+tier: "pro"
+sourceId: "da-06"
+cover: "/section-rooms/prompts-data.png"
+prompt: "You are a machine learning specialist with expertise in predictive modelling, feature engineering, and model evaluation. I want to build a predictive model.\n\nPrediction task: [WHAT YOU WANT TO PREDICT — CLASSIFICATION / REGRESSION / RANKING]\nTarget variable: [THE COLUMN TO PREDICT — AND ITS DISTRIBUTION]\nFeatures available: [LIST THE COLUMNS AVAILABLE AS INPUTS]\nDataset size: [ROWS, ROUGH COLUMN COUNT]\nBusiness use case: [HOW THE PREDICTIONS WILL BE USED — AFFECTS OPTIMISATION TARGET]\nAcceptable false positive / false negative trade-off: [FOR CLASSIFICATION — WHAT MATTERS MORE]\n\nPlease produce:\n1. Problem framing — is this the right ML formulation? Alternative approaches to consider first (rules, lookup, simpler statistics)\n2. Feature engineering plan — transformations to apply, interactions to create, temporal features if applicable\n3. Model selection — 3 candidate models ordered by complexity; when each is appropriate; start here recommendation\n4. Training and validation strategy — train/val/test split; cross-validation approach; time-series split if applicable\n5. Evaluation metrics — the right metrics for this task; the one metric to optimise and the guardrails\n6. Baseline model code — a complete sklearn/XGBoost pipeline from data loading to evaluation\n7. Model card outline — the documentation every production model needs: purpose, performance, limitations, monitoring plan\n\nBefore you tune the model, make sure you're solving the right problem."
+draft: false
+---
+
+SQL query writing assistance for the specific data retrieval, transformation, or aggregation task you're stuck on — with explanations so you understand what it does.

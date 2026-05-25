@@ -1,0 +1,18 @@
+---
+title: "Add the guardrails that stop an AI from going off-script"
+eyebrow: "Prompt Library · Prompting"
+lede: "Constraint injection techniques that limit topic scope, output length, tone, and behaviour — so the model does the job without the surprises."
+category: "Prompting"
+categorySlug: "prompting"
+categoryGroup: "Build"
+subcategory: "control"
+payoff: "save"
+icon: "ph-file-ts"
+tier: "pro"
+sourceId: "pe-09"
+cover: "/section-rooms/prompts-prompting.png"
+prompt: "You are an expert in LLM output evaluation, building evaluation pipelines, and using LLMs to judge LLMs. I want to build an automated evaluation system for my LLM application.\n\nApplication: [WHAT THE LLM DOES — DESCRIBE INPUTS AND DESIRED OUTPUTS]\nCurrent quality assessment: [HOW YOU CURRENTLY KNOW IF OUTPUT IS GOOD — MANUAL / NOTHING]\nKey quality dimensions: [WHAT MAKES AN OUTPUT GOOD — ACCURACY / TONE / FORMAT / COMPLETENESS / SAFETY]\nVolume: [HOW MANY OUTPUTS PER DAY TO EVALUATE]\nModel available for evaluation: [WHICH LLM YOU CAN USE AS THE JUDGE]\n\nPlease produce:\n1. Evaluation framework — the dimensions to evaluate, their weights, and what each score means\n2. Rubric design — a detailed scoring rubric for each dimension (1–5 scale with specific descriptors)\n3. LLM-as-judge prompt — a complete meta-evaluation prompt that uses an LLM to score outputs against the rubric\n4. Gold standard examples — how to create reference outputs for calibration; what to include\n5. Human-AI alignment process — how to check whether the LLM judge agrees with human raters; calibration steps\n6. Automated pipeline design — how to run evaluation at scale; the code structure\n7. Regression testing approach — how to use the evaluation system to detect when model changes degrade quality\n\nYou cannot improve what you cannot measure. Evaluate everything."
+draft: false
+---
+
+Constraint injection techniques that limit topic scope, output length, tone, and behaviour — so the model does the job without the surprises.
