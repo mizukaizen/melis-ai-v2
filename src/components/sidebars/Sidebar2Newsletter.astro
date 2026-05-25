@@ -15,6 +15,17 @@ function formatDateShort(iso?: string) {
   return `${m[3]}/${m[2]}`;
 }
 
+// Channel → Phosphor icon. Lower-case substring match keeps it resilient
+// to small wording shifts in newsletter eyebrows.
+function iconForChannel(channel: string): string {
+  const key = (channel || '').toLowerCase();
+  if (key.includes('soul')) return 'ph-flame';
+  if (key.includes('operator')) return 'ph-file-text';
+  if (key.includes('dispatch')) return 'ph-paper-plane-tilt';
+  if (key.includes('hive') || key.includes('doctrine')) return 'ph-hexagon';
+  return 'ph-envelope-simple';
+}
+
 function channelFor(data: { byline?: string; eyebrow?: string }) {
   if (data.byline) {
     const parts = data.byline.split('·').map((s) => s.trim());
@@ -41,6 +52,7 @@ function channelFor(data: { byline?: string; eyebrow?: string }) {
     </div>
     <div class="sb2-list">
       <a class="sb2-item" href="/newsletter/">
+        <i class="ph ph-envelope sb2-icon"></i>
         <div class="sb2-row">
           <div class="sb2-name">All Issues</div>
           <div class="sb2-count">{items.length}</div>
@@ -54,8 +66,10 @@ function channelFor(data: { byline?: string; eyebrow?: string }) {
         const desc = isComingSoon
           ? (channel ? `coming soon · ${channel}` : 'coming soon')
           : channel;
+        const icon = iconForChannel(channel);
         const inner = (
           <>
+            <i class={`ph ${icon} sb2-icon`}></i>
             <div class="sb2-row">
               <div class="sb2-name">{n.data.title}</div>
               {date && <div class="sb2-count">{date}</div>}

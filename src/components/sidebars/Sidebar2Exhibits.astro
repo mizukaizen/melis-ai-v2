@@ -8,17 +8,17 @@ const currentSlug = Astro.url.pathname.match(/\/lab\/exhibits\/([^/]+)/)?.[1];
 
 // Mockup uses names-only (with count chip on the right showing "01-10"),
 // not "No.01 — Name". Restore mockup ordering + naming verbatim.
-const ENTRIES: { slug: string; name: string; count: string; desc: string }[] = [
-  { slug: 'phainesis',      name: 'Phainesis',      count: '01', desc: 'Inaugural · AI meets humanity' },
-  { slug: 'the-melissae',   name: 'The Melissae',   count: '02', desc: 'Bee priestesses, cave to garden' },
-  { slug: 'the-keeper',     name: 'The Keeper',     count: '03', desc: 'The contemporary tender' },
-  { slug: 'the-field',      name: 'The Field',      count: '04', desc: 'The living ground beneath it all' },
-  { slug: 'the-threshold',  name: 'The Threshold',  count: '05', desc: 'Crossing into the work' },
-  { slug: 'the-loss',       name: 'The Loss',       count: '06', desc: 'What is at stake if we do not tend it' },
-  { slug: 'the-inheritance',name: 'The Inheritance',count: '07', desc: 'What survives because someone tended it' },
-  { slug: 'the-doctrine',   name: 'The Doctrine',   count: '08', desc: 'Counter-architecture for AI' },
-  { slug: 'the-arc',        name: 'The Arc',        count: '09', desc: 'Fourteen to now. Same operator.' },
-  { slug: 'lessons',        name: 'Lessons',        count: '10', desc: 'Thirty-three lessons, one per year' },
+const ENTRIES: { slug: string; name: string; count: string; desc: string; icon: string }[] = [
+  { slug: 'phainesis',      name: 'Phainesis',      count: '01', desc: 'Inaugural · AI meets humanity',          icon: 'ph-eye' },
+  { slug: 'the-melissae',   name: 'The Melissae',   count: '02', desc: 'Bee priestesses, cave to garden',        icon: 'ph-flower-lotus' },
+  { slug: 'the-keeper',     name: 'The Keeper',     count: '03', desc: 'The contemporary tender',                icon: 'ph-key' },
+  { slug: 'the-field',      name: 'The Field',      count: '04', desc: 'The living ground beneath it all',       icon: 'ph-plant' },
+  { slug: 'the-threshold',  name: 'The Threshold',  count: '05', desc: 'Crossing into the work',                 icon: 'ph-door-open' },
+  { slug: 'the-loss',       name: 'The Loss',       count: '06', desc: 'What is at stake if we do not tend it',  icon: 'ph-cloud-rain' },
+  { slug: 'the-inheritance',name: 'The Inheritance',count: '07', desc: 'What survives because someone tended it',icon: 'ph-tree' },
+  { slug: 'the-doctrine',   name: 'The Doctrine',   count: '08', desc: 'Counter-architecture for AI',            icon: 'ph-book-bookmark' },
+  { slug: 'the-arc',        name: 'The Arc',        count: '09', desc: 'Fourteen to now. Same operator.',        icon: 'ph-shooting-star' },
+  { slug: 'lessons',        name: 'Lessons',        count: '10', desc: 'Thirty-three lessons, one per year',     icon: 'ph-graduation-cap' },
 ];
 ---
 
@@ -29,6 +29,7 @@ const ENTRIES: { slug: string; name: string; count: string; desc: string }[] = [
     </div>
     <div class="sb2-list">
       <a class="sb2-item" class:list={[{ active: !currentSlug }]} href="/lab/exhibits/">
+        <i class="ph ph-image-square sb2-icon"></i>
         <div class="sb2-row">
           <div class="sb2-name">All Exhibits</div>
           <div class="sb2-count">{total}</div>
@@ -37,6 +38,7 @@ const ENTRIES: { slug: string; name: string; count: string; desc: string }[] = [
       </a>
       {ENTRIES.map((e) => (
         <a class="sb2-item" class:list={[{ active: e.slug === currentSlug }]} href={`/lab/exhibits/${e.slug}/`}>
+          <i class={`ph ${e.icon} sb2-icon`}></i>
           <div class="sb2-row">
             <div class="sb2-name">{e.name}</div>
             <div class="sb2-count">{e.count}</div>

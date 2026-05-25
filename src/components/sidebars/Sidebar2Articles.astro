@@ -17,6 +17,16 @@ function formatDateShort(iso?: string) {
   if (!m) return iso;
   return `${m[3]}/${m[2]}`;
 }
+
+// Category → Phosphor icon. Falls back to ph-article for anything unknown.
+function iconForCategory(cat: string): string {
+  const key = (cat || '').toLowerCase();
+  if (key.includes('field')) return 'ph-note-pencil';
+  if (key.includes('essay')) return 'ph-feather';
+  if (key.includes('tutorial')) return 'ph-book-open';
+  if (key.includes('tear')) return 'ph-wrench';
+  return 'ph-article';
+}
 ---
 
 <aside class="sidebar-2" transition:persist="sb2-articles">
@@ -27,6 +37,7 @@ function formatDateShort(iso?: string) {
     </div>
     <div class="sb2-list">
       <a class="sb2-item" href="/articles/">
+        <i class="ph ph-archive sb2-icon"></i>
         <div class="sb2-row">
           <div class="sb2-name">All Articles</div>
           <div class="sb2-count">{items.length}</div>
@@ -40,8 +51,10 @@ function formatDateShort(iso?: string) {
         const desc = isComingSoon
           ? (cat ? `coming soon · ${cat}` : 'coming soon')
           : cat;
+        const icon = iconForCategory(a.data.category || '');
         const inner = (
           <>
+            <i class={`ph ${icon} sb2-icon`}></i>
             <div class="sb2-row">
               <div class="sb2-name">{a.data.title}</div>
               {date && <div class="sb2-count">{date}</div>}
