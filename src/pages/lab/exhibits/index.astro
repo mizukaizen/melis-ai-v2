@@ -13,11 +13,18 @@ const ordered = EXHIBITS_ORDER
   .map((title) => byTitle.get(title))
   .filter((e): e is NonNullable<typeof e> => Boolean(e));
 
-// Map exhibit slug to its paper-craft scene in public/section-rooms/exhibits/.
-function coverFor(slug: string): string {
-  const base = slug.replace(/^the-/, '');
-  const ext = base === 'hive' ? 'jpg' : 'png';
-  return `/section-rooms/exhibits/${base}.${ext}`;
+// Map exhibit slug → paper-craft scene in public/section-rooms/exhibits/.
+// Convention: file basename is the slug with leading "the-" stripped.
+// Exhibits whose file name diverges from this convention should set
+// `cover:` in their frontmatter (e.g. phainesis → hive.jpg). The
+// earlier `slug === 'hive'` special-case never matched any real slug,
+// so Phainesis pointed at a non-existent /section-rooms/exhibits/
+// phainesis.png. The frontmatter-first lookup fixes that and keeps
+// the convention working for the other nine.
+function coverFor(entry: { slug: string; data: { cover?: string } }): string {
+  if (entry.data.cover) return entry.data.cover;
+  const base = entry.slug.replace(/^the-/, '');
+  return `/section-rooms/exhibits/${base}.png`;
 }
 ---
 
@@ -41,7 +48,7 @@ function coverFor(slug: string): string {
     <div class="room-grid">
       {ordered.map((ex, i) => (
         <a class="room-card" href={`/lab/exhibits/${ex.slug}/`}>
-          <div class="room-card-img" style={`background-image: url('${coverFor(ex.slug)}');`}></div>
+          <div class="room-card-img" style={`background-image: url('${coverFor(ex)}');`}></div>
           <div class="room-card-veil"></div>
           {ex.data.status === 'live' && (
             <div class="room-card-group-pill is-signal">LIVE</div>

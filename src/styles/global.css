@@ -441,6 +441,415 @@ main.content .pane.in-room .section-header {
   background: rgba(124, 58, 237, 0.10);
 }
 
+/* ── About pages — story hero + chapters + timeline + values + roadmap
+ *    + item-grid + cta-panel. Ported verbatim from
+ *    _cowork/outputs/website-rebrand/melis-ai-shared.css (lines 178-353,
+ *    685-855). The mockup loads this file via <link rel="stylesheet">;
+ *    v2 never imported it, so /about/sean + /about/melis-ai rendered
+ *    these classes (story-hero, chapter, roadmap, item-card, cta-panel,
+ *    btn, rule) as unstyled divs — collapsed to a vertical text stack
+ *    instead of the intended 2-column hero + 3-col surfaces grid +
+ *    chapter blocks with numbers/images.
+ *    Token names mapped to v2: --border → --border-2, --border-light →
+ *    --border-1, --text → --text-1, --accent-soft → --accent-subtle.
+ */
+
+/* Inline section divider */
+.section-body hr.rule {
+  border: none;
+  border-top: 1px solid var(--border-1);
+  margin: 56px 0;
+}
+
+/* Story hero — portrait + meta on the right side */
+.section-body .story-hero {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 40px;
+  align-items: start;
+  margin-bottom: 56px;
+}
+.section-body .story-portrait {
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+}
+.section-body .story-portrait img { width: 100%; display: block; }
+.section-body .story-hero-name {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  margin: 0 0 6px;
+}
+.section-body .story-hero-role {
+  font-size: 13px;
+  color: var(--text-2);
+  margin-bottom: 18px;
+}
+.section-body .story-hero-meta {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--text-3);
+  margin-bottom: 18px;
+}
+.section-body .story-hero-tagline {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin: 28px 0 12px;
+}
+.section-body .story-hero-tagline em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 400;
+}
+.section-body .story-hero-intro {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-2);
+  max-width: 760px;
+}
+
+/* Chapter blocks — numbered story sections */
+.section-body .chapter {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 32px;
+  padding: 40px 0;
+  border-top: 1px solid var(--border-1);
+}
+.section-body .chapter-num {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: 0.2em;
+  padding-top: 8px;
+}
+.section-body .chapter-title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin-bottom: 4px;
+}
+.section-body .chapter-title em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 500;
+}
+.section-body .chapter-subtitle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 22px;
+}
+.section-body .chapter-body {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-2);
+  max-width: 760px;
+}
+.section-body .chapter-body p { margin-bottom: 16px; }
+.section-body .chapter-body p:last-child { margin-bottom: 0; }
+.section-body .chapter-body em { color: var(--text-1); font-style: italic; }
+.section-body .chapter-body a {
+  color: var(--accent);
+  border-bottom: 1px solid rgba(124, 58, 237, 0.4);
+}
+.section-body .chapter-body a:hover { border-bottom-color: var(--accent); }
+.section-body .chapter-images {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  margin-top: 22px;
+}
+.section-body .chapter-image {
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 14px;
+}
+.section-body .chapter-caption {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-top: 10px;
+}
+
+/* Career timeline */
+.section-body .timeline {
+  border-top: 1px solid var(--border-1);
+  margin-top: 48px;
+}
+.section-body .timeline-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 32px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--border-1);
+}
+.section-body .timeline-year {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--text-3);
+  padding-top: 4px;
+}
+.section-body .timeline-org {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  margin-bottom: 4px;
+  color: var(--text-1);
+}
+.section-body .timeline-role {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.section-body .timeline-desc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-2);
+  max-width: 720px;
+}
+
+/* Values grid */
+.section-body .values-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border-1);
+  border: 1px solid var(--border-1);
+  margin-top: 28px;
+}
+.section-body .value-card {
+  background: var(--bg);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.section-body .value-icon { font-size: 24px; line-height: 1; }
+.section-body .value-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+.section-body .value-desc {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-2);
+}
+
+/* Roadmap (about-studio) */
+.section-body .roadmap { margin-top: 28px; }
+.section-body .roadmap-row {
+  display: grid;
+  grid-template-columns: 40px 220px 1fr;
+  gap: 24px;
+  align-items: start;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--border-1);
+}
+.section-body .roadmap-row:first-child {
+  border-top: 1px solid var(--border-1);
+}
+.section-body .roadmap-status {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  color: var(--accent);
+  text-align: center;
+}
+.section-body .roadmap-status.done { color: var(--text-2); }
+.section-body .roadmap-status.pending { color: var(--text-3); }
+.section-body .roadmap-phase {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.section-body .roadmap-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--text-1);
+  margin-top: 2px;
+}
+.section-body .roadmap-desc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+
+/* Item grid (3-col surfaces grid on about-studio) */
+.section-body .item-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border-1);
+  border: 1px solid var(--border-1);
+}
+@media (max-width: 900px) {
+  .section-body .item-grid { grid-template-columns: 1fr; }
+}
+.section-body .item-card {
+  background: var(--bg);
+  padding: 28px 24px;
+  cursor: pointer;
+  transition: background 200ms var(--ease);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 200px;
+  text-decoration: none;
+  color: inherit;
+}
+.section-body .item-card:hover { background: var(--surface); }
+.section-body .item-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-body .item-status {
+  padding: 1px 7px;
+  border-radius: 3px;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  border: 1px solid var(--border-1);
+}
+.section-body .item-status.live {
+  color: var(--accent);
+  border-color: rgba(124, 58, 237, 0.4);
+  background: var(--accent-subtle);
+}
+.section-body .item-status.flight {
+  color: rgba(255, 200, 80, 0.9);
+  border-color: rgba(255, 200, 80, 0.35);
+  background: rgba(255, 200, 80, 0.08);
+}
+.section-body .item-status.parked { color: var(--text-3); }
+.section-body .item-status.coming { color: var(--text-3); border-style: dashed; }
+.section-body .item-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  color: var(--text-1);
+}
+.section-body .item-title em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 500;
+}
+.section-body .item-line {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-2);
+  flex: 1;
+}
+.section-body .item-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  display: flex;
+  gap: 14px;
+  border-top: 1px solid var(--border-1);
+  padding-top: 12px;
+  margin-top: 6px;
+}
+
+/* CTA panel + btn */
+.section-body .cta-panel {
+  background: var(--surface);
+  border: 1px solid var(--border-1);
+  padding: 36px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  margin-top: 36px;
+}
+.section-body .cta-panel-text { flex: 1; }
+.section-body .cta-panel h3 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  margin: 0 0 8px;
+}
+.section-body .cta-panel h3 em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 500;
+}
+.section-body .cta-panel p {
+  font-size: 14px;
+  color: var(--text-2);
+  margin: 0;
+}
+.section-body .cta-panel .btn,
+.section-body a.btn {
+  display: inline-flex;
+  align-items: center;
+  background: var(--accent);
+  color: white;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 12px 18px;
+  border-radius: 4px;
+  border: 1px solid var(--accent);
+  cursor: pointer;
+  text-decoration: none;
+  transition: filter 160ms var(--ease);
+  white-space: nowrap;
+}
+.section-body .cta-panel .btn:hover,
+.section-body a.btn:hover { filter: brightness(1.1); }
+
+/* Back-link in hero (mockup-only — Astro routing handles browser back).
+   Hidden but kept in DOM so any markup that includes it doesn't break. */
+.section-header-inner .back-link { display: none !important; }
+
 /* ════════════════════════════════════════════════════════════════
  * END CANONICAL LAYOUT.
  * ════════════════════════════════════════════════════════════════ */
