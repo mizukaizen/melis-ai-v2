@@ -1,0 +1,37 @@
+---
+// ShelfSection — one horizontal-scroll shelf with its heading row,
+// decorative shelf line, and bottom shelf label. Renders only when
+// the section actually has shelfItems (highlight=true subset).
+//
+// Mockup classes verbatim:
+//   .shelf-header (id="<section-id>") > .roman + .title + .count
+//   .shelf > .shelf-rack > .card[] + .shelf-line + .shelf-label
+
+import RecoCard from './RecoCard.astro';
+import type { NormalisedSection } from '../../lib/recos';
+
+interface Props {
+  section: NormalisedSection;
+  /** 1-based shelf index across the page — for the "Shelf 0X" suffix. */
+  shelfIndex: number;
+}
+
+const { section, shelfIndex } = Astro.props;
+const count = section.shelfItems.length;
+if (count === 0) return null;
+const shelfNo = String(shelfIndex).padStart(2, '0');
+const entryNo = String(count).padStart(2, '0');
+---
+
+<div class="shelf-header" id={`shelf-${section.id}`}>
+  <span class="roman">{section.romanNumeral}</span>
+  <span class="title" set:html={section.title.replace(/(\b\w+)$/, '<em>$1</em>')} />
+  <span class="count">{entryNo} entries · Shelf {shelfNo}</span>
+</div>
+<div class="shelf">
+  <div class="shelf-rack">
+    {section.shelfItems.map((item) => <RecoCard item={item} />)}
+  </div>
+  <div class="shelf-line"></div>
+  {section.label && <span class="shelf-label">{section.label}</span>}
+</div>
