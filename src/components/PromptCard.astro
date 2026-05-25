@@ -1,0 +1,116 @@
+---
+// PromptCard — collapsible prompt card with copy button.
+// Markup follows v1 .pc structure so existing mockup.css rules
+// (.pc, .pc-cat, .pc-top, .pc-meta, .pc-title, .pc-icon, .pc-desc,
+//  .pc-body, .pc-pre, .pc-fade, .pc-footer, .pc-expand-btn,
+//  .pc-copy-btn, .pv-var) cascade.
+//
+// Variables inside [BRACKETS] in the prompt body get highlighted
+// as <span class="pv-var">[NAME]</span>.
+
+interface Props {
+  prompt: string;
+  title: string;
+  description: string;
+  category: string;
+  categorySlug: string;
+  payoff: string;
+  subcategory?: string;
+  icon?: string;
+  slug?: string;
+  sourceId?: string;
+  catColor?: string;
+  catBg?: string;
+}
+
+const {
+  prompt,
+  title,
+  description,
+  category,
+  categorySlug,
+  payoff,
+  subcategory = '',
+  icon = 'ph-chat-dots',
+  slug = '',
+  sourceId = '',
+  catColor,
+  catBg,
+} = Astro.props;
+
+// Per-category colour stops (mirrors v1 catColor / catBg pairs from
+// public/data/prompts.json). Used to tint the category pill + the
+// earned-colour ring on hover (--cat-color CSS var).
+const CAT_COLORS: Record<string, { color: string; bg: string }> = {
+  'sales':         { color: '#fb923c', bg: 'rgba(251,146,60,0.15)' },
+  'marketing':     { color: '#f472b6', bg: 'rgba(244,114,182,0.15)' },
+  'finance':       { color: '#4ade80', bg: 'rgba(74,222,128,0.15)' },
+  'operations':    { color: '#facc15', bg: 'rgba(250,204,21,0.15)' },
+  'hiring':        { color: '#f87171', bg: 'rgba(248,113,113,0.15)' },
+  'customer':      { color: '#e879f9', bg: 'rgba(232,121,249,0.15)' },
+  'legal':         { color: '#94a3b8', bg: 'rgba(148,163,184,0.15)' },
+  'strategy':      { color: '#a78bfa', bg: 'rgba(167,139,250,0.15)' },
+  'frameworks':    { color: '#60a5fa', bg: 'rgba(96,165,250,0.15)' },
+  'writing':       { color: '#818cf8', bg: 'rgba(129,140,248,0.15)' },
+  'research':      { color: '#22d3ee', bg: 'rgba(34,211,238,0.15)' },
+  'communication': { color: '#fbbf24', bg: 'rgba(251,191,36,0.15)' },
+  'life-design':   { color: '#fb7185', bg: 'rgba(251,113,133,0.15)' },
+  'goals':         { color: '#34d399', bg: 'rgba(52,211,153,0.15)' },
+  'creative':      { color: '#a3e635', bg: 'rgba(163,230,53,0.15)' },
+  'career':        { color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
+  'ai-tools':      { color: '#5eead4', bg: 'rgba(94,234,212,0.15)' },
+  'prompting':     { color: '#2dd4bf', bg: 'rgba(45,212,191,0.15)' },
+  'coding':        { color: '#38bdf8', bg: 'rgba(56,189,248,0.15)' },
+  'data':          { color: '#f97316', bg: 'rgba(249,115,22,0.15)' },
+  'product-tech':  { color: '#c084fc', bg: 'rgba(192,132,252,0.15)' },
+  'seans-edge':    { color: '#ff6b6b', bg: 'rgba(255,107,107,0.15)' },
+};
+
+const tint = CAT_COLORS[categorySlug] || { color: catColor || '#a78bfa', bg: catBg || 'rgba(167,139,250,0.15)' };
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function highlightVars(s: string): string {
+  return escapeHtml(s).replace(/\[([^\]]+)\]/g, '<span class="pv-var">[$1]</span>');
+}
+
+const promptHtml = highlightVars(prompt);
+const phIcon = icon.startsWith('ph-') ? icon : `ph-${icon}`;
+---
+
+<div
+  class="pc"
+  data-pcat={category}
+  data-cat-slug={categorySlug}
+  data-uvp={payoff}
+  data-sub={subcategory}
+  data-source-id={sourceId}
+  data-slug={slug}
+  style={`--cat-color: ${tint.color}55;`}
+>
+  <div class="pc-top">
+    <div class="pc-meta">
+      <span class="pc-cat" style={`color:${tint.color};background:${tint.bg};border-color:${tint.color}33`}>{category}</span>
+      <span class="pc-title">{title}</span>
+    </div>
+    <span class="pc-icon"><i class={`ph ${phIcon}`}></i></span>
+  </div>
+  <p class="pc-desc">{description}</p>
+  <div class="pc-body">
+    <pre class="pc-pre" set:html={promptHtml}></pre>
+    <div class="pc-fade"></div>
+  </div>
+  <div class="pc-footer">
+    <button class="pc-expand-btn" type="button" data-pc-expand style={`color:${tint.color}`}>Show full prompt ↓</button>
+    <button class="pc-copy-btn" type="button" data-pc-copy>
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5"/></svg>
+      Copy
+    </button>
+  </div>
+  <div class="pc-raw" hidden>{prompt}</div>
+</div>

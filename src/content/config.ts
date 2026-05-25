@@ -96,6 +96,13 @@ const prompts = defineCollection({
       eyebrow: z.string().optional(),
       lede: z.string().optional(),
       category: z.string(),
+      categorySlug: z.string().optional(),
+      categoryGroup: z.enum(['Business', 'Think & Communicate', 'Life & Career', 'Build', 'Featured']).optional(),
+      subcategory: z.string().optional(),
+      payoff: z.enum(['save', 'money', 'decide', 'create', 'grow']).optional(),
+      icon: z.string().optional(),
+      tier: z.string().optional(),
+      sourceId: z.string().optional(),
       persona: z.string().optional(),
       bestFor: z.string().optional(),
       prompt: z.string(),
@@ -116,6 +123,7 @@ const recos = defineCollection({
       lede: z.string().optional(),
       cover: z.string().optional(),
       category: z.string(),
+      status: z.enum(['live', 'coming-soon']).default('live'),
       affiliateUrl: z.string().url().optional(),
       tools: z
         .array(
@@ -167,6 +175,8 @@ const ventures = defineCollection({
       strip: z.array(stripCell).optional(),
       pill: pill.optional(),
       stage: z.enum(['concept', 'building', 'live', 'archived']).default('building'),
+      status: z.enum(['live', 'coming-soon']).default('live'),
+      groupV1: z.enum(['Live', 'Building', 'Research', 'Paused', 'Archived', 'Past']).optional(),
       url: z.string().url().optional(),
       draft: z.boolean().default(false),
     })

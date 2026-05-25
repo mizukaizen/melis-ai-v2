@@ -1,68 +1,60 @@
 ---
+// /prompts/ landing — category browse (mirrors /dossiers/ landing).
+// 22 paper-craft room-cards, one per category, each linking to
+// /prompts/<category>/ where the actual 2-col prompt grid lives.
+//
+// The 335-card flat browse + payoff filter lives on per-category pages,
+// not here. This page is for picking a category to dive into.
 import AppLayout from '../../layouts/AppLayout.astro';
 import SectionHero from '../../components/SectionHero.astro';
 import { getCollection } from 'astro:content';
-import { landingHero, itemHero } from '../../lib/hero-image';
+import { landingHero } from '../../lib/hero-image';
+import { PROMPT_CATEGORIES, PROMPT_CATEGORY_ORDER } from '../../data/prompt-categories';
 
 export const prerender = true;
 
-const prompts = (await getCollection('prompts')).filter((p) => !p.data.draft);
+// Authoritative live count straight from the collection — keeps the body-lead
+// honest if prompts ever get added/removed.
+const totalPrompts = (await getCollection('prompts')).filter((p) => !p.data.draft).length;
+const totalCategories = PROMPT_CATEGORY_ORDER.length;
 
-// Filter pill categories — derived from the collection. Keeps mockup's filter
-// behaviour while flattening the underlying grid (no per-category sections).
-const categories = ['All', ...Array.from(new Set(prompts.map((p) => p.data.category)))];
-
-function coverFor(p: { data: { category: string; cover?: string }; slug: string }) {
-  if (p.data.cover && p.data.cover.startsWith('/')) return p.data.cover;
-  return itemHero('prompts', p.data.category, p.slug);
-}
+const cats = PROMPT_CATEGORY_ORDER
+  .map((slug) => ({ slug, ...PROMPT_CATEGORIES[slug] }))
+  .filter((c) => c.title);
 ---
 
 <AppLayout
-  title="Prompts"
+  title="Prompt Library"
   pane="prompts"
-  description="A working operator's prompt library — flat searchable grid, tested in real work, ready to copy."
+  description={`${totalPrompts} tested operator prompts across ${totalCategories} categories. Pick a category to dive in.`}
 >
   <SectionHero
     cover={landingHero('prompts')}
-    eyebrow={`Resources · the library · ${prompts.length} prompts`}
-    title="The Prompt Library"
-    titleHtml="The Prompt <em>Library</em>"
-    lede="A working operator's library — tested, categorised, ready to copy. Variables in [purple brackets] are your fill-in points."
+    eyebrow="Resources · the library"
+    title="Prompt Library"
+    titleHtml='Prompt <em>Library</em>'
   />
 
   <section class="section-body">
-    <div class="landing-intro">
-      <h2 class="h2">Operator prompts — <em>tested in real work</em>.</h2>
-      <p class="body-lead">Every prompt here started as something I needed for a real client problem, then got refined enough to reuse. Copy, fill the [brackets], ship.</p>
-    </div>
-
-    {categories.length > 1 && (
-      <div class="pc-type-toggle" id="prompts-filter">
-        {categories.map((c) => (
-          <button class="ptt-btn" class:list={[{ active: c === 'All' }]} type="button" data-filter={c}>{c}</button>
+    <div class="prompts-landing">
+      <div class="section-eyebrow-small">{totalPrompts} prompts · {totalCategories} categories · all tested in real work</div>
+      <h2 class="h2">A working library of <em>operator prompts</em>.</h2>
+      <p class="body-lead">Variables in <span class="pv-var">[BRACKETS]</span> are your fill-in points. Pick a category below, or jump straight into <a href="/prompts/seans-edge/" style="color: var(--accent); border-bottom: 1px solid currentColor;">Sean's Edge</a> for the AI-first cognitive amplification set.</p>
+      <div class="room-grid">
+        {cats.map((c) => (
+          <a class="room-card" href={`/prompts/${c.slug}/`}>
+            <div class="room-card-img" style={`background-image: url('/${c.image}');`}></div>
+            <div class="room-card-veil"></div>
+            <div class="room-card-arrow">↗</div>
+            <div class="room-card-meta">
+              <div class="room-card-eyebrow">{c.group} · {c.count} prompts</div>
+              <div class="room-card-title">{c.title}</div>
+              <div class="room-card-line">{c.line}</div>
+            </div>
+          </a>
         ))}
       </div>
-    )}
-
-    <div class="room-grid" id="prompts-grid">
-      {prompts.map((p) => (
-        <a class="room-card" href={`/prompts/${p.slug}/`} data-category={p.data.category}>
-          <div class="room-card-img" style={`background-image: url('${coverFor(p)}');`}></div>
-          <div class="room-card-veil"></div>
-          <div class="room-card-group-pill is-muted">{p.data.category}</div>
-          <div class="room-card-arrow">↗</div>
-          <div class="room-card-meta">
-            <div class="room-card-eyebrow">Prompt</div>
-            <div class="room-card-title">{p.data.title}</div>
-            <div class="room-card-line">{p.data.lede}</div>
-          </div>
-        </a>
-      ))}
     </div>
-    {prompts.length === 0 && (
-      <p style="text-align:center;color:var(--text-3);">No prompts yet. Check back soon.</p>
-    )}
   </section>
 
   <div class="footer">
@@ -70,24 +62,9 @@ function coverFor(p: { data: { category: string; cover?: string }; slug: string 
     <div>Operator-built · Australia</div>
   </div>
 
-  <script>
-    function wirePromptFilter() {
-      const wrap = document.getElementById('prompts-filter');
-      const grid = document.getElementById('prompts-grid');
-      if (!wrap || !grid) return;
-      if (wrap.dataset.wired === '1') return;
-      wrap.dataset.wired = '1';
-      wrap.querySelectorAll<HTMLButtonElement>('.ptt-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const val = btn.dataset.filter || 'All';
-          wrap.querySelectorAll('.ptt-btn').forEach((b) => b.classList.toggle('active', b === btn));
-          grid.querySelectorAll<HTMLElement>('.room-card').forEach((card) => {
-            card.style.display = (val === 'All' || card.dataset.category === val) ? '' : 'none';
-          });
-        });
-      });
-    }
-    document.addEventListener('astro:page-load', wirePromptFilter);
-    wirePromptFilter();
-  </script>
+  <style>
+    .prompts-landing .section-eyebrow-small { margin-bottom: 8px; }
+    .prompts-landing .h2 { margin-bottom: 10px; }
+    .prompts-landing .body-lead { margin-bottom: 20px; max-width: 60ch; }
+  </style>
 </AppLayout>

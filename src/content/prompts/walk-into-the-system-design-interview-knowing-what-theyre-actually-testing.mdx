@@ -1,0 +1,18 @@
+---
+title: "Walk into the system design interview knowing what they're actually testing"
+eyebrow: "Prompt Library · Coding"
+lede: "System design interview prep that covers the canonical problems, the evaluation criteria interviewers use, and how to structure your answer to show both breadth and depth."
+category: "Coding"
+categorySlug: "coding"
+categoryGroup: "Build"
+subcategory: "ship"
+payoff: "save"
+icon: "ph-brackets-curly"
+tier: "pro"
+sourceId: "dv-05"
+cover: "/section-rooms/prompts-coding.png"
+prompt: "You are a DevOps engineer and CI/CD architect. I want to design a deployment pipeline for a software project.\n\nProject context: [TYPE — WEB APP / API / MICROSERVICES / ML MODEL; LANGUAGE AND FRAMEWORK]\nCurrent deployment process: [HOW YOU DEPLOY TODAY — MANUAL / SCRIPTS / BASIC CI]\nTarget infrastructure: [AWS / GCP / AZURE / HETZNER / FLY / RENDER / VERCEL — PREFERENCE]\nTeam size: [HOW MANY ENGINEERS — AFFECTS PIPELINE COMPLEXITY]\nDeployment frequency goal: [HOW OFTEN DO YOU WANT TO DEPLOY — MULTIPLE TIMES / DAY / WEEK]\n\nPlease produce:\n1. Pipeline architecture — the stages from git push to production; a diagram described in text\n2. Stage-by-stage spec — for each stage: what runs, what must pass, failure behaviour\n3. Environment strategy — local / dev / staging / production; what differs in each; how to promote between them\n4. Container strategy — Dockerfile best practices for this stack; multi-stage build; image size optimisation\n5. Secret management — how to handle environment variables, API keys, and credentials securely in CI/CD\n6. Rollback strategy — how to roll back a bad deployment in under 5 minutes; the exact commands\n7. Monitoring and alerting hooks — what to instrument in the pipeline; what alerts to set up\n8. Infrastructure as Code — a minimal Terraform or Pulumi structure for the target infrastructure\n\nDeployment should be the least interesting part of shipping software."
+draft: false
+---
+
+System design interview prep that covers the canonical problems, the evaluation criteria interviewers use, and how to structure your answer to show both breadth and depth.

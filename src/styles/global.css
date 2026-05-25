@@ -71,25 +71,37 @@ body::-webkit-scrollbar,
  * `height:auto`, and `mask-image` overrides so the section-hero-base
  * overlay can do its job.
  * ────────────────────────────────────────────────────────────── */
-/* Landing heroes are SHORT (~320px) so the cards lift into the fold
-   at 900px viewport. Detail/in-room heroes stay tall for cinematic effect. */
+/* ════════════════════════════════════════════════════════════════
+ * CANONICAL LAYOUT — DO NOT OVERRIDE PER PAGE.
+ *
+ * Single source of truth for hero + body + cards across every route.
+ * Tokens defined in tokens.css. If a value isn't in this block (or its
+ * token), it doesn't belong in a per-page rule.
+ *
+ * Invariants the canon enforces:
+ *   1. section-hero-content + section-body share max-width + padding-x
+ *      → hero eyebrow left edge = body h2 left edge = grid left edge
+ *   2. Hero image fades to var(--bg) via mask-image (no overlay rectangle)
+ *   3. Hero contains eyebrow + h1 + optional 1-line byline ONLY.
+ *      Long descriptions belong in section-body. (SectionHero.astro
+ *      no longer renders the `lede` prop.)
+ *   4. All text in hero AND body is left-aligned. No centering.
+ *   5. h1 uses --section-title-size everywhere (64px max at 1440).
+ *   6. Cards use --card-title-size etc.
+ * ════════════════════════════════════════════════════════════════ */
+
+/* ── Hero shell ────────────────────────────────────────────────── */
 .pane .section-header,
 main.content .section-header {
   position: relative !important;
-  left: auto !important;
-  right: auto !important;
-  top: auto !important;
-  width: auto !important;
-  height: auto !important;
-  min-height: 320px !important;
+  left: auto !important; right: auto !important; top: auto !important;
+  width: auto !important; height: auto !important;
+  min-height: var(--hero-min-h-landing) !important;
   overflow: hidden !important;
 }
 .pane.in-room .section-header,
 main.content .pane.in-room .section-header {
-  min-height: 560px !important;
-}
-.pane[data-pane="library"].in-room .section-header {
-  min-height: 600px !important;
+  min-height: var(--hero-min-h-detail) !important;
 }
 
 .pane .section-header-inner {
@@ -98,50 +110,79 @@ main.content .pane.in-room .section-header {
   display: flex !important;
   flex-direction: column !important;
   justify-content: flex-end !important;
-  padding: 48px clamp(24px, 3vw, 56px) 32px !important;
-  max-width: 1280px !important;
+  /* padding-bottom sets the breathing room between the title and the hero's
+     bottom edge. ~16% of hero height puts the title at "centred-low" rather
+     than glued to the bottom. Landing heroes are shorter, so a smaller
+     absolute value still feels proportionally similar. */
+  padding: 48px var(--content-padding-x) 56px !important;
+  max-width: var(--content-max) !important;
   margin: 0 auto !important;
-  min-height: 320px !important;
+  min-height: var(--hero-min-h-landing) !important;
   width: 100% !important;
   height: auto !important;
   text-align: left !important;
   box-sizing: border-box !important;
 }
 .pane.in-room .section-header-inner {
-  min-height: 560px !important;
-  padding: 80px clamp(24px, 3vw, 56px) 60px !important;
+  min-height: var(--hero-min-h-detail) !important;
+  padding: 80px var(--content-padding-x) 100px !important;
 }
-.pane[data-pane="library"].in-room .section-header-inner { min-height: 600px !important; }
 
 .pane .section-title-block {
   text-align: left !important;
-  margin: 0 !important;
-  padding: 0 !important;
+  margin: 0 !important; padding: 0 !important;
   align-self: flex-start !important;
 }
 
+/* ── Body shell ────────────────────────────────────────────────── */
 .pane .section-body {
   padding-top: clamp(12px, 2vh, 28px) !important;
   padding-bottom: 80px !important;
-  max-width: 1280px !important;
+  padding-left: var(--content-padding-x) !important;
+  padding-right: var(--content-padding-x) !important;
+  max-width: var(--content-max) !important;
   margin: 0 auto !important;
+  text-align: left !important;
 }
-/* Detail/in-room pages keep the cinematic breathing room above the body. */
+/* Higher-specificity override beats mockup.css line 4583 which forces
+   max-width: 1280px on landing-mode / flat-list-mode panes. */
+.app.is-landing-mode .pane.active .section-body,
+.app.is-flat-list-mode .pane.active .section-body {
+  max-width: var(--content-max) !important;
+  padding-left: var(--content-padding-x) !important;
+  padding-right: var(--content-padding-x) !important;
+}
 .pane.in-room .section-body {
-  padding-top: clamp(48px, 6vh, 96px) !important;
+  /* Was clamp(48, 6vh, 96) which produced 54px at 900vh — combined with the
+     hero's padding-bottom of 100px that put 154px between h1 and the first
+     body element. Tightened so the gap reads ~40-50px once the hero fade
+     edge is accounted for. */
+  padding-top: clamp(16px, 2vh, 28px) !important;
 }
 
-/* Landing headers — tighter so flat-card grids surface more rows in the fold. */
-.pane .flat-list-header { margin-bottom: 12px !important; }
-.pane .section-body > .body-lead { margin-bottom: 20px !important; max-width: 60ch !important; }
-.pane .section-body .h2 { margin-bottom: 8px !important; }
-.pane .section-eyebrow-small { margin-bottom: 6px !important; }
+/* ── Prose tier — narrow column for long-form reading.
+   Applies to article / newsletter / dossier detail pages. Hero AND
+   body both clamp to ~720px so h1, eyebrow, body-lead, prose, lists
+   all share the same left + right edges. Single column, edge-to-edge. */
+.pane.in-room[data-pane="articles"]   .section-header-inner,
+.pane.in-room[data-pane="articles"]   .section-body,
+.pane.in-room[data-pane="newsletter"] .section-header-inner,
+.pane.in-room[data-pane="newsletter"] .section-body,
+.pane.in-room[data-pane="library"]    .section-header-inner,
+.pane.in-room[data-pane="library"]    .section-body {
+  max-width: var(--content-max-prose) !important;
+  padding-left: clamp(20px, 2vw, 24px) !important;
+  padding-right: clamp(20px, 2vw, 24px) !important;
+}
 
+/* ── Hero image + fade ─────────────────────────────────────────── */
 .pane .section-hero-bg {
   position: absolute !important;
   inset: 0 !important;
-  -webkit-mask-image: none !important;
-          mask-image: none !important;
+  /* Image fades to transparent at bottom 5%, gradient covers bottom 70%
+     (token --hero-fade). The page var(--bg) shows through naturally. */
+  -webkit-mask-image: var(--hero-fade) !important;
+          mask-image: var(--hero-fade) !important;
   background-size: cover !important;
   background-position: center !important;
   z-index: 0 !important;
@@ -157,36 +198,252 @@ main.content .pane.in-room .section-header {
     transparent 100%) !important;
   pointer-events: none !important;
 }
+/* Disabled — mask-image on .section-hero-bg handles the fade. The
+   ::after overlay creates a double-fade if both are active. */
 .pane .section-header::after {
-  content: '' !important;
-  display: block !important;
-  position: absolute !important;
-  inset: 0 !important;
-  bottom: 0 !important;
-  height: auto !important;
-  background: linear-gradient(180deg,
-    transparent 0%,
-    transparent 55%,
-    rgba(5, 5, 5, 0.55) 85%,
-    var(--bg) 100%) !important;
-  pointer-events: none !important;
-  z-index: 2 !important;
+  display: none !important;
 }
 
-/* Hide the back-link (per mockup) */
 .pane .back-link { display: none !important; }
 
-/* Section title — landing tier (smaller). Detail/in-room tier bumps it up. */
+/* ── Typography (hero) ─────────────────────────────────────────── */
 .pane .section-title {
   font-family: var(--font-display) !important;
-  font-size: clamp(52px, 6vw, 88px) !important;
-  font-weight: 500 !important;
-  line-height: 0.98 !important;
+  font-size: var(--section-title-size) !important;
+  font-weight: 300 !important;
+  line-height: 1.0 !important;
   letter-spacing: -0.02em !important;
   color: var(--text-1) !important;
   margin: 0 !important;
   list-style: none !important;
 }
+.pane .section-eyebrow {
+  font-family: var(--font-mono) !important;
+  font-size: var(--section-eyebrow-size) !important;
+  letter-spacing: 0.22em !important;
+  text-transform: uppercase !important;
+  color: rgba(232, 227, 216, 0.7) !important;
+  margin: 0 0 14px !important;
+}
+.pane .section-byline {
+  font-family: var(--font-mono) !important;
+  font-size: 11px !important;
+  letter-spacing: 0.06em !important;
+  color: var(--text-3) !important;
+  margin: 12px 0 0 !important;
+}
+
+/* ── Body typography ───────────────────────────────────────────── */
+.pane .flat-list-header { margin-bottom: 12px !important; }
+.pane .section-body > .body-lead { margin-bottom: 20px !important; max-width: 60ch !important; }
+.pane .section-body .h2 { margin-bottom: 8px !important; }
+.pane .section-eyebrow-small { margin-bottom: 6px !important; }
+
+/* ── /prompts/ landing — 22-category browse (matches /dossiers/
+ *    pattern). Locks to 3-col on wide → 2-col → 1-col. The default
+ *    .pane .room-grid is 2-col; this is the prompts-landing override. */
+.pane[data-pane="prompts"] .prompts-landing .room-grid {
+  grid-template-columns: repeat(3, 1fr) !important;
+}
+@media (max-width: 980px) {
+  .pane[data-pane="prompts"] .prompts-landing .room-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+@media (max-width: 640px) {
+  .pane[data-pane="prompts"] .prompts-landing .room-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── Prompt Library card grid ──────────────────────────────────
+ * Base styles for .pc cards rendered by PromptCard.astro on
+ * /prompts, /prompts/<category>, etc. mockup.css only carries the
+ * !important overrides (2-col lock, padding 16px, max-height 440px,
+ * earned-colour hover ring). The fundamentals — grid display, card
+ * surface/border, collapsed pre body with fade, button styling,
+ * and the .is-expanded state — live here. Ported from v1
+ * (repos/melis-ai-astro-v1/src/styles/global.css L1002-1024).
+ */
+.pc-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  transition: opacity 0.15s var(--ease);
+  margin-top: 18px;
+}
+.pc-grid.filtering { opacity: 0; }
+@media (max-width: 900px) {
+  .pc-grid { grid-template-columns: 1fr; }
+}
+.pc {
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  max-height: 440px;
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: border-color 0.18s var(--ease), transform 0.18s var(--ease), box-shadow 0.18s var(--ease);
+}
+.pc-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.pc-meta { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.pc-cat {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  width: fit-content;
+  margin-bottom: 4px;
+}
+.pc-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-1);
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+}
+.pc-icon { font-size: 22px; line-height: 1; flex-shrink: 0; opacity: 0.55; display: flex; align-items: center; justify-content: center; color: var(--text-3); }
+.pc-icon i { color: inherit; }
+.pc:hover .pc-icon { opacity: 0.85; }
+.pc-desc {
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text-2);
+  margin: 0;
+}
+.pc-body {
+  background: rgba(13, 13, 20, 0.65);
+  border: 1px solid var(--border-2);
+  border-radius: 6px;
+  padding: 12px 14px;
+  position: relative;
+  flex: 1;
+  min-height: 120px;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.pc-pre {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(232, 227, 216, 0.65);
+  white-space: pre-wrap;
+  line-height: 1.65;
+  word-break: break-word;
+  margin: 0;
+}
+.pv-var {
+  color: var(--accent);
+  background: rgba(124, 58, 237, 0.10);
+  border-radius: 3px;
+  padding: 1px 4px;
+  font-weight: 500;
+}
+.pc-fade {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 52px;
+  background: linear-gradient(transparent, rgba(13, 13, 20, 0.92));
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.pc-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 4px;
+  gap: 10px;
+}
+.pc-expand-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  padding: 2px 0;
+  text-align: left;
+  transition: opacity 0.15s ease;
+}
+.pc-expand-btn:hover { opacity: 0.7; }
+.pc-copy-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: 1px solid var(--border-2);
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.pc-copy-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(124, 58, 237, 0.06); }
+.pc-copy-btn.is-copied { border-color: #5eead4; color: #5eead4; background: rgba(94, 234, 212, 0.1); }
+.pc:hover {
+  transform: translateY(-2px);
+  border-color: transparent;
+  box-shadow:
+    0 0 0 1px var(--cat-color, rgba(255, 255, 255, 0.14)),
+    0 8px 28px rgba(0, 0, 0, 0.45);
+}
+.pc.is-expanded {
+  max-height: none;
+  overflow: visible;
+  align-self: start;
+}
+.pc.is-expanded .pc-body { max-height: none; }
+.pc.is-expanded .pc-fade { opacity: 0; }
+
+/* Payoff-pill filter row */
+.pc-type-toggle {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 4px 0 0;
+}
+.pc-type-toggle .ptt-btn {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--border-2);
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  padding: 5px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.pc-type-toggle .ptt-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(124, 58, 237, 0.06);
+}
+.pc-type-toggle .ptt-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(124, 58, 237, 0.10);
+}
+
+/* ════════════════════════════════════════════════════════════════
+ * END CANONICAL LAYOUT.
+ * ════════════════════════════════════════════════════════════════ */
 .pane.in-room .section-title {
   /* Detail-page heroes are cinematic but must fit single-line at 1440.
      Longest titles in the catalogue: "AI Workspace Starter Kit" (24),
@@ -280,129 +537,36 @@ body[data-pane="home"] main.content {
   .app > main.content { margin-left: 0 !important; }
 }
 
-/* Home pane: lift the height:100vh + overflow:hidden lock from
-   the mockup so the page scrolls normally with sb2 visible. */
-.pane[data-pane="home"].active {
-  display: block !important;
-  height: auto !important;
-  overflow: visible !important;
+/* Tech-stack widget SVG logos — muted at rest, brighten on cell hover.
+   Matches the cinematic dark hero treatment so logos sit in the
+   diorama-like top-right corner without overpowering colours. */
+.pane[data-pane="home"] .tech-cell svg {
+  width: 14px;
+  height: 14px;
+  color: var(--text-2);
+  opacity: 0.55;
+  transition: opacity 160ms ease, color 160ms ease;
 }
-.pane[data-pane="home"] .hero {
-  position: relative !important;
-  min-height: 70vh;
-  height: auto !important;
+.pane[data-pane="home"] .tech-cell:hover svg {
+  opacity: 1;
+  color: var(--text-1);
 }
-
-/* Lotus sigil on home hero eyebrow */
-.pane[data-pane="home"] .hero-eyebrow {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-}
-.pane[data-pane="home"] .lotus-sigil {
-  width: 16px;
-  height: 16px;
-  color: var(--accent) !important;
-  fill: var(--accent) !important;
-  flex-shrink: 0;
-  display: inline-block !important;
-  vertical-align: middle;
+.pane[data-pane="home"] .tech-cell-text {
+  font-size: 8.5px;
 }
 
-/* Home portal cards — make sure they render at a proper size + show
-   eyebrow/title/tagline/arrow. The mockup CSS targets these but the
-   styled clamp height was set for an SPA viewport; with sb2 visible,
-   the cards looked tiny. */
-.pane[data-pane="home"] .cards {
-  display: grid !important;
-  grid-template-columns: repeat(5, 1fr) !important;
-  gap: 12px !important;
-  padding: 24px clamp(16px, 2vw, 32px) 36px !important;
-  margin: 0 !important;
-}
-@media (max-width: 1100px) {
-  .pane[data-pane="home"] .cards { grid-template-columns: repeat(2, 1fr) !important; }
-}
-@media (max-width: 600px) {
-  .pane[data-pane="home"] .cards { grid-template-columns: 1fr !important; }
-}
-.pane[data-pane="home"] .card {
-  position: relative !important;
-  display: block !important;
-  min-height: 280px !important;
-  height: auto !important;
-  border-radius: 10px !important;
-  overflow: hidden !important;
-  text-decoration: none !important;
-  color: inherit !important;
-  border: 1px solid rgba(255, 255, 255, 0.06) !important;
-  isolation: isolate !important;
-  transition: transform 0.2s var(--ease), border-color 0.2s var(--ease) !important;
-}
-.pane[data-pane="home"] .card:hover {
-  transform: translateY(-2px) !important;
-  border-color: rgba(168, 85, 247, 0.35) !important;
-}
-.pane[data-pane="home"] .card .card-img {
-  position: absolute !important;
-  inset: 0 !important;
-  background-size: cover !important;
-  background-position: center !important;
-  z-index: 0 !important;
-}
-.pane[data-pane="home"] .card .card-veil {
-  position: absolute !important;
-  inset: 0 !important;
-  background: linear-gradient(180deg, transparent 30%, rgba(5, 5, 5, 0.75) 100%) !important;
-  z-index: 1 !important;
-  pointer-events: none !important;
-}
-.pane[data-pane="home"] .card .card-arrow {
-  position: absolute !important;
-  top: 12px !important;
-  right: 14px !important;
-  z-index: 2 !important;
-  font-family: var(--font-mono);
-  font-size: 14px !important;
-  color: var(--text-1) !important;
-  background: rgba(5, 5, 5, 0.5) !important;
-  width: 26px !important;
-  height: 26px !important;
-  border-radius: 50% !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-.pane[data-pane="home"] .card .card-meta {
-  position: absolute !important;
-  left: 16px !important;
-  right: 16px !important;
-  bottom: 14px !important;
-  z-index: 2 !important;
-}
-.pane[data-pane="home"] .card .card-eyebrow {
-  font-family: var(--font-mono) !important;
-  font-size: 9px !important;
-  letter-spacing: 0.18em !important;
-  text-transform: uppercase !important;
-  color: var(--accent) !important;
-  margin-bottom: 4px !important;
-}
-.pane[data-pane="home"] .card .card-title {
-  font-family: var(--font-display) !important;
-  font-size: 22px !important;
-  font-weight: 500 !important;
-  color: var(--text-1) !important;
-  margin: 0 0 4px !important;
-  line-height: 1.1 !important;
-}
-.pane[data-pane="home"] .card .card-line {
-  font-family: var(--font-body) !important;
-  font-size: 12px !important;
-  color: var(--text-2) !important;
-  line-height: 1.4 !important;
-  margin: 0 !important;
-}
+/* Home pane: defer to mockup's canonical layout — flex column with
+   height: 100vh + overflow: hidden. Hero is flex:1 1 auto / min-height:360px
+   and grows to fill the space left by ticker + stats + cards (all flex:0 0 auto).
+   Earlier we forced display:block here to make the page scroll when sb2 was
+   visible on home; sb2 is now hidden on home per the mockup, so we no longer
+   need to break the flex lock. */
+
+/* Home portal cards now governed entirely by mockup.css —
+   the previous override block (cards container padding, per-card sizes,
+   eyebrow/title/line overrides) predated the sb2-hidden-on-home layout
+   and was breaking the mockup's `margin: 0 auto` (causing asymmetric
+   left/right margins) and over-padding the container. Deleted in full. */
 
 /* ──────────────────────────────────────────────────────────────
  * Cursor pointer on interactive chrome.
@@ -435,6 +599,14 @@ button:not(:disabled),
 .pane[data-pane="home"] .card {
   cursor: pointer;
 }
+/* The .pane containers themselves carry `data-pane="..."` for routing, so
+   the rule above accidentally lights up cursor: pointer on every cover
+   image, hero text, and felt background. Reset to auto here — actual
+   clickable children (.room-card, .flat-card, .pc, .pc-expand-btn, etc.)
+   each carry their own pointer rule above. */
+.pane[data-pane] {
+  cursor: auto;
+}
 /* Count badges and decorative dots inside a clickable row don't need
    their own pointer — inherit from the parent so the cursor stays
    consistent across the whole row. */
@@ -455,8 +627,11 @@ button:not(:disabled),
  * and the loop is seamless at the -50% translate point.
  * ────────────────────────────────────────────────────────────── */
 .pane[data-pane="home"] .ticker {
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 6%, black 94%, transparent 100%);
-          mask-image: linear-gradient(90deg, transparent 0%, black 6%, black 94%, transparent 100%);
+  /* Right-edge fade only — left edge stays sharp so the "AI SOLUTIONS BUILT FOR"
+     label is fully legible. Brands enter sharp from the right (where the next
+     name appears as the track scrolls) and dissolve into the right fade. */
+  -webkit-mask-image: linear-gradient(90deg, black 0%, black 94%, transparent 100%);
+          mask-image: linear-gradient(90deg, black 0%, black 94%, transparent 100%);
 }
 .pane[data-pane="home"] .ticker-brands {
   flex: 1;
@@ -464,16 +639,20 @@ button:not(:disabled),
   overflow: hidden;
 }
 .pane[data-pane="home"] .ticker-track {
+  /* Canonical 2-copy seamless marquee — no extra gap or per-span padding-right
+     because both create a visible seam between the last brand of span 1 and
+     the first brand of span 2. The " · " separator is inside each span's
+     content (trailing) so the wrap looks identical to internal joins. */
   display: inline-flex;
   align-items: center;
-  gap: 32px;
+  gap: 0;
   white-space: nowrap;
   animation: melis-ticker-scroll 60s linear infinite;
   will-change: transform;
 }
 .pane[data-pane="home"] .ticker-track > span {
   flex-shrink: 0;
-  padding-right: 32px;
+  padding-right: 0;
 }
 @keyframes melis-ticker-scroll {
   from { transform: translate3d(0, 0, 0); }

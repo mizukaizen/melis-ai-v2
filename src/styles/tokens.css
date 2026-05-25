@@ -9,10 +9,12 @@
   --surface: rgba(20, 20, 24, 0.55);
   --surface-2: rgba(20, 20, 24, 0.42);
 
-  /* Accent */
-  --accent: #a855f7;
-  --accent-subtle: rgba(168, 85, 247, 0.12);
-  --accent-glow: rgba(168, 85, 247, 0.25);
+  /* Accent — mockup canonical (melis-ai-shared.css line 13).
+     #7c3aed is HSL(262, 84%, 58%) — deeper royal violet.
+     Previously #a855f7 (Tailwind violet-500) read as pink/magenta. */
+  --accent: #7c3aed;
+  --accent-subtle: rgba(124, 58, 237, 0.12);
+  --accent-glow: rgba(124, 58, 237, 0.25);
 
   /* Text */
   --text-1: rgba(232, 227, 216, 1);
@@ -57,4 +59,41 @@
   /* Motion */
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ─────────────────────────────────────────────────────────────
+   * CANONICAL LAYOUT TOKENS — DO NOT OVERRIDE PER PAGE.
+   * If a value isn't here, it doesn't belong in a page-level rule.
+   * ───────────────────────────────────────────────────────────── */
+
+  /* Content container — two tiers.
+     PROSE: ~720px / ~65ch for long-form reading (articles, newsletter,
+       dossier details). Matches Medium / Substack / NYT / Atlantic / Wired.
+     WIDE: ~1280px for landings + showcase detail (courses / products /
+       prompts / recos / ventures / services / about / lab).
+     A page picks ONE tier and uses it for hero AND body so eyebrow +
+     h1 + body + grids all share the same left + right edges.
+     Default --content-max aliases --content-max-wide. */
+  --content-max-prose:  min(720px, calc(100% - 48px));
+  --content-max-wide:   min(1280px, calc(100% - 120px));
+  --content-max:        var(--content-max-wide);
+  --content-padding-x:  clamp(24px, 3vw, 56px);
+
+  /* Hero sizing. Landing heroes shorter; detail heroes (in-room) taller. */
+  --hero-min-h-landing: clamp(320px, 38vh, 440px);
+  --hero-min-h-detail:  clamp(440px, 60vh, 640px);
+
+  /* Hero fade — image mask gradient that dissolves the bottom of the
+     cover image into var(--bg). Lifted verbatim from mockup.css L2412. */
+  --hero-fade: linear-gradient(to bottom, #000 0%, #000 25%, transparent 95%);
+
+  /* Typography — single source of truth for hero + body. */
+  --section-title-size:   clamp(44px, 4.4vw, 64px);
+  --section-eyebrow-size: 11px;
+  --section-lead-size:    17px;
+
+  /* Cards — uniform sizing across room/featured/coming-soon cards. */
+  --card-title-size:   clamp(20px, 1.6vw, 28px);
+  --card-eyebrow-size: 10px;
+  --card-line-size:    13px;
+  --card-padding:      22px;
 }

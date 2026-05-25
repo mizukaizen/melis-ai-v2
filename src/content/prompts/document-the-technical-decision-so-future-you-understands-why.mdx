@@ -1,0 +1,18 @@
+---
+title: "Document the technical decision so future-you understands why"
+eyebrow: "Prompt Library · Coding"
+lede: "An Architecture Decision Record that captures context, options considered, the decision made, and the trade-offs — so the next person doesn't relitigate it from scratch."
+category: "Coding"
+categorySlug: "coding"
+categoryGroup: "Build"
+subcategory: "review"
+payoff: "save"
+icon: "ph-file-code"
+tier: "pro"
+sourceId: "dv-06"
+cover: "/section-rooms/prompts-coding.png"
+prompt: "You are a security-focused software engineer and application security expert. I want to conduct a security review of my application or a specific component.\n\nComponent to review: [DESCRIBE WHAT IT IS — AUTH SYSTEM / PAYMENT FLOW / FILE UPLOAD / USER DATA HANDLING / API LAYER]\nLanguage and framework: [STACK DETAILS]\nTrust boundary: [WHO ARE THE UNTRUSTED INPUTS — END USERS / THIRD-PARTY APIS / FILE UPLOADS]\nSensitive data handled: [PII / PAYMENT CARD / HEALTH DATA / CREDENTIALS]\nCompliance requirements: [GDPR / PCI-DSS / HIPAA / SOC2 — IF ANY]\nCode or architecture to review:\n```\n[PASTE RELEVANT CODE OR DESCRIBE ARCHITECTURE]\n```\n\nPlease produce:\n1. OWASP Top 10 assessment — score this component against each of the OWASP Top 10; highlight any that apply\n2. Threat model — the 5 most likely attack vectors for this specific component\n3. Vulnerability findings — specific code-level or design vulnerabilities found; severity (CRITICAL/HIGH/MEDIUM/LOW) and CWE reference for each\n4. Fix recommendations — specific code changes or architectural changes to address each finding\n5. Secure coding checklist — the 10 security rules specific to this type of component\n6. Penetration testing recommendations — what to test manually or with tools before this goes to production\n7. Security monitoring — what to log, alert on, and audit for this component in production\n\nSecurity is not a feature. It's a property of the system."
+draft: false
+---
+
+An Architecture Decision Record that captures context, options considered, the decision made, and the trade-offs — so the next person doesn't relitigate it from scratch.

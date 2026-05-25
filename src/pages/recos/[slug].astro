@@ -39,40 +39,55 @@ const tools = data.tools || [];
     eyebrow={data.eyebrow}
     title={data.title}
     titleHtml={data.titleHtml}
-    lede={data.lede}
   />
 
   <section class="section-body">
     <div class="v6-detail">
-      <section class="vd-section">
-        <h3 class="vd-h3">What I actually <em>use</em>.</h3>
-        <div class="vd-prose">
-          <p>No affiliate padding. No "this changed my life!!" copy. These are the tools, books, courses, and apps I genuinely use and would buy again. If a link earns me anything, I'll say so on the line. Otherwise it doesn't.</p>
+      {data.status === 'coming-soon' ? (
+        <div class="reco-stub">
+          <h2 class="h2">Coming soon.</h2>
+          <p class="body-lead">I'm building this list slowly — only adding things I genuinely use. Check back, or hit <a href="/newsletter/" style="color: var(--accent); border-bottom: 1px solid currentColor;">subscribe</a> to get notified when it lands.</p>
+          <p class="body-lead">In the meantime, the four lists that <em>are</em> live: <a href="/recos/tools-i-use-daily/">Software</a> · <a href="/recos/hardware-that-holds-up/">Gear</a> · <a href="/recos/books-that-compound/">Books</a> · <a href="/recos/newsletters-i-read/">Newsletters</a>.</p>
         </div>
-      </section>
-
-      <div class="section-eyebrow-small">The list</div>
-      <div class="vd-rows">
-        {tools.map((t) => (
-          t.url ? (
-            <a class="vd-row" href={withUtm(t.url, item.slug)} target="_blank" rel="noopener nofollow sponsored">
-              <div class="vd-row-name">{t.name}</div>
-              {t.attr && <div class="vd-row-attr">{t.attr}</div>}
-              {t.take && <div class="vd-row-take">{t.take}</div>}
-              <div class="vd-row-cta">{t.cta || 'Visit'} ↗</div>
-            </a>
-          ) : (
-            <div class="vd-row">
-              <div class="vd-row-name">{t.name}</div>
-              {t.attr && <div class="vd-row-attr">{t.attr}</div>}
-              {t.take && <div class="vd-row-take">{t.take}</div>}
-              {t.cta && <div class="vd-row-cta vd-row-cta-muted">{t.cta}</div>}
+      ) : (
+        <>
+          <section class="vd-section">
+            <h3 class="vd-h3">What I actually <em>use</em>.</h3>
+            <div class="vd-prose">
+              <p>No affiliate padding. No "this changed my life!!" copy. These are the tools, books, courses, and apps I genuinely use and would buy again. If a link earns me anything, I'll say so on the line. Otherwise it doesn't.</p>
             </div>
-          )
-        ))}
-      </div>
+          </section>
+
+          <div class="section-eyebrow-small">The list</div>
+          <div class="vd-rows">
+            {tools.map((t) => (
+              t.url ? (
+                <a class="vd-row" href={withUtm(t.url, item.slug)} target="_blank" rel="noopener nofollow sponsored">
+                  <div class="vd-row-name">{t.name}</div>
+                  {t.attr && <div class="vd-row-attr">{t.attr}</div>}
+                  {t.take && <div class="vd-row-take">{t.take}</div>}
+                  <div class="vd-row-cta">{t.cta || 'Visit'} ↗</div>
+                </a>
+              ) : (
+                <div class="vd-row">
+                  <div class="vd-row-name">{t.name}</div>
+                  {t.attr && <div class="vd-row-attr">{t.attr}</div>}
+                  {t.take && <div class="vd-row-take">{t.take}</div>}
+                  {t.cta && <div class="vd-row-cta vd-row-cta-muted">{t.cta}</div>}
+                </div>
+              )
+            ))}
+          </div>
+        </>
+      )}
     </div>
   </section>
+
+  <style>
+    .reco-stub { padding: 16px 0; }
+    .reco-stub .h2 { margin: 0 0 14px; }
+    .reco-stub .body-lead { margin: 0 0 14px; }
+  </style>
 
   <div class="footer">
     <div>melis.ai · 2026</div>

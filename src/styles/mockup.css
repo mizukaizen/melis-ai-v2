@@ -23,54 +23,19 @@
   .app.is-landing-mode > main.content { overflow-x: clip; }
   .app.is-landing-mode .pane[data-pane="prompts"] { overflow-x: clip; }
   .app.is-landing-mode .pane[data-pane="prompts"] .section-body {
-    max-width: none !important;
-    /* Match the section-header-inner padding (56px) so the body intro,
-       group headers, and rail-starts all vertically align with the
-       hero title above them. */
-    padding-left: 56px !important;
-    padding-right: 56px !important;
+    /* Canonical layout: defer to global tokens so prompts aligns with
+       every other landing. Previously forced max-width:none + 56px
+       padding which shifted the body 60px left of the eyebrow. */
     overflow-x: clip;
-  }
-  /* Force section-header left positioning for prompts in landing mode.
-     Higher-specificity selector wins over the v3 polish that hardcodes
-     left: calc(sidebar-w + sidebar-w2). */
-  .app.is-landing-mode .pane[data-pane="prompts"] .section-header {
-    left: var(--sidebar-w) !important;
   }
   .pane[data-pane="prompts"] .section-landing {
     padding: 0;
   }
-  /* Left-align Prompt Library hero title. The v3 polish at line ~979
-     sets max-width: 960px + margin: 0 auto on .section-header-inner,
-     which centres the whole inner block — that was the real culprit.
-     Override max-width, margin, and alignment. */
-  .app.is-landing-mode .pane[data-pane="prompts"] .section-header,
-  .app.is-landing-mode .pane[data-pane="prompts"] .section-header-inner {
-    align-items: flex-start !important;
-    text-align: left !important;
-    justify-content: flex-end !important;
-    max-width: none !important;
-    margin: 0 !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
-  .app.is-landing-mode .pane[data-pane="prompts"] .section-title-block,
-  .app.is-landing-mode .pane[data-pane="prompts"] .section-header-inner > .section-title-block {
-    text-align: left !important;
-    margin-top: auto !important;
-    margin-left: 0 !important;
-    margin-right: auto !important;
-    align-self: flex-start !important;
-    max-width: 100% !important;
-    width: auto !important;
-  }
-  .app.is-landing-mode .pane[data-pane="prompts"] .section-title,
-  .app.is-landing-mode .pane[data-pane="prompts"] .section-eyebrow,
-  .app.is-landing-mode .pane[data-pane="prompts"] .section-lead,
-  .app.is-landing-mode .pane[data-pane="prompts"] h1.section-title {
-    text-align: left !important;
-    margin-left: 0 !important;
-  }
+  /* Prompts hero alignment delegated to CANONICAL LAYOUT in global.css —
+     section-header-inner / section-title-block / section-title etc. all
+     left-align by default via the canonical tokens. Per-pane overrides
+     were forcing max-width:none + margin:0 which shifted prompts 60px
+     left of every other pane. Removed. */
 
   /* Hero featured card — full width, dramatic, cinematic */
   .pane[data-pane="prompts"] .editorial-hero {
@@ -184,23 +149,9 @@
   /* ── Room view (Sales, Marketing, etc.) ── narrower editorial column.
      We also constrain the section-header-inner to the same max-width
      so the hero title vertically aligns with the body content below. */
-  .pane[data-pane="prompts"].in-room .section-room {
-    max-width: 960px;
-    margin: 0 auto;
-    padding-left: clamp(24px, 3vw, 56px);
-    padding-right: clamp(24px, 3vw, 56px);
-    padding-bottom: 60px;
-  }
-  .pane[data-pane="prompts"].in-room .section-header-inner {
-    max-width: 960px !important;
-    margin: 0 auto !important;
-    padding-left: clamp(24px, 3vw, 56px) !important;
-    padding-right: clamp(24px, 3vw, 56px) !important;
-  }
-
-  /* Hero title alignment — let the default .section-header-inner rule
-     apply (max-width: 960px; margin: 0 auto). That keeps the Prompt
-     Library hero title directly above the centred 960px body column. */
+  /* Prompts in-room delegates to canonical --content-max-wide via
+     global.css. The earlier 960px override conflicted with the
+     two-tier system (May 2026 — see docs/LAYOUT-RULES.md). */
 
   /* Sean's Edge sample prompt cards — 2-column grid inside the room view. */
   .pane[data-pane="prompts"] .room-prompts {
@@ -2745,8 +2696,13 @@
     backdrop-filter: blur(6px);
   }
 
-  /* ── article-content canonical prose ── */
-  .article-content { max-width: 720px; margin: 0 auto; }
+  /* ── article-content canonical prose ──
+       Width capped at 720px for reading line-length, but LEFT-ALIGNED
+       (margin: 0) — never centered. On prose-tier pages the parent
+       section-body is already at 720px so cap is a no-op; on wide-tier
+       pages (course detail / product detail) the prose sits flush-left
+       with the eyebrow + h1 above instead of centering away. */
+  .article-content { max-width: 720px; margin: 0; }
   .article-content p {
     font-family: var(--font-body);
     font-size: 17px;
@@ -2803,8 +2759,10 @@
     font-style: normal;
   }
 
-  /* ── landing-intro wrapper (cross-cutting) ── */
-  .landing-intro { max-width: 720px; margin: 0 auto 2em; }
+  /* ── landing-intro wrapper (cross-cutting).
+       Left-aligned per CANONICAL LAYOUT — must not centre or it shifts
+       the h2 + body-lead away from the eyebrow above. */
+  .landing-intro { margin: 0 0 2em; max-width: none; }
   .landing-intro .h2 {
     font-family: var(--font-display);
     font-size: clamp(28px, 3vw, 42px);
@@ -3199,7 +3157,7 @@
   }
 
   /* ── Dossier detail (article-shape with quote + sections) ── */
-  .pane[data-pane="library"] .dossier-content { max-width: 720px; margin: 0 auto; }
+  .pane[data-pane="library"] .dossier-content { max-width: 720px; margin: 0; }
   .pane[data-pane="library"] .dossier-lede {
     font-family: var(--font-display);
     font-size: clamp(20px, 1.8vw, 24px);
@@ -3507,11 +3465,10 @@
     margin: 0;
     line-height: 1.55;
   }
-  .v6-detail.course-detail .course-content { max-width: 720px; margin: 0 auto 3em; }
+  .v6-detail.course-detail .course-content { max-width: 720px; margin: 0 0 3em; }
   .v6-detail.course-detail .course-closing {
     max-width: 720px;
-    margin: 0 auto 1.5em;
-    text-align: center;
+    margin: 0 0 1.5em;
   }
   .v6-detail.course-detail .cs-closing-eyebrow {
     font-family: var(--font-mono);
@@ -3875,7 +3832,12 @@
   .pane[data-pane="home"].active {
     display: flex;
     flex-direction: column;
-    height: 100vh;       /* fixed viewport height, no overflow */
+    /* svh = small-viewport-height — accounts for mobile/desktop browser chrome
+       (URL bar, bookmarks, tab bar) where 100vh would overflow. Stays sharp
+       at 1440×900 in Chrome with bookmarks visible. Falls back to vh in
+       older browsers. */
+    height: 100vh;
+    height: 100svh;
     overflow: hidden;
   }
   .pane[data-pane="home"] .hero {
@@ -3896,11 +3858,11 @@
   }
   .pane[data-pane="home"] .cards {
     flex: 0 0 auto;
-    /* Card height scales with viewport — short on small laptops,
-       generously tall on big monitors so the row doesn't feel anaemic.
-       Range 150-320px gives a meaningful jump between a 720h laptop
-       (158px @ 22vh) and a 1440h monitor (clamped to 320px). */
-    height: clamp(150px, 22vh, 320px);
+    /* Card height — small enough that in a real Chrome window with
+       bookmarks bar visible, the row + ticker + stats + hero all fit above
+       the fold at 1440×900 / 1920×1080 / 2560×1440. Was clamp(150,22vh,320)
+       which over-allocated on tall monitors when browser chrome ate the top. */
+    height: clamp(140px, 18vh, 280px);
     /* Same inset as ticker/stats — scales with viewport so cards extend
        closer to the page edges on big monitors. */
     width: calc(100% - clamp(32px, 2.5vw, 48px)) !important;
@@ -6462,13 +6424,10 @@
   .v6-detail.course-detail {
     max-width: 100%;
   }
-  /* Widen the body wrapper AND the hero header for courses in-room so the
-     course detail hero grid (main copy + trailer card) vertically aligns
-     with the hero title above. Both columns must share the same max-width. */
-  .pane[data-pane="courses"].in-room .section-body,
-  .pane[data-pane="courses"].in-room .section-header-inner {
-    max-width: 1180px !important;
-  }
+  /* Courses-in-room delegated to CANONICAL --content-max-wide via global.css.
+     Previously forced max-width: 1180px which shifted the page off the
+     canonical 575px column. The 2-col course-hero-grid below now constrains
+     itself internally without dictating the wrapper width. */
 
   /* Hero — 2-col grid: main copy left, trailer card right */
   .v6-detail .course-hero-grid {

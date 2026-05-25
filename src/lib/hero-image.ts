@@ -16,7 +16,7 @@ const LANDING_FALLBACKS: Record<string, string> = {
   articles: '/section-rooms/articles-landing.png',     // paper-craft library — pass 7 forensic
   newsletter: '/section-rooms/news-landing.png',       // paper-craft writer's desk — pass 7 forensic
   products: '/card-products-v1.png',     // warm wood-workshop with tools
-  prompts: '/card-products-v1.png',      // mockup uses card-products fallback
+  prompts: '/section-rooms/prompts-landing.png',
   recos: '/card-services-v1.png',
   services: '/card-services-v1.png',
   ventures: '/card-projects-v1.png',

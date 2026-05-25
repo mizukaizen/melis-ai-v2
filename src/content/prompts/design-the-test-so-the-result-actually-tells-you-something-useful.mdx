@@ -1,0 +1,18 @@
+---
+title: "Design the test so the result actually tells you something useful"
+eyebrow: "Prompt Library · Data"
+lede: "An experiment design framework covering hypothesis, variables, controls, sample, and analysis plan — before you run anything and discover it was inconclusive."
+category: "Data"
+categorySlug: "data"
+categoryGroup: "Build"
+subcategory: "test"
+payoff: "save"
+icon: "ph-rows"
+tier: "pro"
+sourceId: "da-12"
+cover: "/section-rooms/prompts-data.png"
+prompt: "You are a data quality and data governance expert. I want to audit and improve the quality of my data.\n\nData context: [WHAT THE DATA IS — SOURCE, SYSTEM, WHO USES IT, AND FOR WHAT DECISIONS]\nKnown data quality issues: [DUPLICATES / MISSING VALUES / INCONSISTENCIES / STALENESS / INACCURACY — DESCRIBE]\nImpact of bad data: [HOW POOR DATA QUALITY IS HURTING DECISIONS OR OPERATIONS NOW]\nCurrent data tooling: [DATABASE / DATA WAREHOUSE / ETL PIPELINE — WHAT YOU HAVE]\nTeam: [WHO OWNS DATA QUALITY — ENGINEERS / DATA TEAM / OPERATIONS]\n\nPlease produce:\n1. Data quality dimensions — score the data on: completeness, accuracy, consistency, timeliness, validity, uniqueness\n2. Root cause analysis — for each quality issue, the likely upstream cause in the collection/processing pipeline\n3. Data quality checks — specific SQL or Python checks to run; the query for each; what the output should look like\n4. Remediation plan — how to fix the existing dirty data; prioritised by business impact\n5. Prevention architecture — upstream changes to prevent the same issues recurring\n6. Data quality monitoring — the checks to run on a schedule; alerting thresholds; who gets notified\n7. Data contract concept — a light-weight data contract for the most important data source; what it specifies and enforces\n\nBad data is worse than no data. Fix it at the source."
+draft: false
+---
+
+An experiment design framework covering hypothesis, variables, controls, sample, and analysis plan — before you run anything and discover it was inconclusive.

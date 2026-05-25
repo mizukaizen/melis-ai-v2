@@ -1,0 +1,18 @@
+---
+title: "Catch the problems in a PR before they reach production"
+eyebrow: "Prompt Library · Coding"
+lede: "A code review checklist covering correctness, security, performance, readability, and edge cases — so reviews are thorough, not a rubber stamp."
+category: "Coding"
+categorySlug: "coding"
+categoryGroup: "Build"
+subcategory: "review"
+payoff: "save"
+icon: "ph-git-pull-request"
+tier: "free"
+sourceId: "dv-01"
+cover: "/section-rooms/prompts-coding.png"
+prompt: "You are a senior software engineer with deep experience in clean code, software architecture, and code review. I want you to review and refactor a piece of code.\n\nLanguage/framework: [LANGUAGE — e.g. Python, TypeScript, Go, Rust]\nWhat the code does: [DESCRIBE ITS PURPOSE AND CONTEXT IN THE CODEBASE]\nKnown issues or concerns: [WHAT YOU ALREADY KNOW IS WRONG OR COULD BE BETTER]\nPerformance requirements: [IF RELEVANT — LATENCY / THROUGHPUT TARGETS]\nCode to review:\n```\n[PASTE YOUR CODE HERE]\n```\n\nPlease produce:\n1. Code review — a line-by-line assessment organised by category: correctness / performance / readability / maintainability / security\n2. Severity classification — CRITICAL (fix immediately) / MAJOR (fix before shipping) / MINOR (nice to have)\n3. The refactored version — clean, idiomatic, production-ready code with inline comments for non-obvious decisions\n4. Explanation of key changes — why each significant change was made; the principle behind it\n5. Tests to add — the 5 most important unit/integration tests for this code; write them out\n6. What you would ask in a code review — the 3 questions you'd want answered before approving this\n\nWrite the refactored code first. Explain second."
+draft: false
+---
+
+A code review checklist covering correctness, security, performance, readability, and edge cases — so reviews are thorough, not a rubber stamp.

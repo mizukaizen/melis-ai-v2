@@ -1,0 +1,18 @@
+---
+title: "Use AI to write better prompts than you'd write yourself"
+eyebrow: "Prompt Library · Prompting"
+lede: "A meta-prompt that takes your task description and produces a high-quality prompt — with the context, constraints, and output spec you'd have taken an hour to write."
+category: "Prompting"
+categorySlug: "prompting"
+categoryGroup: "Build"
+subcategory: "optimise"
+payoff: "save"
+icon: "ph-x-circle"
+tier: "pro"
+sourceId: "pe-07"
+cover: "/section-rooms/prompts-prompting.png"
+prompt: "You are an expert in prompt security, adversarial prompting, and building LLM applications that resist manipulation. I want to make my prompts and LLM application more secure.\n\nApplication context: [WHAT THE LLM APPLICATION DOES — CUSTOMER-FACING / INTERNAL TOOL / AUTOMATED PIPELINE]\nUser input type: [FREEFORM TEXT / STRUCTURED FORM / FILE CONTENT — HOW USERS CAN INFLUENCE THE PROMPT]\nModel: [WHICH LLM AND HOW IT'S DEPLOYED — API / FINE-TUNED / RAG]\nRisk level: [LOW (INTERNAL TOOL) / MEDIUM (CUSTOMER-FACING) / HIGH (HIGH STAKES DECISIONS)]\n\nPlease produce:\n1. Threat model — the specific ways a malicious or careless user could cause the system to behave incorrectly\n2. Prompt injection attack examples — the specific prompt injection attacks most relevant to this application\n3. Defence techniques — sanitisation, instruction hierarchy, output validation, constrained generation — implementation for each\n4. System prompt hardening — the specific wording to add to the system prompt that makes it more resistant to injection\n5. Input validation layer — the checks to run on user input before it reaches the model\n6. Output validation layer — the checks to run on model output before it reaches the user or downstream system\n7. Red team exercise — 5 adversarial inputs to test against the hardened system; expected behaviour\n\nLLM security is different from traditional security. Understand the new attack surface."
+draft: false
+---
+
+A meta-prompt that takes your task description and produces a high-quality prompt — with the context, constraints, and output spec you'd have taken an hour to write.

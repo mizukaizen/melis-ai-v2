@@ -27,14 +27,11 @@ const otherLive = live.filter((c) => c !== flagship);
     eyebrow="Learn · the catalogue"
     title="Courses"
     titleHtml="<em>Courses</em>"
-    lede="An apprenticeship for the AI-native operator. The Cowork Course is the flagship; eight more in flight or coming."
   />
 
   <section class="section-body">
-    <div class="landing-intro">
-      <h2 class="h2">For operators already <em>in the work</em> — not beginners.</h2>
-      <p class="body-lead">One flagship live and recording right now. Seven more in the pipeline.</p>
-    </div>
+    <h2 class="h2">For operators already <em>in the work</em> — not beginners.</h2>
+    <p class="body-lead">One flagship live and recording right now. Seven more in the pipeline.</p>
 
     {flagship && <FeaturedCourseCard item={flagship} />}
 

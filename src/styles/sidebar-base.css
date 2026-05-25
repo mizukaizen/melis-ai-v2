@@ -301,15 +301,13 @@
 .sb2-item.active {
   background: rgba(168, 85, 247, 0.08);
 }
-.sb2-item.active::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 8px;
-  bottom: 8px;
-  width: 2px;
-  background: var(--accent);
-}
+/* No ::before bar — the left-edge indicator is the 2 px transparent
+   `border-left` reserved on every `.sidebar-2 .sb2-item` in mockup.css
+   line 4040, which flips to `var(--accent)` on `.active`. The previous
+   `::before { position: absolute; left: 0; width: 2px }` drew a SECOND
+   bar inside the padding box, producing the double-bar visible on
+   /lab/exhibits/, /services/, /articles/, /newsletter/, /courses/,
+   /about/sean/, /about/melis-ai/. (May 25 2026.) */
 .sb2-row {
   display: flex;
   align-items: center;

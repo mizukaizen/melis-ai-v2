@@ -1,0 +1,18 @@
+---
+title: "Write the docs developers actually want to read"
+eyebrow: "Prompt Library · Coding"
+lede: "API documentation that covers endpoints, parameters, errors, and examples — written the way developers use docs, which is nothing like how they're usually written."
+category: "Coding"
+categorySlug: "coding"
+categoryGroup: "Build"
+subcategory: "review"
+payoff: "save"
+icon: "ph-git-branch"
+tier: "pro"
+sourceId: "dv-07"
+cover: "/section-rooms/prompts-coding.png"
+prompt: "You are an expert in testing strategy, test architecture, and quality engineering. I want to build a comprehensive test suite for a codebase or feature.\n\nWhat I'm testing: [THE COMPONENT, SERVICE, OR FEATURE — DESCRIBE ITS BEHAVIOUR]\nLanguage and test framework: [E.G. JEST / PYTEST / GOTEST / RSPEC]\nCurrent test coverage: [WHAT EXISTS ALREADY — % IF KNOWN]\nThe highest-risk behaviour: [WHAT WOULD HURT MOST IF IT BROKE IN PRODUCTION]\nTime available: [HOW LONG YOU HAVE TO WRITE TESTS]\n\nPlease produce:\n1. Testing pyramid strategy — the right mix of unit / integration / end-to-end tests for this specific component\n2. Test plan — a complete list of test cases organised by: happy path / edge cases / error cases / security cases\n3. Priority order — which tests to write first based on risk; the 10 tests that must exist before this ships\n4. Test implementations — write out 5 of the most important tests in full, using the specified test framework\n5. Mocking strategy — what to mock, what to test against real dependencies, and why\n6. Test data management — how to handle test fixtures, database state, and test isolation\n7. CI integration — how to run these tests in CI; performance targets; what gates deployment\n8. The test you're most likely to forget — the edge case or error path that always slips through\n\nTest code is production code. Write it like it matters."
+draft: false
+---
+
+API documentation that covers endpoints, parameters, errors, and examples — written the way developers use docs, which is nothing like how they're usually written.
