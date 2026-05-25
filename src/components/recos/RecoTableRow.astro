@@ -1,0 +1,45 @@
+---
+// RecoTableRow — single <tr> in the full-list table. Mockup classes:
+//   .row-avatar.<key> + .row-name + .row-meta + .row-cadence + .row-chip + .row-link
+
+import type { NormalisedTool } from '../../lib/recos';
+
+interface Props {
+  item: NormalisedTool;
+}
+
+const { item } = Astro.props;
+const chipClass = item.chip === 'free-tier' ? 'free' : item.chip;
+const chipLabel = item.chip === 'free-tier' ? 'free tier' : item.chip;
+const cadenceLabel = item.cadence === 'daily' ? 'Daily'
+  : item.cadence === 'weekly' ? 'Weekly'
+  : item.cadence === 'monthly' ? 'Monthly'
+  : '';
+const cadenceClass = item.cadence || '';
+---
+
+<tr data-section-id={item.sectionId}>
+  <td style="width:42px;">
+    <div class={`row-avatar ${item.avatarKey}`}>{item.monogram}</div>
+  </td>
+  <td>
+    <div class="row-name">{item.name}</div>
+    {item.meta && <div class="row-meta">{item.meta}</div>}
+  </td>
+  <td>
+    {item.maker && <div class="row-meta">{item.maker}</div>}
+  </td>
+  <td>
+    {item.cadence && <span class={`row-cadence ${cadenceClass}`}>{cadenceLabel}</span>}
+  </td>
+  <td>
+    {item.chip && <span class={`row-chip ${chipClass}`}>{chipLabel}</span>}
+  </td>
+  <td>
+    {item.url && (
+      <a class="row-link" href={item.url} target="_blank" rel="noopener nofollow sponsored">
+        {item.linkLabel}
+      </a>
+    )}
+  </td>
+</tr>
