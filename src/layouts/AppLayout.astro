@@ -3,6 +3,7 @@ import { ClientRouter } from 'astro:transitions';
 import Sidebar1 from '../components/Sidebar1.astro';
 import Sidebar2 from '../components/Sidebar2.astro';
 import CommandPalette from '../components/CommandPalette.astro';
+import FillInBlankController from '../components/FillInBlankController.astro';
 // Order matters: mockup.css first (it's the design source-of-truth),
 // global.css last (its post-mockup overrides win).
 import '../styles/mockup.css';
@@ -89,6 +90,7 @@ const appClass = [
     </div>
 
     <CommandPalette />
+    <FillInBlankController />
 
 
     <script>

@@ -141,7 +141,7 @@ const heading = CAT_HEADINGS[categorySlug] || { title: `${categoryLabel} Prompts
         const expandBtn = target.closest<HTMLButtonElement>('[data-pc-expand]');
         if (expandBtn) {
           const expanded = card.classList.toggle('is-expanded');
-          expandBtn.textContent = expanded ? 'Hide full prompt ↑' : 'Show full prompt ↓';
+          expandBtn.textContent = expanded ? 'Hide ↑' : 'Full prompt ↓';
           return;
         }
 
