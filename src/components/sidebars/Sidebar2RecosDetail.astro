@@ -1,0 +1,81 @@
+---
+// Sidebar2RecosDetail — hybrid TOC + sister-categories sb2 used on
+// /recos/<slug>/ category pages. NOT used on /recos/ landing — that
+// keeps using Sidebar2Recos.
+//
+// Per category route this sb2 differs (TOC anchors change), so the
+// transition:persist key is slug-scoped so each category gets its
+// own DOM instance and stale TOC entries don't survive a navigation.
+
+import { getCollection } from 'astro:content';
+import { normaliseReco } from '../../lib/recos';
+
+interface Props {
+  slug: string;
+}
+
+const { slug } = Astro.props;
+const all = await getCollection('recos');
+const current = all.find((r) => r.slug === slug);
+
+// Fallback: if the slug doesn't match a known reco (shouldn't happen
+// because [slug].astro gates on this), render an empty pane rather
+// than crash the build.
+const data = current ? await normaliseReco(current.data as any, slug) : null;
+---
+
+<aside class="sidebar-2" transition:persist={`sb2-recos-${slug}`}>
+  <div class="sb2-pane active" data-pane="recos">
+    <div class="sb2-header">
+      <div class="sb2-title">Sean's <em>Recos</em>{data ? ` · ${data.category}` : ''}</div>
+    </div>
+
+    {data && (
+      <div class="sb2-list">
+
+        {/* TOC — one item per section. Anchors:
+            - sections with shelfItems → #shelf-<id> (highlights area)
+            - shelf-less sections      → #table-section-<id> (table divider)
+            data-shelf-target / data-table-target let scroll-spy match
+            both targets to the same TOC link. */}
+        {data.sections.map((section, idx) => {
+          const hasShelf = section.shelfItems.length > 0;
+          const primaryAnchor = hasShelf ? `#shelf-${section.id}` : `#table-section-${section.id}`;
+          return (
+            <a
+              class:list={['sb2-item', { active: idx === 0 }]}
+              href={primaryAnchor}
+              data-sb2-toc
+              data-section-id={section.id}
+            >
+              <div class="sb2-row">
+                <span class="roman">{section.romanNumeral}</span>
+                <div class="sb2-name">{section.title}</div>
+                <div class="sb2-count">{section.items.length}</div>
+              </div>
+              {section.eyebrow && <div class="sb2-desc">{section.eyebrow}</div>}
+            </a>
+          );
+        })}
+
+        {/* Divider */}
+        <div class="sb2-divider">Other shelves</div>
+
+        {/* Sister categories */}
+        {data.sisterCategories.map((sister) => (
+          <a class="sb2-item" href={`/recos/${sister.slug}/`}>
+            <div class="sb2-row">
+              <div class="sb2-name">
+                {sister.title}
+                {sister.current && <span class="current-marker">current</span>}
+              </div>
+              <div class="sb2-count">{sister.count}</div>
+            </div>
+            {sister.lede && <div class="sb2-desc">{sister.lede}</div>}
+          </a>
+        ))}
+
+      </div>
+    )}
+  </div>
+</aside>
