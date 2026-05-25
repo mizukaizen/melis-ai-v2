@@ -1,8 +1,11 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro';
 import SectionHero from '../../components/SectionHero.astro';
+import ShelfSection from '../../components/recos/ShelfSection.astro';
+import ListSection from '../../components/recos/ListSection.astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { itemHero, landingHero } from '../../lib/hero-image';
+import { normaliseReco } from '../../lib/recos';
 
 export const prerender = true;
 
@@ -14,73 +17,61 @@ export async function getStaticPaths() {
   }));
 }
 
-function withUtm(rawUrl: string, slug: string): string {
-  try {
-    const u = new URL(rawUrl);
-    u.searchParams.set('utm_source', 'melis-ai');
-    u.searchParams.set('utm_medium', 'recos');
-    u.searchParams.set('utm_campaign', slug);
-    return u.toString();
-  } catch { return rawUrl; }
-}
-
 type Props = { item: CollectionEntry<'recos'> };
 const { item } = Astro.props as Props;
 const data = item.data;
 const cover = (data.cover && data.cover.startsWith('/'))
   ? data.cover
   : itemHero('recos', data.title.replace(/<[^>]+>/g, ''), item.slug) || landingHero('recos');
-const tools = data.tools || [];
+
+// Normalise the reco for the shelf + table view. Coming-soon stays on
+// the simple stub branch below — only live recos get the new layout.
+const view = data.status === 'live'
+  ? await normaliseReco(data as any, item.slug)
+  : null;
+
+const heroEyebrow = view
+  ? [view.eyebrow, view.volume].filter(Boolean).join(' · ')
+  : data.eyebrow;
+const sectionsWithShelves = view ? view.sections.filter((s) => s.shelfItems.length > 0) : [];
 ---
 
 <AppLayout title={data.title} pane="recos" inRoom description={data.lede}>
   <SectionHero
     cover={cover}
-    eyebrow={data.eyebrow}
+    eyebrow={heroEyebrow}
     title={data.title}
     titleHtml={data.titleHtml}
   />
 
   <section class="section-body">
-    <div class="v6-detail">
-      {data.status === 'coming-soon' ? (
-        <div class="reco-stub">
-          <h2 class="h2">Coming soon.</h2>
-          <p class="body-lead">I'm building this list slowly — only adding things I genuinely use. Check back, or hit <a href="/newsletter/" style="color: var(--accent); border-bottom: 1px solid currentColor;">subscribe</a> to get notified when it lands.</p>
-          <p class="body-lead">In the meantime, the four lists that <em>are</em> live: <a href="/recos/tools-i-use-daily/">Software</a> · <a href="/recos/hardware-that-holds-up/">Gear</a> · <a href="/recos/books-that-compound/">Books</a> · <a href="/recos/newsletters-i-read/">Newsletters</a>.</p>
-        </div>
-      ) : (
-        <>
-          <section class="vd-section">
-            <h3 class="vd-h3">What I actually <em>use</em>.</h3>
-            <div class="vd-prose">
-              <p>No affiliate padding. No "this changed my life!!" copy. These are the tools, books, courses, and apps I genuinely use and would buy again. If a link earns me anything, I'll say so on the line. Otherwise it doesn't.</p>
-            </div>
-          </section>
+    {data.status === 'coming-soon' && (
+      <div class="reco-stub">
+        <h2 class="h2">Coming soon.</h2>
+        <p class="body-lead">I'm building this list slowly — only adding things I genuinely use. Check back, or hit <a href="/newsletter/" style="color: var(--accent); border-bottom: 1px solid currentColor;">subscribe</a> to get notified when it lands.</p>
+        <p class="body-lead">In the meantime, the four lists that <em>are</em> live: <a href="/recos/tools-i-use-daily/">Software</a> · <a href="/recos/hardware-that-holds-up/">Gear</a> · <a href="/recos/books-that-compound/">Books</a> · <a href="/recos/newsletters-i-read/">Newsletters</a>.</p>
+      </div>
+    )}
 
-          <div class="section-eyebrow-small">The list</div>
-          <div class="vd-rows">
-            {tools.map((t) => (
-              t.url ? (
-                <a class="vd-row" href={withUtm(t.url, item.slug)} target="_blank" rel="noopener nofollow sponsored">
-                  <div class="vd-row-name">{t.name}</div>
-                  {t.attr && <div class="vd-row-attr">{t.attr}</div>}
-                  {t.take && <div class="vd-row-take">{t.take}</div>}
-                  <div class="vd-row-cta">{t.cta || 'Visit'} ↗</div>
-                </a>
-              ) : (
-                <div class="vd-row">
-                  <div class="vd-row-name">{t.name}</div>
-                  {t.attr && <div class="vd-row-attr">{t.attr}</div>}
-                  {t.take && <div class="vd-row-take">{t.take}</div>}
-                  {t.cta && <div class="vd-row-cta vd-row-cta-muted">{t.cta}</div>}
-                </div>
-              )
+    {view && (
+      <div class="reco-detail-v7">
+        {view.lede && <p class="section-lead">{view.lede}</p>}
+
+        {sectionsWithShelves.length > 0 && (
+          <>
+            <div class="section-eyebrow-row" id="highlights-eyebrow">
+              <span class="label"><em>Highlights.</em></span>
+              <span class="meta">Top picks · {view.totalShelfItems} of {view.totalItems}</span>
+            </div>
+            {sectionsWithShelves.map((section, idx) => (
+              <ShelfSection section={section} shelfIndex={idx + 1} />
             ))}
-          </div>
-        </>
-      )}
-    </div>
+          </>
+        )}
+
+        <ListSection sections={view.sections} totalItems={view.totalItems} />
+      </div>
+    )}
   </section>
 
   <style>
@@ -93,4 +84,112 @@ const tools = data.tools || [];
     <div>melis.ai · 2026</div>
     <div>Operator-built · Australia</div>
   </div>
+
+  <script>
+    // Scroll-spy for the recos detail sb2 TOC.
+    // Observes each shelf-header[id] + the highlights/full-list eyebrows;
+    // toggles .active on matching .sb2-item TOC entries. When the visible
+    // target is the full-list eyebrow (no matching TOC entry), all TOC
+    // entries go inactive — matches mockup behaviour at the table.
+    //
+    // Runs on astro:page-load AND DOMContentLoaded so it survives view-
+    // transitions. Re-queries DOM every fire — no stale refs.
+    function wireRecosScrollSpy() {
+      const sb2 = document.querySelector('aside.sidebar-2');
+      if (!sb2) return;
+      const tocLinks = Array.from(sb2.querySelectorAll<HTMLAnchorElement>('a[data-sb2-toc]'));
+      if (tocLinks.length === 0) return;
+
+      // Position-based scroll-spy. For each TOC entry, find the highest-y
+      // target (shelf-header OR table-section divider) whose top has
+      // crossed the trigger line. That's the active section. This is more
+      // reliable than IntersectionObserver for fast scrolls — IO only
+      // fires on threshold crossings, so a Productivity shelf scrolled
+      // past quickly could be skipped if it enters and leaves the
+      // intersection band within one rAF tick. The position approach is
+      // O(n) per scroll but n is tiny (≤ 10 targets).
+      //
+      // Trigger line: 80px below viewport top (buffers fixed chrome).
+      const TRIGGER_OFFSET = 80;
+
+      function setActiveBySectionId(sid: string | null) {
+        tocLinks.forEach((link) =>
+          link.classList.toggle('active', !!sid && link.dataset.sectionId === sid),
+        );
+      }
+
+      // Pre-compute target [sectionId, scrollY-top] pairs. Refresh on
+      // resize because table reflow changes offsets.
+      let waypoints: { sid: string; top: number }[] = [];
+      function refreshWaypoints() {
+        const els = Array.from(document.querySelectorAll<HTMLElement>(
+          '.shelf-header[id], tr.section-divider[id]',
+        ));
+        waypoints = els
+          .map((el) => {
+            const id = el.id || '';
+            const sid = id.startsWith('shelf-') ? id.slice('shelf-'.length)
+              : id.startsWith('table-section-') ? id.slice('table-section-'.length)
+              : null;
+            if (!sid) return null;
+            return { sid, top: el.getBoundingClientRect().top + window.scrollY };
+          })
+          .filter((w): w is { sid: string; top: number } => !!w)
+          .sort((a, b) => a.top - b.top);
+      }
+
+      let rafQueued = false;
+      function onScroll() {
+        if (rafQueued) return;
+        rafQueued = true;
+        requestAnimationFrame(() => {
+          rafQueued = false;
+          if (waypoints.length === 0) return;
+          const docHeight = document.documentElement.scrollHeight;
+          const atBottom = (window.scrollY + window.innerHeight) >= (docHeight - 16);
+          if (atBottom) {
+            // Bottom-of-page fallback. Short pages can't scroll their last
+            // section above the trigger line, so without this the TOC sits
+            // on whichever middle section last passed the trigger.
+            setActiveBySectionId(waypoints[waypoints.length - 1].sid);
+            return;
+          }
+          const trigger = window.scrollY + TRIGGER_OFFSET;
+          // For each TOC section, mark active = the LAST waypoint whose top
+          // is at or above the trigger line. Sections with multiple
+          // waypoints (shelf + table divider) collapse to one active state
+          // because both share a sectionId.
+          let activeSid: string | null = waypoints[0].sid;
+          for (const w of waypoints) {
+            if (w.top <= trigger) activeSid = w.sid;
+            else break;
+          }
+          setActiveBySectionId(activeSid);
+        });
+      }
+
+      refreshWaypoints();
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', () => {
+        refreshWaypoints();
+        onScroll();
+      });
+
+      // Smooth-scroll for in-page TOC clicks (offset for sticky chrome).
+      tocLinks.forEach((link) => {
+        link.addEventListener('click', (e) => {
+          const href = link.getAttribute('href') || '';
+          if (!href.startsWith('#')) return;
+          const target = document.querySelector(href);
+          if (!target) return;
+          e.preventDefault();
+          const top = (target as HTMLElement).getBoundingClientRect().top + window.scrollY - TRIGGER_OFFSET;
+          window.scrollTo({ top, behavior: 'smooth' });
+        });
+      });
+    }
+    document.addEventListener('astro:page-load', wireRecosScrollSpy);
+    if (document.readyState !== 'loading') wireRecosScrollSpy();
+  </script>
 </AppLayout>
