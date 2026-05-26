@@ -1,0 +1,66 @@
+---
+// Section 01 · Promise · what we owe the audience.
+// 3-card principle grid with hand-coded SVG marks. Greek transliterations
+// per card. Content ported from brand-guidelines.html (lines 4431-4479).
+
+type Principle = {
+  num: string;
+  title: string;
+  greek: string;
+  translit: string;
+  body: string;
+  svg: string;
+};
+
+const PRINCIPLES: Principle[] = [
+  {
+    num: '01 · Promise',
+    title: 'Signal, not noise.',
+    greek: 'λόγος',
+    translit: 'lógos',
+    body: 'If we haven\'t used the tool, technique, or framework in real work — we don\'t teach it. The library is curated, not generated. <em>No tutorial mill, no SEO churn.</em>',
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg>',
+  },
+  {
+    num: '02 · Promise',
+    title: 'Operator depth.',
+    greek: 'φρόνησις',
+    translit: 'phrónēsis',
+    body: 'No definitions of what a prompt is. No recaps. We move at the speed of someone already in the work. <em>If you\'re past the basics, you\'re the audience.</em>',
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M 5 7 L 19 7 L 12 19 Z"/><circle cx="12" cy="11" r="1.25" fill="currentColor" stroke="none"/></svg>',
+  },
+  {
+    num: '03 · Promise',
+    title: 'Restraint.',
+    greek: 'σωφροσύνη',
+    translit: 'sōphrosýnē',
+    body: 'We don\'t extend the brand for hype. We don\'t ship "AI-powered X" because the moment is hot. We don\'t publish content we wouldn\'t put our name on in five years. <em>Honest before impressive.</em>',
+    svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><path d="M 3 12 H 21"/></svg>',
+  },
+];
+---
+
+<section id="promise" data-brand-section class="melis-section">
+  <div class="melis-section-eyebrow-row">
+    <span class="num">01</span>
+    <span class="name">Promise · what we owe the audience</span>
+    <span class="line"></span>
+  </div>
+  <h2 class="melis-section-title">Three things the audience can rely on. <em>Signal. Depth. Restraint.</em></h2>
+
+  <div class="melis-prose">
+    <p>Most AI educators promise outcomes — money, time, transformation. We don't. The brand promise is narrower and more honest. It's the contract: this is what you'll get from us, no matter the surface.</p>
+  </div>
+
+  <div class="promise-grid">
+    {PRINCIPLES.map((p) => (
+      <article class="promise-card">
+        <span class="promise-mark" set:html={p.svg} />
+        <div class="promise-meta">{p.num}</div>
+        <h3 class="promise-title">{p.title}</h3>
+        <div class="promise-greek">{p.greek} <span class="promise-translit">{p.translit}</span></div>
+        <p class="promise-body" set:html={p.body} />
+      </article>
+    ))}
+  </div>
+</section>

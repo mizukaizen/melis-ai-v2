@@ -1,0 +1,169 @@
+---
+// Section 07 · Type · three families. Source: brand-guidelines.html
+// lines 5016-5102.
+---
+
+<section id="typography" data-brand-section class="melis-section">
+  <div class="melis-section-eyebrow-row">
+    <span class="num">07</span>
+    <span class="name">Type · three families</span>
+    <span class="line"></span>
+  </div>
+  <h2 class="melis-section-title">Three typefaces. No fourth. Each has a job.</h2>
+
+  <div class="melis-prose">
+    <p>A modern Garamond for display. A neutral grotesque for everything else. A monospace for structural metadata. The three are deliberately differentiated — never blur the lines between them.</p>
+  </div>
+
+  <div class="type-specimens">
+    <div class="type-specimen">
+      <div class="type-meta">
+        <span>Family<strong>Cormorant Garamond</strong></span>
+        <span>Role<strong>Display</strong></span>
+        <span>Weights<strong>300 / 400 / 500</strong></span>
+      </div>
+      <div class="type-alpha type-alpha-display">Aa</div>
+      <p class="type-sample" style="font-family: var(--font-display); font-size: 22px; font-weight: 300; line-height: 1.4; color: var(--text-1, var(--text));">A modern Garamond. Used for the largest type on every page. Light weights at large sizes feel editorial and confident.</p>
+      <p class="type-sample"><em>Italic display renders in <span class="type-accent-em">accent purple</span> — emphasis without weight.</em></p>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-meta">
+        <span>Family<strong>Inter</strong></span>
+        <span>Role<strong>Body / UI</strong></span>
+        <span>Weights<strong>400 / 500 / 600</strong></span>
+      </div>
+      <div class="type-alpha type-alpha-body">Aa</div>
+      <p class="type-sample">The workhorse. Body copy, UI, subsection headings. Variable weights from 400 (regular body) to 600 (subheadings). Body line-height is generous (1.75) so the page breathes.</p>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-meta">
+        <span>Family<strong>JetBrains Mono</strong></span>
+        <span>Role<strong>Metadata / labels</strong></span>
+        <span>Weights<strong>300 / 400 / 500</strong></span>
+      </div>
+      <div class="type-alpha type-alpha-mono">Aa</div>
+      <p class="type-sample" style="font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); line-height: 1.6;">TAGS · EYEBROW LABELS · METADATA · NUMBERS · STATUS · TIMESTAMPS · ALWAYS UPPERCASED AT SMALL SIZES · +0.12EM TRACKING · NEVER FOR HEADLINES</p>
+    </div>
+  </div>
+
+  <table class="type-scale">
+    <thead>
+      <tr><th>Class</th><th>Sample</th><th>Spec</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="type-class">Display</span></td>
+        <td class="type-scale-sample" style="font-family: var(--font-display); font-size: 36px; font-weight: 400; letter-spacing: -0.02em;">melis.ai</td>
+        <td class="type-scale-spec">Cormorant · 36 · 400 · −0.02em</td>
+      </tr>
+      <tr>
+        <td><span class="type-class">H1</span></td>
+        <td class="type-scale-sample" style="font-family: var(--font-display); font-size: 40px; font-weight: 300; letter-spacing: -0.03em;">Build something that lasts.</td>
+        <td class="type-scale-spec">Cormorant · 44 · 300 · −0.03em</td>
+      </tr>
+      <tr>
+        <td><span class="type-class">H2</span></td>
+        <td class="type-scale-sample" style="font-family: var(--font-display); font-size: 26px; font-weight: 300; letter-spacing: -0.02em;">Section headlines</td>
+        <td class="type-scale-spec">Cormorant · 28 · 300 · −0.02em</td>
+      </tr>
+      <tr>
+        <td><span class="type-class">H3</span></td>
+        <td class="type-scale-sample" style="font-size: 15px; font-weight: 600; letter-spacing: -0.01em;">Subsection / chapter</td>
+        <td class="type-scale-spec">Inter · 15 · 600 · −0.01em</td>
+      </tr>
+      <tr>
+        <td><span class="type-class">Body</span></td>
+        <td class="type-scale-sample" style="font-size: 13px;">All body copy and paragraphs.</td>
+        <td class="type-scale-spec">Inter · 13 · 400 · 1.75</td>
+      </tr>
+      <tr>
+        <td><span class="type-class">Label</span></td>
+        <td class="type-scale-sample" style="font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3);">Eyebrow · metadata · status</td>
+        <td class="type-scale-spec">JetBrains Mono · 10 · +0.12em</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<style is:global>
+  .type-specimens {
+    margin-top: 40px;
+    display: flex; flex-direction: column;
+    gap: 32px;
+  }
+  .type-specimen {
+    padding: 28px 30px;
+    border: 1px solid var(--border-2, rgba(232,227,216,0.08));
+    background: rgba(255,255,255,0.015);
+  }
+  .type-meta {
+    display: flex; gap: 32px; flex-wrap: wrap;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.06));
+  }
+  .type-meta span { display: flex; flex-direction: column; gap: 4px; }
+  .type-meta strong { color: var(--text-1, var(--text)); font-weight: 500; letter-spacing: 0.04em; }
+  .type-alpha {
+    font-size: 96px;
+    line-height: 1;
+    margin-bottom: 18px;
+    color: var(--text-1, var(--text));
+  }
+  .type-alpha-display { font-family: var(--font-display); font-weight: 300; }
+  .type-alpha-body { font-family: var(--font-body); font-weight: 500; }
+  .type-alpha-mono { font-family: var(--font-mono); font-weight: 400; }
+  .type-sample {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-2);
+    margin: 0;
+  }
+  .type-sample + .type-sample { margin-top: 14px; }
+  .type-sample em { font-style: italic; }
+  .type-accent-em { color: var(--accent); }
+
+  .type-scale {
+    width: 100%;
+    margin-top: 48px;
+    border-collapse: collapse;
+  }
+  .type-scale th {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    text-align: left;
+    padding: 12px 14px 12px 0;
+    border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.08));
+  }
+  .type-scale td {
+    padding: 14px 14px 14px 0;
+    border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.06));
+    vertical-align: middle;
+  }
+  .type-class {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .type-scale-sample { color: var(--text-1, var(--text)); }
+  .type-scale-spec {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-3);
+    letter-spacing: 0.06em;
+    text-align: right;
+    white-space: nowrap;
+  }
+</style>

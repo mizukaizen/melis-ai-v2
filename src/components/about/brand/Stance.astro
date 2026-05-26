@@ -1,0 +1,43 @@
+---
+// Section 04 · Stance · what melis.ai is not.
+// 8-card grid — matches gold-standard mockup at
+// _cowork/outputs/website-rebrand/about-brand-canonical-chrome.html (lines 612-682).
+// Content verbatim from brand-guidelines.html (lines 4605-4676).
+
+type Stance = { num: string; prefix: string; title: string; body: string };
+const STANCES: Stance[] = [
+  { num: '01', prefix: 'Not a',  title: 'Not a <em>guru</em>.',                       body: 'We don\'t sell certainty. We don\'t promise outcomes we can\'t deliver. We don\'t position any individual as someone who has figured it all out.' },
+  { num: '02', prefix: 'Not a',  title: 'Not a <em>hustle-bro</em> AI educator.',     body: 'No "I made $40K with ChatGPT in one week" content. No gold gradients, no late-stage capitalism font choices, no income-reports-as-marketing.' },
+  { num: '03', prefix: 'Not a',  title: 'Not a <em>thought leader</em>.',             body: 'We don\'t perform expertise. We don\'t write think-pieces about "the future of work". We don\'t appear on every panel about AI.' },
+  { num: '04', prefix: 'Not a',  title: 'Not a <em>consultancy</em> that doesn\'t ship.', body: 'We use what we sell. We run the agents we teach. If we\'re not actively using a tool in real work — we don\'t teach it.' },
+  { num: '05', prefix: 'Not a',  title: 'Not a <em>lifestyle</em> brand.',            body: 'We\'re not selling a vibe. The papercraft imagery and dark surfaces support the work, not perform aesthetic.' },
+  { num: '06', prefix: 'Not',    title: 'Not <em>enterprise</em>.',                   body: 'We don\'t write for procurement teams. No "for enterprise" lockup. No SOC2 promises. The audience is operators, founders, individual contributors.' },
+  { num: '07', prefix: 'Not a',  title: 'Not a <em>tutorial mill</em>.',              body: 'We don\'t churn content for SEO traffic. We don\'t publish "How to use Claude in 2026" listicles. The library is curated, not generated.' },
+  { num: '08', prefix: 'Not',    title: 'Not <em>corporate</em>.',                    body: 'No third-person About copy. No "we are pleased to announce". No press releases. No newsroom.' },
+];
+---
+
+<section id="stance" data-brand-section class="melis-section">
+  <div class="melis-section-eyebrow-row">
+    <span class="num">04</span>
+    <span class="name">Stance · what melis.ai is not</span>
+    <span class="line"></span>
+  </div>
+  <h2 class="melis-section-title">Anti-positioning is <em>sharper</em> than positioning.</h2>
+
+  <div class="melis-prose">
+    <p>Most brand documents tell you what a brand <em>is</em>. This page tells you what it <em>isn't</em>. When a request, opportunity, or content idea conflicts with one of these — the answer is no.</p>
+  </div>
+
+  <div class="stance-grid">
+    {STANCES.map((s) => (
+      <div class="stance-cell">
+        <div>
+          <div class="stance-num">{s.num} · {s.prefix}</div>
+          <h3 class="stance-statement" set:html={s.title} />
+        </div>
+        <p class="stance-body">{s.body}</p>
+      </div>
+    ))}
+  </div>
+</section>

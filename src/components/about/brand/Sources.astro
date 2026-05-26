@@ -1,0 +1,89 @@
+---
+// § · Sources · canonical markdown. Source: brand-guidelines.html
+// lines 8299-8322. Links resolve relative to the brand folder
+// (currently external to the Astro repo); kept as-is to mirror
+// the source intent.
+
+type Source = { kind: string; file: string; href: string };
+const SOURCES: Source[] = [
+  { kind: 'Canonical',       file: 'DESIGN.md',         href: '#' },
+  { kind: 'Philosophy',      file: 'PRINCIPLES.md',     href: '#' },
+  { kind: 'Logo',            file: 'WORDMARK.md',       href: '#' },
+  { kind: 'A11y',            file: 'ACCESSIBILITY.md',  href: '#' },
+  { kind: 'Motion',          file: 'MOTION.md',         href: '#' },
+  { kind: 'Anti-positioning', file: 'STANCE.md',        href: '#' },
+  { kind: 'Writing',         file: 'VOICE.md',          href: '#' },
+  { kind: 'Visual',          file: 'IMAGERY.md',        href: '#' },
+  { kind: 'Charts',          file: 'DATAVIZ.md',        href: '#' },
+  { kind: 'Family',          file: 'SUBBRAND.md',       href: '#' },
+];
+---
+
+<section id="sources" data-brand-section class="melis-section sources-section">
+  <div class="melis-section-eyebrow-row">
+    <span class="num sources-num">§</span>
+    <span class="name">Sources · the canonical markdown</span>
+    <span class="line"></span>
+  </div>
+  <h2 class="melis-section-title sources-subhead">This page is the visual layer. <em>The canonical sources are markdown.</em></h2>
+
+  <div class="melis-prose">
+    <p>When AI tools or future Sean reads this brand system, they read the <code>.md</code> files — not this HTML. The HTML is a beautiful index. The markdown is the truth.</p>
+  </div>
+
+  <div class="sources-grid">
+    {SOURCES.map((s) => (
+      <a class="sources-cell" href={s.href}>
+        <div class="sources-kind">{s.kind}</div>
+        <div class="sources-file">{s.file}</div>
+      </a>
+    ))}
+  </div>
+</section>
+
+<style is:global>
+  .sources-section {
+    padding-top: 64px;
+    border-top: 1px solid var(--border-2, rgba(232,227,216,0.08));
+    margin-top: 64px;
+  }
+  .sources-num { color: var(--text-3) !important; opacity: 0.6; }
+  .sources-subhead {
+    font-size: 26px !important;
+    color: var(--text-2) !important;
+    font-weight: 400 !important;
+  }
+  .sources-grid {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border-2, rgba(232,227,216,0.08));
+    border: 1px solid var(--border-2, rgba(232,227,216,0.08));
+  }
+  .sources-cell {
+    padding: 20px 24px;
+    background: rgba(0,0,0,0.4);
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: background 0.15s ease;
+  }
+  .sources-cell:hover { background: rgba(124,58,237,0.08); }
+  .sources-kind {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--accent);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .sources-file {
+    font-family: var(--font-display);
+    font-size: 16px;
+    color: var(--text-1, var(--text));
+  }
+  @media (max-width: 720px) {
+    .sources-grid { grid-template-columns: 1fr; }
+  }
+</style>

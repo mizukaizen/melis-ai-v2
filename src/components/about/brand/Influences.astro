@@ -1,0 +1,56 @@
+---
+// Section 14 · Influences · six lineages we draw from. Source:
+// brand-guidelines.html lines 6639-6704.
+
+type Lineage = { num: string; title: string; ja?: string; body: string };
+const LINEAGES: Lineage[] = [
+  { num: '01 · Architecture',         title: 'Less is more.',           body: 'Mies van der Rohe gave architecture its spine: a building can be powerful precisely because of what it withholds. Every material exposed honestly. No ornament that doesn\'t earn its place. <em>Structure as beauty.</em>' },
+  { num: '02 · Industrial design',    title: 'Less, but better.',       body: 'Dieter Rams\' tenth principle of good design: <em>good design is as little design as possible.</em> Thirty years at Braun. Direct lineage to Apple. Still the clearest articulation of what good product design means.' },
+  { num: '03 · Japanese aesthetics',  title: 'Kanso',  ja: '簡素 — simplicity',           body: 'The elimination of clutter — not for efficiency, but for clarity. Removing everything that distracts from what the thing fundamentally is. A kanso tea house contains nothing that is not necessary.' },
+  { num: '04 · Japanese aesthetics',  title: 'Ma',     ja: '間 — negative space',        body: 'The intentional use of emptiness as a compositional element. The empty space is not absence — it is presence. <em>It is where meaning lives.</em>' },
+  { num: '05 · Japanese aesthetics',  title: 'Wabi-sabi', ja: '侘寂 — honest, imperfect', body: 'Accepting incompleteness and imperfection as sources of beauty. Not the polish of perfection, but the honesty of something real. <em>Ship the honest version, not the impressive version.</em>' },
+  { num: '06 · Practice',             title: 'Subtraction as discipline.', body: 'Before adding any element we ask: <em>does the product get worse without it?</em> If the answer is no, it goes. Adding feels like progress. Removing requires conviction.' },
+];
+---
+
+<section id="influences" data-brand-section class="melis-section">
+  <div class="melis-section-eyebrow-row">
+    <span class="num">14</span>
+    <span class="name">Influences · what we appreciate</span>
+    <span class="line"></span>
+  </div>
+  <h2 class="melis-section-title">Six lineages we draw from. <em>None of them govern us.</em></h2>
+
+  <div class="melis-prose">
+    <p>Every brand has aesthetic ancestors. These are ours — six traditions of restrained, considered design that shaped how we think about typography, space, material, and the discipline of removing rather than adding. We're not minimalists. We're <em>subtractive</em> — and the difference matters.</p>
+  </div>
+
+  <blockquote class="melis-quote">
+    <p>"Perfection is achieved not when there is nothing more to add, but when there is nothing left to take away."</p>
+    <cite>Antoine de Saint-Exupéry · Terre des Hommes · 1939</cite>
+  </blockquote>
+
+  <div class="voice-grid">
+    {LINEAGES.map((l) => (
+      <article class="voice-card">
+        <div class="voice-num">{l.num}</div>
+        <h4 class="voice-title">{l.title}{l.ja && <span class="influence-ja">{l.ja}</span>}</h4>
+        <p class="voice-body" set:html={l.body} />
+      </article>
+    ))}
+  </div>
+
+  <p class="melis-aside">These shape the brand's <em>aesthetic execution</em>. They don't replace the manifesto, the promise, or the values — those are first-order. The lineage is second-order: how we make things, not why we make them.</p>
+</section>
+
+<style is:global>
+  .influence-ja {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    color: var(--text-3);
+    font-weight: 400;
+    margin-top: 4px;
+  }
+</style>

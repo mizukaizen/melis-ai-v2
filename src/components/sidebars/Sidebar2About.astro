@@ -1,95 +1,58 @@
 ---
-const path = Astro.url.pathname;
-const isSean = path.startsWith('/about/sean');
-const isStudio = path.startsWith('/about/melis-ai');
+// Sidebar2About — sb2 for /about/sean (the biography route).
+// /about/melis-ai uses Sidebar2MelisAI (brand-book TOC).
+// All routes are dispatched independently by Sidebar2.astro.
+//
+// Pattern mirrors Sidebar2Dossiers/Articles/Newsletter — canonical
+// .sb2-header + .panel-list + .panel-item with icon + body + count.
 
-// Chapter TOC for /about/sean/ — anchor IDs match the chapter divs in
-// src/_html/pane-about.html (ch01-ch09 + timeline + drives).
-const SEAN_CHAPTERS: { id: string; label: string; num?: string }[] = [
-  { id: 'top',      label: 'Opening' },
-  { id: 'ch01',     label: 'The Blueprint',          num: '01' },
-  { id: 'ch02',     label: 'Sharp End of the Spear', num: '02' },
-  { id: 'ch03',     label: 'The Machine Starts',     num: '03' },
-  { id: 'ch04',     label: 'The Great Unraveling',   num: '04' },
-  { id: 'ch05',     label: 'Zero to Agency',         num: '05' },
-  { id: 'ch06',     label: 'The Pivot',              num: '06' },
-  { id: 'ch07',     label: 'Back in the Room',       num: '07' },
-  { id: 'ch08',     label: 'The Edge',               num: '08' },
-  { id: 'ch09',     label: 'The Long Bet',           num: '09' },
-  { id: 'timeline', label: 'Career Timeline' },
-  { id: 'drives',   label: 'What Drives Me' },
-];
-
-// Chapter TOC for /about/melis-ai/ — anchor IDs match the section ids
-// in src/_html/pane-about-studio.html.
-const STUDIO_CHAPTERS: { id: string; label: string }[] = [
-  { id: 'what',      label: 'What is melis.ai' },
-  { id: 'mission',   label: 'The Mission' },
-  { id: 'inside',    label: "What's Live · Five Surfaces" },
-  { id: 'roadmap',   label: 'The Roadmap' },
+const CHAPTERS: { id: string; title: string; subtitle?: string; num?: string; icon: string }[] = [
+  { id: 'top',      title: 'Opening',                       subtitle: undefined,                                                                       icon: 'ph-book-open' },
+  { id: 'ch01',     title: 'The Blueprint',                 num: '01', subtitle: 'Brisbane, early 2000s — architects for parents, AI in high school',  icon: 'ph-compass' },
+  { id: 'ch02',     title: 'Sharp End of the Spear',        num: '02', subtitle: 'QUT 2011–2015 — international competitions, Uber early hire, Shanghai', icon: 'ph-target' },
+  { id: 'ch03',     title: 'The Machine Starts',            num: '03', subtitle: "Deloitte 2016–2017 — RPA pioneer, Singapore and China, Brisbane's first AI research deck", icon: 'ph-gear' },
+  { id: 'ch04',     title: 'The Great Unraveling',          num: '04', subtitle: '2017 — the failures, the floor, the reset',                          icon: 'ph-arrows-out' },
+  { id: 'ch05',     title: 'Zero to Agency',                num: '05', subtitle: "bot•hello 2017–2023 — Australia's first conversational AI agency, digital humans, Intercom APAC", icon: 'ph-rocket-launch' },
+  { id: 'ch06',     title: 'The Pivot',                     num: '06', subtitle: '2023 — walking away from a profitable business, teaching at scale',  icon: 'ph-arrow-bend-up-right' },
+  { id: 'ch07',     title: 'Back in the Room',              num: '07', subtitle: 'PA Consulting 2025 — enterprise AI, Tier 1 banks, agentic transformation', icon: 'ph-door-open' },
+  { id: 'ch08',     title: 'The Edge',                      num: '08', subtitle: 'melis.ai 2026 — London, multi-agent systems, building in the open',   icon: 'ph-mountains' },
+  { id: 'ch09',     title: 'The Long Bet',                  num: '09', subtitle: "2026 and beyond — what's being built, and where it's all heading",    icon: 'ph-infinity' },
+  { id: 'timeline', title: 'Career Timeline',               subtitle: undefined,                                                                       icon: 'ph-clock-counter-clockwise' },
+  { id: 'drives',   title: 'What Drives Me',                subtitle: undefined,                                                                       icon: 'ph-flame' },
 ];
 ---
 
 <aside class="sidebar-2" transition:persist="sb2-about">
   <div class="sb2-pane active" data-pane="about">
     <div class="sb2-header">
-      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="9" r="3"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>
-      <div class="sb2-title"><em>About</em></div>
+      <div class="sb2-title"><em>My story</em></div>
     </div>
 
-    <div class="sb2-list">
-      <a class="sb2-item" class:list={[{ active: isSean }]} href="/about/sean/">
-        <div class="sb2-row">
-          <div class="sb2-name">Sean</div>
-          <div class="sb2-count">the operator</div>
-        </div>
-        <div class="sb2-desc">A decade with AI, mostly artificial</div>
-      </a>
-      <a class="sb2-item" class:list={[{ active: isStudio }]} href="/about/melis-ai/">
-        <div class="sb2-row">
-          <div class="sb2-name">melis.ai</div>
-          <div class="sb2-count">the studio</div>
-        </div>
-        <div class="sb2-desc">Studio behind it all</div>
-      </a>
+    <div class="panel-list" data-about-toc>
+      {CHAPTERS.map((c) => (
+        <a class="panel-item" href={`#${c.id}`} data-toc-target={c.id}>
+          <i class={`ph ${c.icon} pi-icon`} style="color:var(--accent);opacity:0.85"></i>
+          <div class="pi-body">
+            <div class="pi-title">{c.title}</div>
+            {c.subtitle && <div class="pi-meta">{c.subtitle}</div>}
+          </div>
+          {c.num && <div class="pi-dot">{c.num}</div>}
+        </a>
+      ))}
     </div>
-
-    {isSean && (
-      <nav class="about-toc" data-about-toc>
-        <div class="about-toc-label">Chapters</div>
-        {SEAN_CHAPTERS.map((c) => (
-          <a class="about-toc-item" href={`#${c.id}`} data-toc-target={c.id}>
-            {c.num && <span class="toc-num">{c.num}</span>}
-            <span class="toc-label">{c.label}</span>
-          </a>
-        ))}
-      </nav>
-    )}
-
-    {isStudio && (
-      <nav class="about-toc" data-about-toc>
-        <div class="about-toc-label">Chapters</div>
-        {STUDIO_CHAPTERS.map((c) => (
-          <a class="about-toc-item" href={`#${c.id}`} data-toc-target={c.id}>
-            <span class="toc-label">{c.label}</span>
-          </a>
-        ))}
-      </nav>
-    )}
   </div>
 </aside>
 
 <script>
-  // Scroll-spy: highlight the about-toc item whose target section is
-  // currently in view. Smooth-scroll on click. Runs on every page load
-  // and after Astro view-transitions.
-  function wireAboutScrollSpy() {
-    const toc = document.querySelector<HTMLElement>('[data-about-toc]');
+  // Scroll-spy + smooth-scroll on TOC click. Idempotent across page
+  // loads + Astro view-transitions.
+  function wireSeanScrollSpy() {
+    const toc = document.querySelector<HTMLElement>('aside.sidebar-2 [data-about-toc]');
     if (!toc) return;
     if (toc.dataset.wired === '1') return;
     toc.dataset.wired = '1';
 
-    const items = toc.querySelectorAll<HTMLAnchorElement>('.about-toc-item');
+    const items = toc.querySelectorAll<HTMLAnchorElement>('.panel-item');
     const sectionById = new Map<string, Element>();
     items.forEach((item) => {
       const id = item.dataset.tocTarget;
@@ -97,16 +60,14 @@ const STUDIO_CHAPTERS: { id: string; label: string }[] = [
       const el = document.getElementById(id);
       if (el) sectionById.set(id, el);
     });
-
     if (sectionById.size === 0) return;
 
     const setActive = (id: string | null) => {
       items.forEach((it) => {
-        it.classList.toggle('is-current', it.dataset.tocTarget === id);
+        it.classList.toggle('active', it.dataset.tocTarget === id);
       });
     };
 
-    // Smooth scroll on click.
     items.forEach((item) => {
       item.addEventListener('click', (e) => {
         const id = item.dataset.tocTarget;
@@ -120,8 +81,6 @@ const STUDIO_CHAPTERS: { id: string; label: string }[] = [
       });
     });
 
-    // IntersectionObserver — fires when ≥30% of a section is in the
-    // upper-half of the viewport. Picks the topmost intersecting section.
     const visible = new Set<string>();
     const observer = new IntersectionObserver(
       (entries) => {
@@ -131,24 +90,34 @@ const STUDIO_CHAPTERS: { id: string; label: string }[] = [
           if (entry.isIntersecting) visible.add(id);
           else visible.delete(id);
         });
-        // Pick the first section in document order that's visible.
-        const orderedIds = Array.from(items)
+        // 'top' is the entire .section-body wrapper that CONTAINS every
+        // chapter — so the IO reports it as intersecting whenever any
+        // chapter is on screen. That meant clicking ch03/ch05 etc. left
+        // the active highlight stuck on Opening. Filter 'top' out of
+        // the contention whenever any other section is also visible —
+        // 'top' only wins when nothing else is on screen (= true top
+        // of the page).
+        const otherVisible = Array.from(items)
           .map((it) => it.dataset.tocTarget!)
-          .filter((id) => visible.has(id));
-        setActive(orderedIds[0] || null);
+          .filter((id) => id !== 'top' && visible.has(id));
+        if (otherVisible.length > 0) {
+          setActive(otherVisible[0]);
+          return;
+        }
+        if (visible.has('top')) {
+          setActive('top');
+          return;
+        }
+        // No section currently visible (between sections) — keep last active.
       },
-      {
-        rootMargin: '-15% 0px -55% 0px',
-        threshold: [0, 0.3, 0.6],
-      },
+      { rootMargin: '-15% 0px -55% 0px', threshold: [0, 0.3, 0.6] },
     );
     sectionById.forEach((el) => observer.observe(el));
 
-    // Initial state — light up the first section by default.
     const first = items[0]?.dataset.tocTarget;
     if (first) setActive(first);
   }
-  document.addEventListener('DOMContentLoaded', wireAboutScrollSpy);
-  document.addEventListener('astro:after-swap', wireAboutScrollSpy);
-  if (document.readyState !== 'loading') wireAboutScrollSpy();
+  document.addEventListener('DOMContentLoaded', wireSeanScrollSpy);
+  document.addEventListener('astro:after-swap', wireSeanScrollSpy);
+  if (document.readyState !== 'loading') wireSeanScrollSpy();
 </script>

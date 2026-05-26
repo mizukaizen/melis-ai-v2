@@ -1,0 +1,95 @@
+---
+// Section 20 · Do · Don't. Two-column shortlist. Source:
+// brand-guidelines.html lines 8236-8276.
+
+const DO = [
+  'Strip everything you can. If it\'s removable without loss, remove it.',
+  'Use mono eyebrows everywhere — they are the brand\'s structural fingerprint.',
+  'Trust empty space. Let the page breathe.',
+  'Treat the reader as a peer. Concrete over conceptual.',
+  'Use Australian spelling: colour, organise, behaviour, recognise.',
+  'Render italic display in accent purple — emphasis without weight.',
+  'Pair amber + teal in imagery. Always two-light.',
+  'Ship the honest version, not the impressive version.',
+];
+
+const DONT = [
+  'Don\'t use accent purple for decoration. Purple has a job.',
+  'Don\'t add drop shadows for depth. Use tone shifts.',
+  'Don\'t extend the palette. If you need a new colour, you\'re solving the wrong problem.',
+  'Don\'t write anything you wouldn\'t say to a peer you respect.',
+  'Don\'t mix more than two image styles on one page.',
+  'Don\'t put body copy inside mood imagery — let the type sit on top via blur-and-text. <em>The tactile library is the deliberate exception: those labels are the point.</em>',
+  'Don\'t imitate Stripe / Linear / Vercel. Their language is theirs. Earn yours.',
+  'Don\'t use any word from the banlist. Ever.',
+];
+---
+
+<section id="dodont" data-brand-section class="melis-section">
+  <div class="melis-section-eyebrow-row">
+    <span class="num">20</span>
+    <span class="name">Do · Don't</span>
+    <span class="line"></span>
+  </div>
+  <h2 class="melis-section-title">The shortlist. <em>Print this and pin it.</em></h2>
+
+  <div class="melis-prose">
+    <p>If you forget everything else, hold these. Each line is a decision rule that has cost something to keep — and is worth what it cost.</p>
+  </div>
+
+  <div class="dodont-grid">
+    <div class="dodont-col dodont-do">
+      <h3>Do</h3>
+      <ul>
+        {DO.map((line) => <li set:html={line} />)}
+      </ul>
+    </div>
+    <div class="dodont-col dodont-dont">
+      <h3>Don't</h3>
+      <ul>
+        {DONT.map((line) => <li set:html={line} />)}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .dodont-grid {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+  .dodont-col {
+    padding: 24px 28px;
+    border-top: 2px solid;
+  }
+  .dodont-do { border-top-color: var(--accent); }
+  .dodont-dont { border-top-color: #f0a0a0; }
+  .dodont-col h3 {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin: 0 0 18px;
+  }
+  .dodont-do h3 { color: var(--accent); }
+  .dodont-dont h3 { color: #f0a0a0; }
+  .dodont-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .dodont-col li {
+    padding: 12px 0;
+    border-top: 1px solid var(--border-2, rgba(232,227,216,0.06));
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+  .dodont-col li:first-child { border-top: none; }
+  .dodont-col li em { font-style: italic; color: var(--accent); }
+  @media (max-width: 1100px) {
+    .dodont-grid { grid-template-columns: 1fr; }
+  }
+</style>

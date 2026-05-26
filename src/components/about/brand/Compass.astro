@@ -1,0 +1,73 @@
+---
+// Section C · The Compass · 15 modern conceptual frames.
+// Text-only — no glyphs by design. Grouped: Reasoning · Decision ·
+// Time · Action. Data: src/data/compass.ts.
+
+import { COMPASS } from '../../../data/compass';
+---
+
+<section id="compass" data-brand-section class="melis-section">
+  <div class="melis-section-eyebrow-row">
+    <span class="num">C</span>
+    <span class="name">The Compass · modern conceptual frames</span>
+    <span class="line"></span>
+  </div>
+  <h2 class="melis-section-title">Fifteen frames sharp enough to invoke, often. <em>Different in kind from the Lexicon.</em></h2>
+
+  <div class="melis-prose">
+    <p>Where the Lexicon names <em>concepts humanity must take forward and protect</em>, the Compass names <em>modern conceptual frames sharp enough to be invoked, often, in a working life</em>. These have English names. They are not endangered. They do not need preservation. Their power is in the language. Glyphs would dilute them.</p>
+    <p class="compass-rule">Rule: no Compass entry gets a glyph. They appear by name in dispatch, course material, essays — invoked, not illustrated.</p>
+  </div>
+
+  {COMPASS.map((group) => (
+    <div class="compass-group">
+      <div class="lex-section-head"><span>{group.label}</span></div>
+      <div class="compass-grid">
+        {group.frames.map((f) => (
+          <article class="compass-card">
+            <h4 class="compass-title">{f.title}</h4>
+            <p class="compass-gloss" set:html={f.gloss} />
+          </article>
+        ))}
+      </div>
+    </div>
+  ))}
+</section>
+
+<style is:global>
+  .compass-rule {
+    font-style: italic;
+    color: var(--text-3);
+  }
+  .compass-group { margin-top: 56px; }
+  .compass-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px 48px;
+  }
+  .compass-card {
+    display: flex; flex-direction: column;
+  }
+  .compass-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin: 0 0 10px;
+    color: var(--text-1, var(--text));
+  }
+  .compass-gloss {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--text-2);
+    margin: 0;
+  }
+  .compass-gloss em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  @media (max-width: 1100px) {
+    .compass-grid { grid-template-columns: 1fr; }
+  }
+</style>

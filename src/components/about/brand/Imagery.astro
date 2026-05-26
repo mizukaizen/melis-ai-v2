@@ -1,0 +1,129 @@
+---
+// Section 10 · Imagery · tilt-shift papercraft world. Includes the
+// six-quality grid + premium ceiling references. Source:
+// brand-guidelines.html lines 5277-5470. Featured cover image
+// references /brand/cover-image.png (copied in Part 4); six-quality
+// tiles render as labelled placeholders if assets aren't shipped yet.
+
+type Quality = { num: string; title: string; body: string; img: string };
+const QUALITIES: Quality[] = [
+  { num: '01 · Aesthetic', title: 'Tilt-shift miniature world.',  img: '/brand/six-qualities/01-tilt-shift-miniature-world.png',  body: 'Strong, visible tilt-shift blur. <em>The figure sits at the focal plane</em> — sharp band in the centre, soft Gaussian blur above and below, bokeh halos where the lamplight catches. The optical effect is what creates the miniature feeling, not any visible frame.' },
+  { num: '02 · Aesthetic', title: 'Cinematic two-light tension.', img: '/brand/six-qualities/02-cinematic-two-light-tension.png', body: 'Warm amber from <em>inside</em> the scene — a desk lamp, a hearth, the glow of a screen. Cool teal twilight pouring in from <em>outside</em> — a window, a doorway, a sky. <em>The interplay between warm interior and cool exterior is the brand\'s lighting fingerprint.</em> Never single-source flat lighting.' },
+  { num: '03 · Aesthetic', title: 'Frame-filling composition.',   img: '/brand/six-qualities/03-frame-filling-composition.png',   body: 'The miniature world extends to all four sides of the image. <em>No vignette borders, no diorama-box edges, no museum-vitrine framing.</em> The camera is inside the world, not peering at it from outside. The viewer steps in.' },
+  { num: '04 · Aesthetic', title: 'Paper grain authenticity.',     img: '/brand/six-qualities/04-paper-grain-authenticity.png',     body: 'Every object visibly hand-cut and folded. Crisp edges, visible paper grain, layered cardstock. Books with paper spines, plants from layered cut-paper leaves, scattered handwritten paper notes. <em>No plastic, no chrome, no rendered surfaces.</em> If it doesn\'t look like it could\'ve been made by hand from paper, it doesn\'t ship.' },
+  { num: '05 · Aesthetic', title: 'Small paper figure.',           img: '/brand/six-qualities/05-small-paper-figure.png',           body: 'A small paper figure at the focal plane is the focal subject — a hand-crafted papercraft figurine at proper scale within the room. <em>Never a photorealistic human, never a 3D character render, never absent.</em> The figure is who you are inside the world.' },
+  { num: '06 · Aesthetic', title: 'One magical small element.',    img: '/brand/six-qualities/06-magical-small-element.png',        body: 'Each scene contains <em>one</em> detail that doesn\'t quite belong — typically a small violet paper lotus glowing faintly with soft purple light. <em>Without it, the image is a still life. With it, it\'s a brand asset.</em> The lotus is the brand\'s visual signature — the magic, the violet anchor, the thing the eye lands on.' },
+];
+
+const CEILING = [
+  '<strong>Laika Studios stop-motion stills</strong> — <em>Kubo</em>, <em>Coraline</em>, <em>ParaNorman</em> — handmade physical worlds, photographed with care.',
+  '<strong>Hermès window displays</strong> — small worlds lit like jewellery, telling a single story.',
+  '<strong>Anthology film miniatures</strong> — symmetrical sets, every prop intentional, the camera precise rather than busy.',
+  '<strong>Premium tilt-shift miniature photography</strong> — frame-filling, the optical effect doing the miniature work.',
+  '<strong>The Pudding\'s editorial visualisations</strong> — for the rare blueprint / schematic accent style.',
+];
+---
+
+<section id="imagery" data-brand-section class="melis-section">
+  <div class="melis-section-eyebrow-row">
+    <span class="num">10</span>
+    <span class="name">Imagery · tilt-shift papercraft world</span>
+    <span class="line"></span>
+  </div>
+  <h2 class="melis-section-title">The visual language is a tilt-shift papercraft world, photographed.</h2>
+
+  <div class="melis-prose">
+    <p>Miniature physical worlds of cut and folded paper. Lit warmly from inside, cool teal twilight pouring in from outside. Shot through a tilt-shift lens — sharp focal band where the figure sits, soft above and below. Frame-filling, never bounded. <em>A small papercraft world the camera is inside, not peering at.</em></p>
+  </div>
+
+  <figure class="imagery-feature">
+    <img src="/brand/cover-image.png" alt="The tilt-shift papercraft visual language — a small paper figure of an operator at the centre of a wide paper-craft studio at twilight." loading="lazy" />
+  </figure>
+
+  <div class="melis-prose">
+    <p><strong>Conceptual fit.</strong> "Built by hand, made of paper, lit cinematically" maps directly onto the brand's craft promise. The tilt-shift is the optical signature — the world feels miniature, the camera leans in, the figure invites you in.</p>
+    <p><strong>Premium ceiling.</strong> Reads as Laika Studios stop-motion, Wes Anderson set, Hermès display — cultural references that pull premium without trying.</p>
+    <p><strong>Distinctive.</strong> Almost nobody in AI-education land uses tilt-shift papercraft. Low saturation, high recognition. <em>A language with no competitors.</em></p>
+  </div>
+
+  <h3 class="imagery-subhead">Six qualities. <em>Every image earns all six.</em></h3>
+  <p class="melis-prose"><span>"Tilt-shift papercraft" is the floor, not the ceiling. Below the surface description, six locked qualities make a melis.ai image distinctly ours — and rule out the ten thousand AI-generated paper-craft images that look like everything else. If a generated image misses any of these, it's regenerated.</span></p>
+
+  <div class="imagery-quality-grid">
+    {QUALITIES.map((q) => (
+      <article class="imagery-quality" style={`background-image: linear-gradient(rgba(15,15,15,0.78), rgba(15,15,15,0.95)), url('${q.img}');`}>
+        <div class="imagery-quality-num">{q.num}</div>
+        <h4 class="imagery-quality-title">{q.title}</h4>
+        <p class="imagery-quality-body" set:html={q.body} />
+      </article>
+    ))}
+  </div>
+
+  <h3 class="imagery-subhead">Premium ceiling — what these read like.</h3>
+  <p class="melis-prose"><span>When a melis.ai image lands, it should read as one of these references — not as "AI paper craft":</span></p>
+  <ul class="melis-ul">
+    {CEILING.map((c) => <li set:html={c} />)}
+  </ul>
+</section>
+
+<style is:global>
+  .imagery-feature {
+    margin: 56px 0;
+    border: 1px solid var(--border-2, rgba(232,227,216,0.08));
+    background: rgba(255,255,255,0.02);
+  }
+  .imagery-feature img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .imagery-subhead {
+    margin: 80px 0 14px;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 24px;
+    color: var(--text-1, var(--text));
+  }
+  .imagery-subhead em { font-style: italic; color: var(--accent); }
+  .imagery-quality-grid {
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+  .imagery-quality {
+    padding: 28px 28px 32px;
+    border: 1px solid var(--border-2, rgba(232,227,216,0.08));
+    background-size: cover;
+    background-position: center;
+    display: flex; flex-direction: column;
+    min-height: 240px;
+  }
+  .imagery-quality-num {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 8px;
+  }
+  .imagery-quality-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin: 0 0 12px;
+    color: var(--text-1, var(--text));
+  }
+  .imagery-quality-body {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--text-2);
+    margin: 0;
+  }
+  .imagery-quality-body em { font-style: italic; color: var(--accent); }
+  @media (max-width: 1100px) {
+    .imagery-quality-grid { grid-template-columns: 1fr; }
+  }
+</style>

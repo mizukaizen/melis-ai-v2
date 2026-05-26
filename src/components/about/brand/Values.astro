@@ -1,0 +1,106 @@
+---
+// Section 02 · Values · what we won't violate.
+// 3 chart-cards (Honest before impressive / Build in public, sell in
+// private / Subtract by default) — each with "when tested / what we do /
+// how we know we're holding it" palette rows. Content ported from
+// brand-guidelines.html (lines 4482-4572).
+
+type Value = {
+  num: 'Value 01' | 'Value 02' | 'Value 03';
+  title: string;
+  lede: string;
+  scene: string;   // public path to the paper-craft background scene
+  rows: { label: string; body: string }[];
+};
+
+const VALUES: Value[] = [
+  {
+    num: 'Value 01',
+    title: 'Honest before impressive.',
+    lede: 'The honest version ships. The impressive version waits, or doesn\'t. When the choice is between looking good and being right, we pick right. Wabi-sabi as a daily practice, not an aesthetic.',
+    scene: '/brand/cover-image.png',
+    rows: [
+      { label: 'When this gets tested', body: 'When the launch deadline is tomorrow and the product still has the rough edges. When a case study would land harder if we left out the part that didn\'t work. When a course module would convert better with a confidence we don\'t yet have.' },
+      { label: 'What we do',           body: 'Ship the version we\'d defend in five years, even if it\'s less impressive today. Include the parts that didn\'t work. Replace performed certainty with honest uncertainty.' },
+      { label: 'How we know we\'re holding it', body: 'If the copy could appear in a competitor\'s pitch deck without anyone noticing — we\'ve drifted. If the launch felt awkward to talk about because some of it didn\'t land — we\'re holding.' },
+    ],
+  },
+  {
+    num: 'Value 02',
+    title: 'Build in public, sell in private.',
+    lede: 'The reasoning, the methods, the principles, the documents — public. The working tools, the agents, the execution kits, the curated assets — paid. The thinking is the marketing; the execution is the product.',
+    scene: '/brand/values/atmosphere-10-fireflies.png',
+    rows: [
+      { label: 'When this gets tested', body: 'When a competitor copies a public document. When a free piece of content "should" be paywalled because it took weeks to write. When customers ask whether they need to pay for something we already published.' },
+      { label: 'What we do',           body: 'We let the public artefact stay public. We charge for the executable layer — the working code, the working agents, the working templates — not for the reasoning. The depth is the marketing. People pay for the wiring, not the schematic.' },
+      { label: 'How we know we\'re holding it', body: 'If publishing the rules would expose the business — we\'ve got it backwards. The rules aren\'t the moat. The execution is.' },
+    ],
+  },
+  {
+    num: 'Value 03',
+    title: 'Subtract by default.',
+    lede: 'When in doubt, we remove. Adding is the conviction-required move, not removing. <em>Does the product get worse without it?</em> If no, it goes.',
+    scene: '/brand/values/atmosphere-09-smoke-steam.png',
+    rows: [
+      { label: 'When this gets tested', body: 'When a feature would technically work and feels like progress. When a product page is naked and it feels like it should "have more". When a course module could include "extra value" — three more lessons, four more bonuses.' },
+      { label: 'What we do',           body: 'We remove anything that doesn\'t earn its place. The course teaches what the student needs, not the catalogue we could have written. The product page sells what the product does, not the ten things it could one day do.' },
+      { label: 'How we know we\'re holding it', body: 'If we keep adding things to look serious — we\'ve drifted. If we keep cutting things and the product gets clearer — we\'re holding.' },
+    ],
+  },
+];
+---
+
+<section id="values" data-brand-section class="melis-section">
+  <div class="melis-section-eyebrow-row">
+    <span class="num">02</span>
+    <span class="name">Values · what we won't violate</span>
+    <span class="line"></span>
+  </div>
+  <h2 class="melis-section-title">Three commitments. <em>We don't break any of them.</em></h2>
+
+  <div class="melis-prose">
+    <p>Values are the lines we won't cross even when crossing them would be convenient. Three is enough. Seven is a corporate poster. These are the ones we'd refuse to violate even if a tempting opportunity made one of them inconvenient — and that refusal is the whole point. Each one passes through the North Star below.</p>
+  </div>
+
+  <div class="values-northstar">
+    <div class="values-northstar-label">North Star · the test the values flow from</div>
+    <h3 class="values-northstar-q">Does this make the user's life feel <em>lighter</em>, or heavier?</h3>
+  </div>
+
+  <div class="melis-prose">
+    <p>A value only works if it has teeth — if there's a moment we can name when honouring it costs us something. The three below have all been tested. Here's how each one behaves under pressure.</p>
+  </div>
+
+  {VALUES.map((v) => (
+    <article class="value-card value-card-scene" style={`--scene: url('${v.scene}');`}>
+      <div class="value-eyebrow">{v.num}</div>
+      <h3 class="value-title">{v.title}</h3>
+      <p class="value-lede" set:html={v.lede} />
+      {v.rows.map((row) => (
+        <div class="value-row">
+          <div class="value-row-label">{row.label}</div>
+          <div class="value-row-body">{row.body}</div>
+        </div>
+      ))}
+    </article>
+  ))}
+
+  <blockquote class="melis-quote">
+    <p>"The strength of a position comes from its consistency. Every time we make an exception, the position weakens, and decisions get slower. The values exist to make decisions faster — not by computing every trade-off, but by ruling out the ones we already know we won't take."</p>
+    <cite>Internal note · 2026.04.28</cite>
+  </blockquote>
+</section>
+
+<style is:global>
+  /* Scene-backed value cards — papercraft atmosphere behind a heavy
+     veil so the body text remains readable while the scene tints the
+     card character. Each card sets --scene via inline style. */
+  .value-card-scene {
+    position: relative;
+    background:
+      linear-gradient(rgba(20,18,28,0.92), rgba(20,18,28,0.96)),
+      var(--scene) center / cover no-repeat;
+    overflow: hidden;
+  }
+</style>
+
