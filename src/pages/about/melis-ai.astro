@@ -52,20 +52,12 @@ const SECTIONS: Section[] = [
       <div class="melis-topbar-right">LIVING DOCUMENT</div>
     </div>
 
-    <section id="the-studio" data-brand-section class="melis-hero">
+    <header class="melis-hero">
       <div class="melis-hero-eyebrow">About <span class="sep">·</span> melis.ai</div>
-      <h1 class="melis-hero-title">The <em>studio</em>.</h1>
-      <div class="melis-hero-meta">
-        <span>A living document</span><span class="sep">·</span>
-        <span>v2026.04.29</span><span class="sep">·</span>
-        <span>22 sections</span><span class="sep">·</span>
-        <span>33 concepts</span><span class="sep">·</span>
-        <span>15 frames</span>
-      </div>
-      <p class="melis-hero-intro">melis.ai is a working AI studio run by Sean Melis from London. Courses, products, and dispatches from an operator who's been in the work since before it was the work.</p>
-      <p class="melis-hero-intro">What follows is the brand system that holds it together — the <em>manifesto</em>, the visual language, the voice, the imagery, the sigils, the lexicon. Published, not hidden. If you copy it, copy it <em>well</em>.</p>
-      <p class="melis-hero-intro">Content lands progressively. Use the navigation on the left.</p>
-    </section>
+      <h1 class="melis-hero-title">melis<em>.</em>ai</h1>
+      <p class="melis-hero-lead"><em>The studio behind the work — its why, its look, its voice.</em></p>
+      <p class="melis-hero-intro">An AI studio run by Sean Melis from London. Courses, products, dispatches. What follows is everything that holds it together.</p>
+    </header>
 
     {SECTIONS.map((s) => (
       <section id={s.id} data-brand-section class="melis-section melis-section-placeholder">
@@ -117,7 +109,6 @@ const SECTIONS: Section[] = [
   }
 
   .melis-hero {
-    scroll-margin-top: 80px;
     margin-bottom: 96px;
     max-width: 880px;
   }
@@ -136,38 +127,34 @@ const SECTIONS: Section[] = [
     font-size: 72px;
     line-height: 1.02;
     letter-spacing: -0.035em;
-    margin: 0 0 28px;
+    margin: 0 0 20px;
     color: var(--text-1, var(--text));
   }
   .melis-hero-title em {
-    font-style: italic;
+    font-style: normal;
     color: var(--accent);
     font-weight: 400;
   }
-  .melis-hero-meta {
-    font-family: var(--font-mono);
-    font-size: 10.5px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--text-3);
-    display: flex; flex-wrap: wrap; gap: 8px 18px;
+  .melis-hero-lead {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.4;
+    color: var(--accent);
+    margin: 0 0 24px;
+    max-width: 640px;
   }
-  .melis-hero-meta .sep { color: var(--text-3); opacity: 0.5; }
+  .melis-hero-lead em {
+    font-style: italic;
+    color: var(--accent);
+  }
   .melis-hero-intro {
-    margin: 36px 0 0;
+    margin: 0;
     max-width: 640px;
     font-size: 16px;
     line-height: 1.7;
     color: var(--text-2);
-  }
-  .melis-hero-intro + .melis-hero-intro { margin-top: 20px; }
-  .melis-hero-intro em {
-    color: var(--accent);
-    font-style: italic;
-    font-family: var(--font-display);
-    font-size: 18px;
-    font-weight: 400;
-    letter-spacing: -0.01em;
   }
 
   .melis-section {

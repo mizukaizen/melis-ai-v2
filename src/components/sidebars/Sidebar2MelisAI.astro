@@ -1,8 +1,8 @@
 ---
-// Sidebar2MelisAI — sb2 for /about/melis-ai. Hosts the consolidated
-// studio + brand book TOC. "The studio" intro is the first sb2 entry
-// (anchor: #the-studio). Then 5 chevron-collapsible groups for the
-// 22 brand book sections.
+// Sidebar2MelisAI — sb2 for /about/melis-ai. 5 chevron-collapsible
+// groups, 22 brand book sections (00–21 + L + C + §). The studio
+// intro lives IN the page hero, not as a separate sb2 entry — first
+// scrollable target is Manifesto (#manifesto).
 //
 // transition:persist="sb2-about-melis-ai" — survives in-page anchor
 // nav cleanly. Mirrors the gold-standard mockup at
@@ -77,13 +77,6 @@ const GROUPS: Group[] = [
       <span>melis.ai · brand system · v2026.04.29</span>
     </div>
 
-    <a class="brand-sb2-item brand-sb2-studio" href="#the-studio" data-brand-toc data-section-id="the-studio">
-      <div class="brand-sb2-row">
-        <span class="brand-sb2-num">⊚</span>
-        <span class="brand-sb2-name">The studio<span class="brand-sb2-sub">what melis.ai is</span></span>
-      </div>
-    </a>
-
     {GROUPS.map((g) => (
       <div class="brand-sb2-group">
         <div class="brand-sb2-group-header" data-pgh-toggle>
@@ -131,12 +124,6 @@ const GROUPS: Group[] = [
     border-radius: 50%;
     box-shadow: 0 0 10px #5eead4;
     flex-shrink: 0;
-  }
-
-  .sb2-melis-ai .brand-sb2-studio {
-    margin: 0 8px 18px;
-    padding-bottom: 14px;
-    border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.08));
   }
 
   .sb2-melis-ai .brand-sb2-group { margin-bottom: 18px; padding: 0 8px; }

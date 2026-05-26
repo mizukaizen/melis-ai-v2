@@ -2,12 +2,9 @@
 // Sidebar2About — sb2 for /about/sean (the biography route).
 // /about/melis-ai now uses Sidebar2MelisAI (brand-book TOC).
 // /about/legals  now uses Sidebar2Legals.
-// All three are routed independently by Sidebar2.astro.
-
-const path = Astro.url.pathname;
-const isSean = path.startsWith('/about/sean');
-const isStudio = path.startsWith('/about/melis-ai');
-const isLegals = path.startsWith('/about/legals');
+// All three are routed independently by Sidebar2.astro. Cross-section
+// navigation between the three ABOUT pages is handled by sb1 — this
+// sb2 shows only the items relevant to /about/sean.
 
 // Chapter TOC for /about/sean/ — anchor IDs match the chapter divs in
 // src/_html/pane-about.html (ch01-ch09 + timeline + drives).
@@ -31,44 +28,18 @@ const SEAN_CHAPTERS: { id: string; label: string; num?: string }[] = [
   <div class="sb2-pane active" data-pane="about">
     <div class="sb2-header">
       <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="9" r="3"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>
-      <div class="sb2-title"><em>About</em></div>
+      <div class="sb2-title"><em>Sean</em></div>
     </div>
 
-    <div class="sb2-list">
-      <a class="sb2-item" class:list={[{ active: isSean }]} href="/about/sean/">
-        <div class="sb2-row">
-          <div class="sb2-name">Sean</div>
-          <div class="sb2-count">the operator</div>
-        </div>
-        <div class="sb2-desc">A decade with AI, mostly artificial</div>
-      </a>
-      <a class="sb2-item" class:list={[{ active: isStudio }]} href="/about/melis-ai/">
-        <div class="sb2-row">
-          <div class="sb2-name">melis.ai</div>
-          <div class="sb2-count">the studio</div>
-        </div>
-        <div class="sb2-desc">Studio + brand system</div>
-      </a>
-      <a class="sb2-item" class:list={[{ active: isLegals }]} href="/about/legals/">
-        <div class="sb2-row">
-          <div class="sb2-name">Legals</div>
-          <div class="sb2-count">policy</div>
-        </div>
-        <div class="sb2-desc">Privacy + terms</div>
-      </a>
-    </div>
-
-    {isSean && (
-      <nav class="about-toc" data-about-toc>
-        <div class="about-toc-label">Chapters</div>
-        {SEAN_CHAPTERS.map((c) => (
-          <a class="about-toc-item" href={`#${c.id}`} data-toc-target={c.id}>
-            {c.num && <span class="toc-num">{c.num}</span>}
-            <span class="toc-label">{c.label}</span>
-          </a>
-        ))}
-      </nav>
-    )}
+    <nav class="about-toc" data-about-toc>
+      <div class="about-toc-label">Chapters</div>
+      {SEAN_CHAPTERS.map((c) => (
+        <a class="about-toc-item" href={`#${c.id}`} data-toc-target={c.id}>
+          {c.num && <span class="toc-num">{c.num}</span>}
+          <span class="toc-label">{c.label}</span>
+        </a>
+      ))}
+    </nav>
   </div>
 </aside>
 
