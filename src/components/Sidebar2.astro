@@ -12,7 +12,6 @@ import Courses from './sidebars/Sidebar2Courses.astro';
 import Exhibits from './sidebars/Sidebar2Exhibits.astro';
 import About from './sidebars/Sidebar2About.astro';
 import MelisAI from './sidebars/Sidebar2MelisAI.astro';
-import Legals from './sidebars/Sidebar2Legals.astro';
 import Products from './sidebars/Sidebar2Products.astro';
 import Prompts from './sidebars/Sidebar2Prompts.astro';
 import Dossiers from './sidebars/Sidebar2Dossiers.astro';
@@ -35,7 +34,6 @@ const { pane } = Astro.props;
 {pane === 'exhibits' && <Exhibits />}
 {pane === 'about' && <About />}
 {pane === 'about-studio' && <MelisAI />}
-{pane === 'about-legals' && <Legals />}
 {pane === 'products' && <Products />}
 {pane === 'prompts' && <Prompts />}
 {pane === 'library' && <Dossiers />}
