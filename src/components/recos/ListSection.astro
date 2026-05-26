@@ -1,0 +1,100 @@
+---
+// ListSection — "The full list" eyebrow row + filter pills + reco-table.
+// Renders the table grouped by section dividers in source order.
+// Filter pills are vanilla JS; clicking a pill hides non-matching rows
+// (and the divider row that follows an empty section). "All" resets.
+
+import RecoTableRow from './RecoTableRow.astro';
+import type { NormalisedSection } from '../../lib/recos';
+
+interface Props {
+  sections: NormalisedSection[];
+  totalItems: number;
+}
+
+const { sections, totalItems } = Astro.props;
+const filterCounts = sections.map((s) => ({ id: s.id, label: s.title, count: s.items.length }));
+---
+
+<div class="section-eyebrow-row" id="full-list-eyebrow">
+  <span class="label">The <em>full list.</em></span>
+  <span class="meta">{totalItems} entries · sortable · filterable</span>
+</div>
+
+<div class="list-filters" data-list-filters>
+  <button class="list-filter active" data-filter="all">All ({totalItems})</button>
+  {filterCounts.map((f) => (
+    <button class="list-filter" data-filter={f.id}>{f.label} ({f.count})</button>
+  ))}
+</div>
+
+<table class="reco-table">
+  <thead>
+    <tr>
+      <th colspan="2">Name</th>
+      <th>Maker · Category</th>
+      <th>Cadence</th>
+      <th>Status</th>
+      <th>Link</th>
+    </tr>
+  </thead>
+  <tbody>
+    {sections.map((s) => (
+      <>
+        <tr
+          class="section-divider"
+          data-section-id={s.id}
+          id={`table-section-${s.id}`}
+        >
+          <td colspan="6">{s.title}</td>
+        </tr>
+        {s.items.map((item) => <RecoTableRow item={item} />)}
+      </>
+    ))}
+  </tbody>
+</table>
+
+<script>
+  // Filter pills — runs on every page load (including view-transitions).
+  // Idempotent: re-binds listeners each fire so we never carry stale
+  // refs across navigation. Hides rows + their preceding section divider
+  // when no items match.
+  function wireRecoFilters() {
+    const pillsHost = document.querySelector<HTMLElement>('[data-list-filters]');
+    if (!pillsHost) return;
+    const table = document.querySelector<HTMLTableElement>('.reco-table');
+    if (!table) return;
+
+    const pills = Array.from(pillsHost.querySelectorAll<HTMLButtonElement>('.list-filter'));
+    const rows = Array.from(table.querySelectorAll<HTMLTableRowElement>('tbody tr'));
+
+    function apply(filter: string) {
+      pills.forEach((p) => p.classList.toggle('active', p.dataset.filter === filter));
+      // First pass: show/hide each row based on filter.
+      let visibleBySection: Record<string, number> = {};
+      rows.forEach((row) => {
+        if (row.classList.contains('section-divider')) return;
+        const sec = row.dataset.sectionId || '';
+        const visible = filter === 'all' || sec === filter;
+        row.style.display = visible ? '' : 'none';
+        if (visible) visibleBySection[sec] = (visibleBySection[sec] || 0) + 1;
+      });
+      // Second pass: hide section dividers that have no visible rows.
+      rows.forEach((row) => {
+        if (!row.classList.contains('section-divider')) return;
+        const sec = row.dataset.sectionId || '';
+        row.style.display = (visibleBySection[sec] || 0) > 0 ? '' : 'none';
+      });
+    }
+
+    pills.forEach((pill) => {
+      pill.addEventListener('click', () => apply(pill.dataset.filter || 'all'));
+    });
+    // Initialise to whichever pill is currently .active (server-rendered = "all").
+    const initial = pills.find((p) => p.classList.contains('active'))?.dataset.filter || 'all';
+    apply(initial);
+  }
+
+  document.addEventListener('astro:page-load', wireRecoFilters);
+  if (document.readyState !== 'loading') wireRecoFilters();
+</script>

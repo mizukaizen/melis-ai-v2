@@ -8,17 +8,23 @@ export const prerender = true;
 
 const recos = (await getCollection('recos')).filter((r) => !r.data.draft);
 
-// Slug → paper-craft asset. Files live in public/section-rooms/recos-*.png.
-const COVER_MAP: Record<string, string> = {
-  'tools-i-use-daily':     '/section-rooms/recos-tools.png',
-  'books-that-compound':   '/section-rooms/recos-books.png',
-  'newsletters-i-read':    '/section-rooms/recos-newsletters.png',
-  'courses-id-take-again': '/section-rooms/recos-courses.png',
-  'apps-i-wont-quit':      '/section-rooms/recos-apps.png',
-  'hardware-that-holds-up':'/section-rooms/recos-hardware.png',
-};
-function coverFor(slug: string) {
-  return COVER_MAP[slug] || '/section-rooms/recos-landing.png';
+// 3-tier cover resolution for the /recos/ landing card grid:
+//   1. MDX `cover:` frontmatter (explicit override)
+//   2. Slug-derived convention path — only for slugs we know ship art
+//   3. Shared landing scene fallback (movies, music-sets, tv-shows
+//      land here until per-category paper-craft scenes are commissioned)
+//
+// Mirrors the convention in src/pages/lab/exhibits/index.astro, with
+// the addition of a known-assets guard so categories without bespoke
+// art don't 404 their card-img background.
+const KNOWN_RECO_COVERS = new Set([
+  'software', 'books', 'newsletters', 'courses',
+  'apps', 'hardware', 'podcasts',
+]);
+function coverFor(entry: { slug: string; data: { cover?: string } }): string {
+  if (entry.data.cover) return entry.data.cover;
+  if (KNOWN_RECO_COVERS.has(entry.slug)) return `/section-rooms/recos-${entry.slug}.png`;
+  return '/section-rooms/recos-landing.png';
 }
 ---
 
@@ -42,7 +48,7 @@ function coverFor(slug: string) {
     <div class="room-grid">
       {recos.map((r) => (
         <a class="room-card" href={`/recos/${r.slug}/`}>
-          <div class="room-card-img" style={`background-image: url('${coverFor(r.slug)}');`}></div>
+          <div class="room-card-img" style={`background-image: url('${coverFor(r)}');`}></div>
           <div class="room-card-veil"></div>
           <div class="room-card-arrow">↗</div>
           <div class="room-card-meta">

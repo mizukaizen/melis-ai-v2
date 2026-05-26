@@ -5,9 +5,13 @@ import Sidebar2 from '../components/Sidebar2.astro';
 import CommandPalette from '../components/CommandPalette.astro';
 import FillInBlankController from '../components/FillInBlankController.astro';
 // Order matters: mockup.css first (it's the design source-of-truth),
-// global.css last (its post-mockup overrides win).
+// global.css last (its post-mockup overrides win). recos.css imports
+// after global because its rules scope under .reco-detail-v7 and the
+// 10 .cover-* palettes — no overlap with other surfaces, but cheap
+// to load globally.
 import '../styles/mockup.css';
 import '../styles/global.css';
+import '../styles/recos.css';
 
 interface Props {
   title: string;

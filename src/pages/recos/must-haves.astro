@@ -1,0 +1,77 @@
+---
+// /recos/must-haves/ — cross-category curated page surfacing every
+// tool tagged `mustHave: true` across the recos collection.
+//
+// Reuses the v7 card + table chrome so the page reads as a peer to
+// the category landings, just without per-section grouping.
+
+import AppLayout from '../../layouts/AppLayout.astro';
+import SectionHero from '../../components/SectionHero.astro';
+import RecoCard from '../../components/recos/RecoCard.astro';
+import ListSection from '../../components/recos/ListSection.astro';
+import { landingHero } from '../../lib/hero-image';
+import { collectMustHaves, type NormalisedSection } from '../../lib/recos';
+
+export const prerender = true;
+
+const items = await collectMustHaves();
+
+// Single synthetic section for the table — by design. Future split
+// (e.g. "Daily drivers" / "Long-term keepers") waits until cross-
+// category content lands; for the launch ~8 items, one shelf reads
+// cleaner than two thin ones.
+const sections: NormalisedSection[] = [
+  {
+    id: 'top-picks',
+    title: 'Top picks',
+    icon: 'ph-star',
+    label: undefined,
+    items,
+    shelfItems: items,
+  },
+];
+
+const cover = landingHero('recos');
+---
+
+<AppLayout
+  title="Sean's Must-Haves"
+  pane="recos"
+  inRoom
+  description="The things across every category I'd refuse to give up. Honest only — no affiliate padding, no recency bias."
+>
+  <SectionHero
+    cover={cover}
+    eyebrow="My recos · Must-haves"
+    title="Sean's Must-Haves"
+    titleHtml='Sean&rsquo;s <em>Must-Haves</em>.'
+  />
+
+  <section class="section-body">
+    <div class="reco-detail-v7">
+      <p class="section-lead">The things across every category I'd refuse to give up. Honest only &mdash; no affiliate padding, no recency bias.</p>
+
+      {items.length > 0 && (
+        <>
+          <div class="section-eyebrow-row" id="highlights-eyebrow">
+            <span class="label"><em>Top picks.</em></span>
+            <span class="meta">{items.length} entries · curated</span>
+          </div>
+          <div class="shelf">
+            <div class="shelf-rack">
+              {items.map((item) => <RecoCard item={item} />)}
+            </div>
+            <div class="shelf-line"></div>
+          </div>
+        </>
+      )}
+
+      <ListSection sections={sections} totalItems={items.length} />
+    </div>
+  </section>
+
+  <div class="footer">
+    <div>melis.ai · 2026</div>
+    <div>Operator-built · Australia</div>
+  </div>
+</AppLayout>

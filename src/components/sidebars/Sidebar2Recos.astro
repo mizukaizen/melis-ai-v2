@@ -1,49 +1,124 @@
 ---
-// Sidebar2Recos — ported from v1 panels.js `resources` panel (lines 103-117).
-// v1 used 10 categories under "Sean's Recos": Software / Gear / Books /
-// Newsletters / Communities / YouTubers / Podcasts / TV Shows / Movies /
-// Music Sets. Plus 2 extras already in the v2 content collection
-// (Apps / Courses) appended at the bottom.
+// Sidebar2Recos — single persistent sb2 across all /recos/* routes.
+// Mirrors the Sidebar2Prompts pattern verbatim:
+//   - 2 pinned panel-items at top (All Recommendations + Sean's Must-Haves)
+//   - 3 panel-groups (Operate / Learn / Atmosphere), chevron-collapsible
+//   - Each category = panel-item with icon + title + meta + count chip
 //
-// Where an existing /content/recos/*.mdx maps to a v1 category, the row
-// links to the detail page; categories not yet ported render as muted
-// "Coming Soon" divs (non-clickable). Sean can flesh these out later.
+// transition:persist key is "sb2-recos" (single instance, not slug-scoped),
+// so the DOM survives navigation across /recos/, /recos/must-haves/, and
+// every /recos/<category>/ — user-expanded groups stay open. Active state
+// is re-synced by AppLayout's syncSb2Active() on each page-load.
 
 import { getCollection } from 'astro:content';
 
-const liveSlugs = new Set((await getCollection('recos')).filter((r) => !r.data.draft).map((r) => r.slug));
+const all = await getCollection('recos');
 
-type Row =
-  | { kind: 'live'; slug: string; title: string; meta: string; count: string; icon: string; color: string; bg: string }
-  | { kind: 'soon'; title: string; meta: string; count: string; icon: string; color: string; bg: string };
-
-function mk(title: string, slug: string | null, meta: string, count: string, icon: string, color: string, bg: string): Row[] {
-  if (slug && liveSlugs.has(slug)) return [{ kind: 'live', slug, title, meta, count, icon, color, bg }];
-  return [{ kind: 'soon', title, meta, count, icon, color, bg }];
+// Count map (slug → tools length). Used for the .pi-dot count chip.
+const counts = new Map<string, number>();
+for (const r of all) {
+  counts.set(r.slug, (r.data.tools || []).length);
 }
 
-// v1 categories in v1 order. Each maps to its v2 MDX slug — including
-// stub pages for the 6 categories Sean is still filling in (those stubs
-// render a "Coming soon" body but the sb2 row is a proper anchor, not
-// a dead muted div, so navigation never lands on /recos/ for nothing).
-const ROWS: Row[] = [
-  ...mk('Software',    'tools-i-use-daily',      'Tools I actually use',        '18', 'ph-desktop-tower', '#5eead4', 'rgba(94,234,212,0.15)'),
-  ...mk('Gear',        'hardware-that-holds-up', 'Hardware & peripherals',      '12', 'ph-wrench',        '#60a5fa', 'rgba(96,165,250,0.15)'),
-  ...mk('Books',       'books-that-compound',    'Worth reading cover to cover','15', 'ph-books',         '#a78bfa', 'rgba(167,139,250,0.15)'),
-  ...mk('Newsletters', 'newsletters-i-read',     'Signal over noise picks',     '7',  'ph-newspaper',     '#fbbf24', 'rgba(251,191,36,0.15)'),
-  ...mk('Communities', 'communities',            'Worth your time & energy',    '6',  'ph-users-three',   '#4ade80', 'rgba(74,222,128,0.15)'),
-  ...mk('YouTubers',   'youtubers',              'Channels worth watching',     '8',  'ph-youtube-logo',  '#fb923c', 'rgba(251,146,60,0.15)'),
-  ...mk('Podcasts',    'podcasts',               'What I listen to',            '8',  'ph-microphone',    '#f472b6', 'rgba(244,114,182,0.15)'),
-  ...mk('TV Shows',    'tv-shows',               'Currently watching',          '9',  'ph-television',    '#38bdf8', 'rgba(56,189,248,0.15)'),
-  ...mk('Movies',      'movies',                 'Worth your time',             '9',  'ph-film-strip',    '#c084fc', 'rgba(192,132,252,0.15)'),
-  ...mk('Music Sets',  'music-sets',             'What I build to',             '8',  'ph-music-note',    '#fb7185', 'rgba(251,113,133,0.15)'),
-  // v2 extras (not in v1 panel) appended at the bottom
-  ...mk('Apps',        'apps-i-wont-quit',        "Software that earned a spot", '6',  'ph-app-window',    '#e879f9', 'rgba(232,121,249,0.15)'),
-  ...mk('Courses',     'courses-id-take-again',   "Online courses I'd retake",   '8',  'ph-graduation-cap','#a3e635', 'rgba(163,230,53,0.15)'),
+// Cross-category must-have count for the pinned row.
+let mustHaveCount = 0;
+for (const r of all) {
+  if (r.data.draft || r.data.status === 'coming-soon') continue;
+  for (const t of (r.data.tools || []) as { mustHave?: boolean }[]) {
+    if (t.mustHave) mustHaveCount += 1;
+  }
+}
+
+const totalLive = all.reduce((acc, r) => acc + (r.data.status === 'live' ? (r.data.tools || []).length : 0), 0);
+
+type Cat = {
+  slug: string;
+  title: string;
+  meta: string;
+  icon: string;
+  color: string;
+  bg: string;
+  count: number;
+};
+
+const PINNED: Cat[] = [
+  {
+    slug: '__all__',
+    title: 'All Recommendations',
+    meta: 'Everything I actually use',
+    icon: 'ph-star',
+    color: '#fbbf24',
+    bg: 'rgba(251,191,36,0.15)',
+    count: totalLive,
+  },
+  {
+    slug: 'must-haves',
+    title: "Sean's Must-Haves",
+    meta: "Refuse-to-give-up picks",
+    icon: 'ph-lightning',
+    color: '#ff6b6b',
+    bg: 'rgba(255,107,107,0.15)',
+    count: mustHaveCount,
+  },
 ];
 
-const path = Astro.url.pathname;
-const isLanding = path === '/recos/' || path === '/recos';
+// Group structure — Operate / Learn / Atmosphere. Counts come from
+// the recos collection so the chip stays honest as content lands.
+const GROUPS: { name: string; cats: Cat[] }[] = [
+  {
+    name: 'Operate',
+    cats: [
+      { slug: 'software', title: 'Software', meta: 'Tools I actually use',     icon: 'ph-desktop-tower', color: '#5eead4', bg: 'rgba(94,234,212,0.15)',  count: counts.get('software')  ?? 0 },
+      { slug: 'apps',     title: 'Apps',     meta: 'Software that earned a spot', icon: 'ph-app-window',  color: '#e879f9', bg: 'rgba(232,121,249,0.15)', count: counts.get('apps')      ?? 0 },
+      { slug: 'hardware', title: 'Hardware', meta: 'Hardware & peripherals',   icon: 'ph-wrench',        color: '#60a5fa', bg: 'rgba(96,165,250,0.15)',  count: counts.get('hardware')  ?? 0 },
+    ],
+  },
+  {
+    name: 'Learn',
+    cats: [
+      { slug: 'books',       title: 'Books',       meta: 'Worth reading cover to cover', icon: 'ph-books',         color: '#a78bfa', bg: 'rgba(167,139,250,0.15)', count: counts.get('books')       ?? 0 },
+      { slug: 'courses',     title: 'Courses',     meta: "Online courses I'd retake",    icon: 'ph-graduation-cap',color: '#a3e635', bg: 'rgba(163,230,53,0.15)',  count: counts.get('courses')     ?? 0 },
+      { slug: 'newsletters', title: 'Newsletters', meta: 'Signal over noise picks',      icon: 'ph-newspaper',     color: '#fbbf24', bg: 'rgba(251,191,36,0.15)',  count: counts.get('newsletters') ?? 0 },
+      { slug: 'communities', title: 'Communities', meta: 'Worth your time & energy',     icon: 'ph-users-three',   color: '#4ade80', bg: 'rgba(74,222,128,0.15)',  count: counts.get('communities') ?? 0 },
+    ],
+  },
+  {
+    name: 'Atmosphere',
+    cats: [
+      { slug: 'podcasts',   title: 'Podcasts',   meta: 'What I listen to',     icon: 'ph-microphone',    color: '#f472b6', bg: 'rgba(244,114,182,0.15)', count: counts.get('podcasts')   ?? 0 },
+      { slug: 'youtubers',  title: 'YouTubers',  meta: 'Channels worth watching', icon: 'ph-youtube-logo', color: '#fb923c', bg: 'rgba(251,146,60,0.15)',  count: counts.get('youtubers')  ?? 0 },
+      { slug: 'tv-shows',   title: 'TV Shows',   meta: 'Currently watching',   icon: 'ph-television',    color: '#38bdf8', bg: 'rgba(56,189,248,0.15)',  count: counts.get('tv-shows')   ?? 0 },
+      { slug: 'movies',     title: 'Movies',     meta: 'Worth your time',      icon: 'ph-film-strip',    color: '#c084fc', bg: 'rgba(192,132,252,0.15)', count: counts.get('movies')     ?? 0 },
+      { slug: 'music-sets', title: 'Music Sets', meta: 'What I build to',      icon: 'ph-music-note',    color: '#fb7185', bg: 'rgba(251,113,133,0.15)', count: counts.get('music-sets') ?? 0 },
+    ],
+  },
+];
+
+// Path detection for initial active state (final state cascades from
+// AppLayout's syncSb2Active() after page-load — this just seeds the
+// server-rendered DOM so first-paint isn't blank).
+const path = Astro.url.pathname.replace(/\/$/, '');
+const isLanding = path === '/recos' || path === '';
+const slugMatch = path.match(/^\/recos\/([^/]+)$/);
+const slugSegment = slugMatch?.[1] ?? null;
+
+const allCategorySlugs = new Set(GROUPS.flatMap((g) => g.cats.map((c) => c.slug)));
+
+function isPinnedActive(p: Cat): boolean {
+  if (p.slug === '__all__') return isLanding;
+  return slugSegment === p.slug;
+}
+function isCategoryActive(slug: string): boolean {
+  return slugSegment === slug;
+}
+function isGroupOpen(group: { name: string; cats: Cat[] }, idx: number): boolean {
+  // Open the group whose category is currently active. Default: first
+  // group open if no category is active.
+  if (slugSegment && allCategorySlugs.has(slugSegment)) {
+    return group.cats.some((c) => c.slug === slugSegment);
+  }
+  return idx === 0;
+}
 ---
 
 <aside class="sidebar-2" transition:persist="sb2-recos">
@@ -53,57 +128,43 @@ const isLanding = path === '/recos/' || path === '/recos';
     </div>
     <div class="panel-list" style="padding: 8px 0; flex: 1; overflow-y: auto;">
 
-      <a class:list={['panel-item', { active: isLanding }]} href="/recos/">
-        <i class="ph ph-star pi-icon" style="color:#fbbf24;opacity:0.85"></i>
-        <div class="pi-body">
-          <div class="pi-title">All Recommendations</div>
-          <div class="pi-meta">Everything I actually use</div>
-        </div>
-        <div class="pi-dot" style="background:rgba(251,191,36,0.15);color:#fbbf24">53</div>
-      </a>
-
-      {ROWS.map((row) => row.kind === 'live' ? (
-        <a class="panel-item" href={`/recos/${row.slug}/`}>
-          <i class={`ph ${row.icon} pi-icon`} style={`color:${row.color};opacity:0.85`}></i>
+      {PINNED.map((p) => (
+        <a
+          class:list={['panel-item', { active: isPinnedActive(p) }]}
+          href={p.slug === '__all__' ? '/recos/' : `/recos/${p.slug}/`}
+        >
+          <i class={`ph ${p.icon} pi-icon`} style={`color:${p.color};opacity:0.85`}></i>
           <div class="pi-body">
-            <div class="pi-title">{row.title}</div>
-            <div class="pi-meta">{row.meta}</div>
+            <div class="pi-title">{p.title}</div>
+            <div class="pi-meta">{p.meta}</div>
           </div>
-          <div class="pi-dot" style={`background:${row.bg};color:${row.color}`}>{row.count}</div>
+          <div class="pi-dot" style={`background:${p.bg};color:${p.color}`}>{p.count}</div>
         </a>
-      ) : (
-        <div class="panel-item is-soon">
-          <i class={`ph ${row.icon} pi-icon`} style={`color:${row.color};opacity:0.45`}></i>
-          <div class="pi-body">
-            <div class="pi-title">{row.title}</div>
-            <div class="pi-meta">{row.meta} <span class="pi-soon-tag">soon</span></div>
+      ))}
+
+      {GROUPS.map((g, gi) => (
+        <div class:list={['panel-group', { open: isGroupOpen(g, gi) }]}>
+          <div class="panel-group-header" data-pgh-toggle>
+            <span class="pgh-label">{g.name}</span>
+            <svg class="pgh-chevron" viewBox="0 0 10 6" fill="none">
+              <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
-          <div class="pi-dot" style={`background:${row.bg};color:${row.color};opacity:0.55`}>{row.count}</div>
+          <div class="panel-group-items">
+            {g.cats.map((c) => (
+              <a class:list={['panel-item', { active: isCategoryActive(c.slug) }]} href={`/recos/${c.slug}/`}>
+                <i class={`ph ${c.icon} pi-icon`} style={`color:${c.color};opacity:0.85`}></i>
+                <div class="pi-body">
+                  <div class="pi-title">{c.title}</div>
+                  <div class="pi-meta">{c.meta}</div>
+                </div>
+                <div class="pi-dot" style={`background:${c.bg};color:${c.color}`}>{c.count}</div>
+              </a>
+            ))}
+          </div>
         </div>
       ))}
 
     </div>
   </div>
 </aside>
-
-<style>
-  .sb2-pane[data-pane="recos"] .panel-item.is-soon {
-    opacity: 0.55;
-    cursor: default;
-  }
-  .sb2-pane[data-pane="recos"] .panel-item.is-soon:hover {
-    background: transparent;
-  }
-  .sb2-pane[data-pane="recos"] .pi-soon-tag {
-    font-family: var(--font-mono);
-    font-size: 8px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-3);
-    margin-left: 4px;
-    padding: 1px 5px;
-    border: 1px solid var(--border-2);
-    border-radius: 3px;
-    vertical-align: middle;
-  }
-</style>

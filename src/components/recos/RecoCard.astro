@@ -1,0 +1,85 @@
+---
+// RecoCard — single card on a shelf. Three coverVariants:
+//   A 'abstract' — paper-craft gradient + Cormorant monogram (mockup default)
+//   B 'real'     — duotone-filtered cover image (e.g. book cover, album art)
+//   C 'portrait' — paper-craft silhouette portrait (for people-led recos)
+// B and C fall back to A's rendering when coverAsset is missing so we
+// never paint a broken image.
+//
+// Markup matches the canonical mockup classes verbatim:
+//   .card > .card-cover.cover-{palette} > .card-monogram + .card-chip
+//        > .card-body > .card-title + .card-take + .card-meta
+
+import type { NormalisedTool } from '../../lib/recos';
+
+interface Props {
+  item: NormalisedTool;
+}
+
+const { item } = Astro.props;
+
+// Variant resolution. If author asked for B/C but didn't supply a
+// coverAsset, fall back to A so we never render a broken <img>.
+const effectiveVariant = (item.coverVariant === 'abstract' || !item.coverAsset)
+  ? 'abstract'
+  : item.coverVariant;
+
+// Map our internal chip kinds to the mockup's chip class names.
+const chipClass = item.chip === 'free-tier' ? 'free' : item.chip;
+const chipLabel = item.chip === 'free-tier' ? 'free tier' : item.chip;
+
+const hrefAttrs = item.url
+  ? { href: item.url, target: '_blank', rel: 'noopener nofollow sponsored' }
+  : {};
+const Tag = item.url ? 'a' : 'article';
+---
+
+<Tag class="card" id={`card-${item.id}`} {...hrefAttrs}>
+  {effectiveVariant === 'abstract' && (
+    <div class={`card-cover cover-${item.coverPalette}`}>
+      <span class="card-monogram">{item.monogram}</span>
+      {item.chip && <span class={`card-chip ${chipClass}`}>{chipLabel}</span>}
+    </div>
+  )}
+  {effectiveVariant === 'real' && item.coverAsset && (
+    <div class={`card-cover card-cover-real cover-${item.coverPalette}`}>
+      <img src={item.coverAsset} alt={`${item.name} cover`} loading="lazy" />
+      {item.chip && <span class={`card-chip ${chipClass}`}>{chipLabel}</span>}
+    </div>
+  )}
+  {effectiveVariant === 'portrait' && item.coverAsset && (
+    <div class={`card-cover card-cover-portrait cover-${item.coverPalette}`}>
+      <img src={item.coverAsset} alt={`${item.name} portrait`} loading="lazy" />
+      {item.chip && <span class={`card-chip ${chipClass}`}>{chipLabel}</span>}
+    </div>
+  )}
+  <div class="card-body">
+    <h3 class="card-title">{item.name}<span class="stop">.</span></h3>
+    {item.oneLiner && <p class="card-take">{item.oneLiner}</p>}
+    <div class="card-meta">
+      <span>{item.maker || item.meta}</span>
+      {item.cadence && (
+        <span class={`cadence ${item.cadence}`}>
+          {item.cadence === 'daily' ? 'Daily' : item.cadence === 'weekly' ? 'Weekly' : 'Monthly'}
+        </span>
+      )}
+    </div>
+  </div>
+</Tag>
+
+<style>
+  /* Variant B/C image fitting — fall outside the mockup CSS so they
+     don't disturb variant A. */
+  .card-cover-real img,
+  .card-cover-portrait img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.85) contrast(1.05);
+  }
+  .card-cover-portrait img {
+    object-position: center top;
+  }
+</style>

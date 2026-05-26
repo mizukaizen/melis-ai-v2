@@ -113,6 +113,56 @@ const prompts = defineCollection({
 });
 
 // ─── Recos ───────────────────────────────────────────────────
+// Cadence drives the coloured cadence-dot on cards + table rows
+// (teal=daily, amber=weekly, grey=monthly). Chip drives the
+// affiliate/open/free/paid pill. coverVariant + coverPalette feed
+// the RecoCard component; A=abstract gradient + monogram (default),
+// B=real cover art (img), C=portrait silhouette.
+const recoCadence = z.enum(['daily', 'weekly', 'monthly']).optional();
+const recoChip = z.enum(['affiliate', 'open', 'free', 'paid', 'free-tier']).optional();
+const recoCoverVariant = z.enum(['abstract', 'real', 'portrait']).default('abstract');
+
+const recoTool = z
+  .object({
+    // Legacy v1 fields — kept for backward compat with un-migrated MDX.
+    name: z.string(),
+    attr: z.string().optional(),
+    take: z.string().optional(),
+    cta: z.string().optional(),
+    url: z.string().url().optional(),
+    // v7 shelf+table fields (all optional — sensible defaults applied
+    // by src/lib/recos.ts so un-migrated entries still render).
+    id: z.string().optional(),
+    oneLiner: z.string().optional(),
+    monogram: z.string().optional(),
+    coverVariant: recoCoverVariant.optional(),
+    coverAsset: z.string().optional(),
+    coverPalette: z.string().optional(),
+    cadence: recoCadence,
+    chip: recoChip,
+    highlight: z.boolean().optional(),
+    sectionId: z.string().optional(),
+    meta: z.string().optional(),
+    maker: z.string().optional(),
+    linkLabel: z.string().optional(),
+    // mustHave drives the cross-category /recos/must-haves/ page.
+    // Curate brutally — these are "would refuse to give up" picks only.
+    mustHave: z.boolean().optional(),
+  })
+  .passthrough();
+
+const recoSection = z
+  .object({
+    id: z.string(),
+    title: z.string(),
+    // Phosphor icon name (e.g. "ph-sparkle"). Replaces the previous
+    // roman-numeral treatment on shelf-headers. Defaults to ph-folder
+    // for legacy sections without an explicit icon.
+    icon: z.string().optional(),
+    eyebrow: z.string().optional(),
+    label: z.string().optional(),
+  });
+
 const recos = defineCollection({
   type: 'content',
   schema: z
@@ -125,17 +175,9 @@ const recos = defineCollection({
       category: z.string(),
       status: z.enum(['live', 'coming-soon']).default('live'),
       affiliateUrl: z.string().url().optional(),
-      tools: z
-        .array(
-          z.object({
-            name: z.string(),
-            attr: z.string().optional(),
-            take: z.string().optional(),
-            cta: z.string().optional(),
-            url: z.string().url().optional(),
-          }),
-        )
-        .optional(),
+      tools: z.array(recoTool).optional(),
+      sections: z.array(recoSection).optional(),
+      volume: z.string().optional(),
       draft: z.boolean().default(false),
     })
     .passthrough(),
