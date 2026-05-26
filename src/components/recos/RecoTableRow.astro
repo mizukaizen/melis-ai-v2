@@ -18,7 +18,7 @@ const cadenceLabel = item.cadence === 'daily' ? 'Daily'
 const cadenceClass = item.cadence || '';
 ---
 
-<tr data-section-id={item.sectionId}>
+<tr data-section-id={item.sectionId} id={item.id}>
   <td style="width:42px;">
     <div class={`row-avatar ${item.avatarKey}`}>{item.monogram}</div>
   </td>

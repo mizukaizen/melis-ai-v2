@@ -34,7 +34,7 @@ const hrefAttrs = item.url
 const Tag = item.url ? 'a' : 'article';
 ---
 
-<Tag class="card" {...hrefAttrs}>
+<Tag class="card" id={`card-${item.id}`} {...hrefAttrs}>
   {effectiveVariant === 'abstract' && (
     <div class={`card-cover cover-${item.coverPalette}`}>
       <span class="card-monogram">{item.monogram}</span>
