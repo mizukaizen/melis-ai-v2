@@ -25,7 +25,7 @@ const CHAPTERS: { id: string; title: string; subtitle?: string; num?: string; ic
 <aside class="sidebar-2" transition:persist="sb2-about">
   <div class="sb2-pane active" data-pane="about">
     <div class="sb2-header">
-      <div class="sb2-title"><em>My stories</em></div>
+      <div class="sb2-title"><em>My story</em></div>
     </div>
 
     <div class="panel-list" data-about-toc>
@@ -90,10 +90,25 @@ const CHAPTERS: { id: string; title: string; subtitle?: string; num?: string; ic
           if (entry.isIntersecting) visible.add(id);
           else visible.delete(id);
         });
-        const orderedIds = Array.from(items)
+        // 'top' is the entire .section-body wrapper that CONTAINS every
+        // chapter — so the IO reports it as intersecting whenever any
+        // chapter is on screen. That meant clicking ch03/ch05 etc. left
+        // the active highlight stuck on Opening. Filter 'top' out of
+        // the contention whenever any other section is also visible —
+        // 'top' only wins when nothing else is on screen (= true top
+        // of the page).
+        const otherVisible = Array.from(items)
           .map((it) => it.dataset.tocTarget!)
-          .filter((id) => visible.has(id));
-        setActive(orderedIds[0] || null);
+          .filter((id) => id !== 'top' && visible.has(id));
+        if (otherVisible.length > 0) {
+          setActive(otherVisible[0]);
+          return;
+        }
+        if (visible.has('top')) {
+          setActive('top');
+          return;
+        }
+        // No section currently visible (between sections) — keep last active.
       },
       { rootMargin: '-15% 0px -55% 0px', threshold: [0, 0.3, 0.6] },
     );
