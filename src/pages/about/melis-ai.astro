@@ -1,20 +1,20 @@
 ---
-// /about/melis-ai — the consolidated studio + brand system page.
-// Foundation: scaffold only. "The studio" intro + 22 placeholder
-// section anchors so the Sidebar2MelisAI scroll-spy has targets
-// immediately. Brand book content lands in subsequent PRs.
+// /about/melis-ai — studio intro + the full brand book.
+// Composition: Ventures-pattern hero + 22 brand book sections + Legals tail.
+// Section components live under src/components/about/brand/.
 
 import AppLayout from '../../layouts/AppLayout.astro';
+import Manifesto from '../../components/about/brand/Manifesto.astro';
+import Promise   from '../../components/about/brand/Promise.astro';
+import Values    from '../../components/about/brand/Values.astro';
+import Goal      from '../../components/about/brand/Goal.astro';
+import Stance    from '../../components/about/brand/Stance.astro';
 
-// Section roster — kept in sync with Sidebar2MelisAI's TOC. Each
-// section renders as a placeholder pane in this foundation PR.
-type Section = { id: string; num: string; group: string; name: string };
-const SECTIONS: Section[] = [
-  { id: 'manifesto',     num: '00', group: 'Why we exist',          name: 'Manifesto' },
-  { id: 'promise',       num: '01', group: 'Why we exist',          name: 'Promise' },
-  { id: 'values',        num: '02', group: 'Why we exist',          name: 'Values' },
-  { id: 'goal',          num: '03', group: 'Why we exist',          name: 'Goal' },
-  { id: 'stance',        num: '04', group: 'Why we exist',          name: "Stance · what we're not" },
+// Sections still rendered as placeholder anchors so the sb2 scroll-spy
+// has targets while content lands progressively. Each pending section
+// gets eyebrow + title + a single placeholder block.
+type Pending = { id: string; num: string; group: string; name: string };
+const PENDING: Pending[] = [
   { id: 'lexicon',       num: 'L',  group: 'Why we exist',          name: 'The Lexicon' },
   { id: 'compass',       num: 'C',  group: 'Why we exist',          name: 'The Compass' },
   { id: 'wordmark',      num: '05', group: 'How we appear',          name: 'Wordmark' },
@@ -44,14 +44,6 @@ const SECTIONS: Section[] = [
   description="The studio behind it all — what melis.ai is, the brand system, the manifesto, the visual language, voice, lexicon, sigils. Published, not hidden."
 >
   <section class="melis-main">
-    <div class="melis-topbar">
-      <div class="melis-topbar-left">
-        <span class="melis-signal-dot"></span>
-        <span>melis.ai · brand system · v2026.04.29</span>
-      </div>
-      <div class="melis-topbar-right">LIVING DOCUMENT</div>
-    </div>
-
     <header class="melis-hero">
       <div class="melis-hero-eyebrow">About <span class="sep">·</span> melis.ai</div>
       <h1 class="melis-hero-title">melis<em>.</em>ai</h1>
@@ -59,7 +51,13 @@ const SECTIONS: Section[] = [
       <p class="melis-hero-intro">An AI studio run by Sean Melis from London. Courses, products, dispatches. What follows is everything that holds it together.</p>
     </header>
 
-    {SECTIONS.map((s) => (
+    <Manifesto />
+    <Promise />
+    <Values />
+    <Goal />
+    <Stance />
+
+    {PENDING.map((s) => (
       <section id={s.id} data-brand-section class="melis-section melis-section-placeholder">
         <div class="melis-section-eyebrow-row">
           <span class="num">{s.num}</span>
@@ -68,10 +66,8 @@ const SECTIONS: Section[] = [
         </div>
         <h2 class="melis-section-title">{s.name}</h2>
         <p class="melis-section-placeholder-body">
-          <em>Section content lands in a subsequent PR.</em> This anchor exists so the
-          sb2 scroll-spy has a target. See the standalone brand book at
-          <a href="/Users/seanmelis/Documents/02-AREAS/01-melis-ai/brand/brand-guidelines.html">brand-guidelines.html</a>
-          for the current source.
+          <em>Section content lands in a subsequent commit in this PR.</em>
+          This anchor exists so the sb2 scroll-spy has a target.
         </p>
       </section>
     ))}
@@ -79,35 +75,16 @@ const SECTIONS: Section[] = [
 </AppLayout>
 
 <style is:global>
-  /* Scoped under .melis-main — won't leak. Mirrors the gold-standard
-     brand book mockup chrome. */
+  /* ════════════════════════════════════════════════════════════
+   * /about/melis-ai chrome — scoped under .melis-main.
+   * Reproduces the brand book treatment from the gold-standard mockup.
+   * ════════════════════════════════════════════════════════════ */
   .melis-main {
     padding: 28px 60px 120px;
     max-width: none;
   }
-  .melis-topbar {
-    display: flex; justify-content: space-between; align-items: center;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: lowercase;
-    color: var(--text-3);
-    padding-bottom: 32px;
-    margin-bottom: 56px;
-    border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.08));
-  }
-  .melis-topbar-left { display: flex; align-items: center; gap: 10px; }
-  .melis-signal-dot {
-    width: 8px; height: 8px;
-    background: #5eead4;
-    border-radius: 50%;
-    box-shadow: 0 0 12px #5eead4;
-  }
-  .melis-topbar-right {
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-  }
 
+  /* Hero */
   .melis-hero {
     margin-bottom: 96px;
     max-width: 880px;
@@ -130,11 +107,7 @@ const SECTIONS: Section[] = [
     margin: 0 0 20px;
     color: var(--text-1, var(--text));
   }
-  .melis-hero-title em {
-    font-style: normal;
-    color: var(--accent);
-    font-weight: 400;
-  }
+  .melis-hero-title em { font-style: normal; color: var(--accent); font-weight: 400; }
   .melis-hero-lead {
     font-family: var(--font-display);
     font-style: italic;
@@ -145,10 +118,7 @@ const SECTIONS: Section[] = [
     margin: 0 0 24px;
     max-width: 640px;
   }
-  .melis-hero-lead em {
-    font-style: italic;
-    color: var(--accent);
-  }
+  .melis-hero-lead em { font-style: italic; color: var(--accent); }
   .melis-hero-intro {
     margin: 0;
     max-width: 640px;
@@ -157,6 +127,7 @@ const SECTIONS: Section[] = [
     color: var(--text-2);
   }
 
+  /* Section frame */
   .melis-section {
     scroll-margin-top: 80px;
     margin-bottom: 96px;
@@ -183,7 +154,7 @@ const SECTIONS: Section[] = [
     font-size: 40px;
     line-height: 1.15;
     letter-spacing: -0.02em;
-    margin: 0 0 18px;
+    margin: 0 0 28px;
     color: var(--text-1, var(--text));
   }
   .melis-section-title em {
@@ -191,6 +162,260 @@ const SECTIONS: Section[] = [
     color: var(--accent);
     font-weight: 400;
   }
+
+  /* Prose blocks within a section */
+  .melis-prose {
+    max-width: 720px;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-2);
+  }
+  .melis-prose > p { margin: 0 0 20px; }
+  .melis-prose > p:last-child { margin-bottom: 0; }
+  .melis-prose em {
+    font-style: italic;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 400;
+  }
+  .melis-ul { padding-left: 22px; }
+  .melis-ul li {
+    margin-bottom: 10px;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-2);
+  }
+  .melis-ul li strong { color: var(--text-1, var(--text)); font-weight: 500; }
+  .melis-aside {
+    margin: 28px 0 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-3);
+    font-style: italic;
+  }
+
+  /* Quote callout */
+  .melis-quote {
+    margin: 56px 0 0;
+    padding: 28px 32px;
+    border-left: 2px solid var(--accent);
+    background: rgba(124, 58, 237, 0.04);
+    max-width: 720px;
+  }
+  .melis-quote p {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.45;
+    color: var(--text-1, var(--text));
+    margin: 0 0 12px;
+  }
+  .melis-quote cite {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    font-style: normal;
+    display: block;
+  }
+
+  /* Promise (Section 01) — principle grid */
+  .promise-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 56px;
+  }
+  .promise-card {
+    padding: 28px 28px 32px;
+    border: 1px solid var(--border-2, rgba(232,227,216,0.08));
+    background: rgba(255,255,255,0.015);
+    display: flex; flex-direction: column;
+  }
+  .promise-mark {
+    color: var(--accent);
+    width: 36px; height: 36px;
+    margin-bottom: 22px;
+    display: inline-flex;
+  }
+  .promise-mark svg { width: 100%; height: 100%; }
+  .promise-meta {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 8px;
+  }
+  .promise-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 26px;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    margin: 0 0 10px;
+    color: var(--text-1, var(--text));
+  }
+  .promise-greek {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+  .promise-translit {
+    font-family: var(--font-mono);
+    font-style: normal;
+    font-size: 10px;
+    color: var(--text-3);
+    margin-left: 6px;
+    letter-spacing: 0.06em;
+  }
+  .promise-body {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--text-2);
+    margin: 0;
+  }
+  .promise-body em {
+    font-style: italic;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 15px;
+  }
+
+  /* Values (Section 02) — chart cards */
+  .values-northstar {
+    margin: 40px 0 32px;
+    padding: 24px 28px;
+    border: 1px dashed var(--border-2, rgba(232,227,216,0.14));
+    border-radius: 4px;
+    max-width: 720px;
+  }
+  .values-northstar-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .values-northstar-q {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.35;
+    color: var(--text-1, var(--text));
+    margin: 0;
+  }
+  .values-northstar-q em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .value-card {
+    margin-top: 32px;
+    padding: 32px 32px 12px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border-2, rgba(232,227,216,0.08));
+  }
+  .value-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .value-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    margin: 0 0 14px;
+    color: var(--text-1, var(--text));
+  }
+  .value-lede {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-2);
+    margin: 0 0 24px;
+  }
+  .value-lede em {
+    font-style: italic;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 17px;
+  }
+  .value-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 24px;
+    padding: 16px 0;
+    border-top: 1px solid var(--border-2, rgba(232,227,216,0.06));
+  }
+  .value-row-label {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .value-row-body {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--text-2);
+  }
+
+  /* Stance (Section 04) — 8-cell grid */
+  .stance-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid var(--border-2, rgba(232,227,216,0.08));
+    border-left: 1px solid var(--border-2, rgba(232,227,216,0.08));
+    margin-top: 32px;
+  }
+  .stance-cell {
+    padding: 32px 30px;
+    border-right: 1px solid var(--border-2, rgba(232,227,216,0.08));
+    border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.08));
+    display: flex; flex-direction: column; gap: 18px;
+    min-height: 200px;
+  }
+  .stance-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #f0a0a0;
+    margin-bottom: 6px;
+  }
+  .stance-statement {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 26px;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    margin: 0;
+    color: var(--text-1, var(--text));
+  }
+  .stance-statement em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .stance-body {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--text-2);
+    margin: auto 0 0;
+  }
+
+  /* Placeholder section block */
   .melis-section-placeholder-body {
     padding: 18px 22px;
     border: 1px dashed var(--border-2, rgba(232,227,216,0.14));
@@ -206,8 +431,11 @@ const SECTIONS: Section[] = [
     color: var(--accent);
     font-style: italic;
   }
-  .melis-section-placeholder-body a {
-    color: var(--accent);
-    border-bottom: 1px solid currentColor;
+
+  /* Responsive: collapse multi-column grids on narrower viewports */
+  @media (max-width: 1100px) {
+    .stance-grid { grid-template-columns: 1fr; }
+    .promise-grid { grid-template-columns: 1fr; }
+    .value-row { grid-template-columns: 1fr; gap: 6px; }
   }
 </style>
