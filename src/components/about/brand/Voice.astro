@@ -1,0 +1,179 @@
+---
+// Section 09 · Voice · how we write. Includes 6-principle grid +
+// avoid→prefer comparison table + banlist. Source: brand-guidelines.html
+// lines 5145-5274.
+
+type Principle = { num: string; title: string; body: string };
+const PRINCIPLES: Principle[] = [
+  { num: '01 · Voice', title: 'Direct.',           body: 'Lead with the actual claim. Cut the warm-up. <em>"I built Australia\'s first retail digital human"</em> — not "I\'ve been thinking about how AI changes retail and recently had the opportunity to work on something exciting…"' },
+  { num: '02 · Voice', title: 'Specific.',          body: 'Concrete over conceptual. Numbers over adjectives. Names over categories. <em>"20,000 students on Udemy"</em> — not "trusted by thousands worldwide". <em>"Built for L\'Oréal, Maybelline, Anytime Fitness"</em> — not "household brands across multiple verticals".' },
+  { num: '03 · Voice', title: 'Plain English.',     body: 'No jargon. No SaaS-speak. No frontier-of-AI language. If a phrase sounds like it could appear in a press release, it can\'t appear in our copy. Words that have been worn smooth by overuse don\'t carry weight anymore.' },
+  { num: '04 · Voice', title: 'Australian.',         body: 'Australian spelling: colour, organise, behaviour, recognise, programme, centre. Dry humour where it lands. Self-deprecation, never self-flagellation. <em>"Yeah, nah" energy.</em> Hero narratives are not the register.' },
+  { num: '05 · Voice', title: 'Witty — when it earns the line.', body: 'A clever analogy is worth a thousand "powerful, intuitive, game-changing"s. A cultural reference that lands tells the reader who we think they are. <em>A throwaway joke that connects two disconnected things makes the whole paragraph come alive.</em> But the discipline is restraint — humour earns its place; most copy doesn\'t need it.' },
+  { num: '06 · Voice', title: 'Story-shaped.',      body: 'Even a product page has a story underneath it: <em>here\'s what we tried, here\'s what happened, here\'s what we\'d do differently.</em> Reach for the texture — the specific morning, the actual cost, the conversation it came out of. Texture is what makes copy memorable.' },
+];
+
+type Pair = { avoid: string; prefer: string };
+const PAIRS: Pair[] = [
+  { avoid: '"Cutting-edge AI solutions"',          prefer: '"AI tools, used in production for two years"' },
+  { avoid: '"Leveraging large language models"',    prefer: '"Using Claude. Or GPT. Whichever fits the job."' },
+  { avoid: '"Passionate about democratising AI"',  prefer: '"I built this because the existing tutorials weren\'t good enough"' },
+  { avoid: '"Game-changing platform"',              prefer: '"Here\'s what it does. Here\'s why it matters."' },
+  { avoid: '"Unleash your potential"',              prefer: '"Build something useful with AI"' },
+  { avoid: '"Empower your team"',                   prefer: '"Make your team faster"' },
+  { avoid: '"Synergies between human and machine"', prefer: '"What you do well, what AI does well, where they overlap"' },
+  { avoid: '"In today\'s fast-paced AI landscape…"', prefer: '"Two months ago, this didn\'t exist."' },
+  { avoid: '"Don\'t get left behind!"',              prefer: '"You can wait six months. The work will still be here."' },
+];
+
+const BANLIST = ['cutting-edge', 'leveraging', 'passionate about', 'thought leader', 'innovative', 'synergy', 'game-changer', 'revolutionary', 'unleash', 'disruptive', 'paradigm shift', 'world-class', 'seamless', 'turnkey', 'holistic', 'empowering', 'transformational', 'move the needle', 'low-hanging fruit', 'fast-paced', 'don\'t get left behind', 'in a world where'];
+---
+
+<section id="voice" data-brand-section class="melis-section">
+  <div class="melis-section-eyebrow-row">
+    <span class="num">09</span>
+    <span class="name">Voice · how we write</span>
+    <span class="line"></span>
+  </div>
+  <h2 class="melis-section-title">Direct. Specific. Plain English. Australian. <em>And, when it lands — funny.</em></h2>
+
+  <div class="melis-prose">
+    <p>We write the way a senior operator explains something to a smart colleague — neither dumbing down nor performing expertise. We trust the reader to keep up. The voice is plain by default and clever when the moment earns it. <em>Restraint is funnier than effort.</em> A line that makes the reader smile mid-paragraph is worth more than a paragraph that tries to.</p>
+  </div>
+
+  <div class="voice-grid">
+    {PRINCIPLES.map((p) => (
+      <article class="voice-card">
+        <div class="voice-num">{p.num}</div>
+        <h4 class="voice-title">{p.title}</h4>
+        <p class="voice-body" set:html={p.body} />
+      </article>
+    ))}
+  </div>
+
+  <h3 class="voice-subhead">Avoid → prefer.</h3>
+  <table class="voice-table">
+    <thead>
+      <tr><th class="voice-avoid">Avoid</th><th class="voice-prefer">Prefer</th></tr>
+    </thead>
+    <tbody>
+      {PAIRS.map((p) => (
+        <tr>
+          <td class="voice-avoid">{p.avoid}</td>
+          <td class="voice-prefer">{p.prefer}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  <div class="voice-banlist">
+    <div class="voice-banlist-label">Banlist · words that never appear in melis.ai copy</div>
+    <p class="voice-banlist-words">
+      {BANLIST.map((w, i) => (
+        <>{w}{i < BANLIST.length - 1 && <span class="sep"> · </span>}</>
+      ))}
+    </p>
+  </div>
+
+  <p class="melis-aside">If a sentence relies on one of these words to make its point, the sentence has not yet been written.</p>
+</section>
+
+<style is:global>
+  .voice-grid {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+  }
+  .voice-card {
+    padding: 24px 26px;
+    background: rgba(255,255,255,0.015);
+    border: 1px solid var(--border-2, rgba(232,227,216,0.08));
+  }
+  .voice-num {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 8px;
+  }
+  .voice-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin: 0 0 12px;
+    color: var(--text-1, var(--text));
+  }
+  .voice-body {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--text-2);
+    margin: 0;
+  }
+  .voice-body em { font-style: italic; color: var(--accent); }
+
+  .voice-subhead {
+    margin: 80px 0 16px;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 24px;
+    color: var(--text-1, var(--text));
+  }
+  .voice-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+  }
+  .voice-table th {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    text-align: left;
+    padding: 12px 14px 12px 0;
+    border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.08));
+  }
+  .voice-table th.voice-avoid { color: #f0a0a0; }
+  .voice-table th.voice-prefer { color: var(--accent); }
+  .voice-table td {
+    padding: 14px 14px 14px 0;
+    border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.06));
+    vertical-align: top;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--text-2);
+    width: 50%;
+  }
+  .voice-table td.voice-avoid { color: var(--text-3); text-decoration: line-through; text-decoration-color: rgba(240,160,160,0.4); }
+  .voice-table td.voice-prefer { color: var(--text-1, var(--text)); }
+
+  .voice-banlist {
+    margin-top: 48px;
+    padding: 24px 26px;
+    border: 1px dashed var(--border-2, rgba(232,227,216,0.14));
+    border-radius: 4px;
+  }
+  .voice-banlist-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #f0a0a0;
+    margin-bottom: 14px;
+  }
+  .voice-banlist-words {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.9;
+    color: var(--text-2);
+    margin: 0;
+  }
+  .voice-banlist-words .sep { color: var(--text-3); margin: 0 4px; }
+  @media (max-width: 1100px) {
+    .voice-grid { grid-template-columns: 1fr; }
+  }
+</style>

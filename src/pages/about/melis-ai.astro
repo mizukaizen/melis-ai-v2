@@ -10,23 +10,20 @@ import Values    from '../../components/about/brand/Values.astro';
 import Goal      from '../../components/about/brand/Goal.astro';
 import Stance    from '../../components/about/brand/Stance.astro';
 import Lexicon   from '../../components/about/brand/Lexicon.astro';
-import Compass   from '../../components/about/brand/Compass.astro';
+import Compass      from '../../components/about/brand/Compass.astro';
+import Wordmark     from '../../components/about/brand/Wordmark.astro';
+import Colour       from '../../components/about/brand/Colour.astro';
+import Typography   from '../../components/about/brand/Typography.astro';
+import Voice        from '../../components/about/brand/Voice.astro';
+import Imagery      from '../../components/about/brand/Imagery.astro';
+import Influences   from '../../components/about/brand/Influences.astro';
+import Placeholders from '../../components/about/brand/Placeholders.astro';
 
 // Sections still rendered as placeholder anchors so the sb2 scroll-spy
 // has targets while content lands progressively. Each pending section
 // gets eyebrow + title + a single placeholder block.
 type Pending = { id: string; num: string; group: string; name: string };
 const PENDING: Pending[] = [
-  { id: 'wordmark',      num: '05', group: 'How we appear',          name: 'Wordmark' },
-  { id: 'colour',        num: '06', group: 'How we appear',          name: 'Colour' },
-  { id: 'typography',    num: '07', group: 'How we appear',          name: 'Typography' },
-  { id: 'spacing',       num: '08', group: 'How we appear',          name: 'Spacing & layout' },
-  { id: 'voice',         num: '09', group: 'How we appear',          name: 'Voice' },
-  { id: 'imagery',       num: '10', group: 'How we appear',          name: 'Imagery' },
-  { id: 'motion',        num: '11', group: 'How we appear',          name: 'Motion' },
-  { id: 'dataviz',       num: '12', group: 'How we appear',          name: 'Data viz' },
-  { id: 'accessibility', num: '13', group: 'How we appear',          name: 'Accessibility' },
-  { id: 'influences',    num: '14', group: 'How we appear',          name: 'Influences' },
   { id: 'website',       num: '15', group: 'Where the brand lives',  name: 'The website' },
   { id: 'soul',          num: '16', group: 'Where the brand lives',  name: 'Soul of the Machine' },
   { id: 'youtube',       num: '17', group: 'Where the brand lives',  name: 'YouTube' },
@@ -58,6 +55,16 @@ const PENDING: Pending[] = [
     <Stance />
     <Lexicon />
     <Compass />
+    <Wordmark />
+    <Colour />
+    <Typography />
+    <Placeholders slug="spacing" />
+    <Voice />
+    <Imagery />
+    <Placeholders slug="motion" />
+    <Placeholders slug="dataviz" />
+    <Placeholders slug="accessibility" />
+    <Influences />
 
     {PENDING.map((s) => (
       <section id={s.id} data-brand-section class="melis-section melis-section-placeholder">

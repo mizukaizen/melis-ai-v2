@@ -1,0 +1,93 @@
+---
+// Section 06 · Colour · the palette. Source: brand-guidelines.html
+// lines 4936-5013.
+
+type Swatch = { name: string; role: string; hex: string; use: string; glow?: boolean };
+const PALETTE: Swatch[] = [
+  { name: '--bg',       role: 'Page background',  hex: '#0F0F0F', use: 'Deep editorial black — never pure #000. Reads warmer at low light, holds detail in dark imagery.' },
+  { name: '--surface',  role: 'Cards, panels',    hex: '#1A1A1A', use: 'One step up from background. Used for cards, sidebar, code blocks.' },
+  { name: '--text',     role: 'Primary text',     hex: '#E5E7EB', use: 'Headlines, emphasis, primary content. Reserve full strength — body uses --text-2.' },
+  { name: '--text-2',   role: 'Body copy',        hex: '#A1A5B0', use: 'All body text. The workhorse colour — most letters on the site are this shade.' },
+  { name: '--text-3',   role: 'Metadata',         hex: '#6B7280', use: 'Mono labels, timestamps, secondary metadata. Always pairs with mono font.' },
+  { name: '--accent',   role: 'Brand purple',     hex: '#7C3AED', use: 'Interactive states, "this matters" markers, italic display emphasis. Use sparingly — purple loses power when overused.', glow: true },
+  { name: '--signal',   role: 'Live / positive',  hex: '#5EEAD4', use: 'Live indicators, positive states, "shipping now" badges. Functional only — never decorative.' },
+  { name: '--amber',    role: 'Imagery / warm',   hex: '#F5B342', use: 'The warm practical light inside papercraft imagery. Pairs with teal in two-light setups.' },
+  { name: '--border',   role: 'Dividers',         hex: '#2D2D2D', use: 'Major region separators. Use --border-light (#252525) for subtle internal divisions.' },
+];
+---
+
+<section id="colour" data-brand-section class="melis-section">
+  <div class="melis-section-eyebrow-row">
+    <span class="num">06</span>
+    <span class="name">Colour · the palette</span>
+    <span class="line"></span>
+  </div>
+  <h2 class="melis-section-title">A small palette, deliberately. Adding a colour requires removing one.</h2>
+
+  <div class="melis-prose">
+    <p>Built on a warm-shifted dark neutral, with three text steps and two functional accents — purple for "this matters", teal for "this is live". Amber appears in imagery; green and red are reserved for system feedback.</p>
+  </div>
+
+  <div class="palette-table">
+    {PALETTE.map((s) => (
+      <div class="palette-row">
+        <div class={`palette-swatch ${s.glow ? 'with-glow' : ''}`} style={`background: ${s.hex};`} />
+        <div class="palette-name">{s.name}<span class="role">{s.role}</span></div>
+        <div class="palette-hex">{s.hex}</div>
+        <div class="palette-use">{s.use}</div>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style is:global>
+  .palette-table {
+    margin-top: 40px;
+    border-top: 1px solid var(--border-2, rgba(232,227,216,0.08));
+  }
+  .palette-row {
+    display: grid;
+    grid-template-columns: 56px 200px 100px 1fr;
+    gap: 24px;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.06));
+  }
+  .palette-swatch {
+    width: 48px; height: 48px;
+    border-radius: 4px;
+    border: 1px solid var(--border-2, rgba(232,227,216,0.08));
+  }
+  .palette-swatch.with-glow {
+    box-shadow: 0 0 24px rgba(124, 58, 237, 0.45);
+  }
+  .palette-name {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--text-1, var(--text));
+    display: flex; flex-direction: column;
+  }
+  .palette-name .role {
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-top: 4px;
+  }
+  .palette-hex {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+  }
+  .palette-use {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--text-2);
+  }
+  @media (max-width: 1100px) {
+    .palette-row { grid-template-columns: 56px 1fr; row-gap: 8px; }
+    .palette-hex, .palette-use { grid-column: 2; }
+  }
+</style>
