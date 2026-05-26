@@ -5,12 +5,12 @@
 // under the original slugs, the other 2 (Fractional Operator, Speaking)
 // are coming-soon stubs created in pass 10.
 
-const ENTRIES: { name: string; count: string; desc: string; href: string }[] = [
-  { name: 'AI Strategy Sprint',     count: '1:1',     desc: 'Two weeks · opinionated print',           href: '/services/strategy-print-sprint/' },
-  { name: 'AI Builds on Tap',       count: 'sub',     desc: 'Monthly · ships, websites, automations',  href: '/services/ai-builds-on-tap/' },
-  { name: 'Business AI Blueprint',  count: 'SMB',     desc: 'Discovery → blueprint → build',           href: '/services/business-ai-blueprint/' },
-  { name: 'Operator Coaching',      count: '1:1',     desc: 'Monthly sessions + Slack',                href: '/services/operator-coaching/' },
-  { name: 'Speaking & Workshops',   count: 'stage',   desc: 'Keynotes and workshops',                  href: '/services/speaking/' },
+const ENTRIES: { name: string; count: string; desc: string; href: string; icon: string }[] = [
+  { name: 'AI Strategy Sprint',     count: '1:1',     desc: 'Two weeks · opinionated print',           href: '/services/strategy-print-sprint/', icon: 'ph-lightning' },
+  { name: 'AI Builds on Tap',       count: 'sub',     desc: 'Monthly · ships, websites, automations',  href: '/services/ai-builds-on-tap/',       icon: 'ph-plug' },
+  { name: 'Business AI Blueprint',  count: 'SMB',     desc: 'Discovery → blueprint → build',           href: '/services/business-ai-blueprint/',  icon: 'ph-compass' },
+  { name: 'Operator Coaching',      count: '1:1',     desc: 'Monthly sessions + Slack',                href: '/services/operator-coaching/',      icon: 'ph-users-three' },
+  { name: 'Speaking & Workshops',   count: 'stage',   desc: 'Keynotes and workshops',                  href: '/services/speaking/',               icon: 'ph-microphone-stage' },
 ];
 ---
 
@@ -21,6 +21,7 @@ const ENTRIES: { name: string; count: string; desc: string; href: string }[] = [
     </div>
     <div class="sb2-list">
       <a class="sb2-item" href="/services/">
+        <i class="ph ph-handshake sb2-icon"></i>
         <div class="sb2-row">
           <div class="sb2-name">All Services</div>
           <div class="sb2-count">5</div>
@@ -29,6 +30,7 @@ const ENTRIES: { name: string; count: string; desc: string; href: string }[] = [
       </a>
       {ENTRIES.map((e) => (
         <a class="sb2-item" href={e.href}>
+          <i class={`ph ${e.icon} sb2-icon`}></i>
           <div class="sb2-row">
             <div class="sb2-name">{e.name}</div>
             <div class="sb2-count">{e.count}</div>

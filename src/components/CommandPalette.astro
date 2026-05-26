@@ -1,0 +1,447 @@
+---
+// Cmdk-style command palette — semantic search via Orama hybrid mode
+// (BM25 + cosine-similarity over MiniLM-L6-v2 embeddings).
+//
+// Architecture (Sean-approved):
+//   1. Build-time `node scripts/build-cmdk-index.mjs` (runs via
+//      `pnpm prebuild`) embeds every searchable item and writes
+//      `/public/cmdk-index.json` (~1.3 MB raw, ~380 KB gzipped).
+//   2. CommandPalette.astro ships **only the modal HTML + ~5 KB of
+//      glue JS** to every page. Zero embedding data is in the per-page
+//      bundle.
+//   3. On the first ⌘K open:
+//        a. Fetch /cmdk-index.json (lazy — no cost to non-cmdk users)
+//        b. Dynamic-import @orama/orama, build the search DB with
+//           precomputed vectors
+//        c. Spawn /cmdk-embed-worker.js to load MiniLM-L6-v2 (q8, 23 MB)
+//           in a Web Worker — does not block the main thread
+//        d. Until the worker posts {type:'ready'}, queries run in
+//           **BM25-only mode** (fast lexical fallback)
+//        e. When ready, switch to **hybrid mode** (BM25 + vector blend)
+//           and surface a one-time "✨ Semantic search ready" toast
+//   4. Worker stays alive for the session — every subsequent query is
+//      embedded in ~50 ms.
+//
+// Markup + interaction modelled on mockup HTML lines 15290-15602.
+// CSS already in mockup.css under #cmdk-* + .cmdk-*.
+---
+
+<!-- transition:persist keeps the modal DOM + its captured refs alive
+     across view-transitions. Without it, Astro replaces the body on
+     every nav and the script's cached refs (backdrop, input, list, …)
+     point to detached nodes — keypress would toggle `is-open` on a
+     dead element, looking like ⌘K stopped working after the first
+     navigation. The wrapper also hosts the toast so both pieces of
+     state (modal + toast-seen) survive together. -->
+<div id="cmdk-root" transition:persist="cmdk-root">
+  <div id="cmdk-backdrop" role="dialog" aria-modal="true" aria-label="Command palette" aria-hidden="true">
+    <div id="cmdk-panel">
+      <div class="cmdk-search-row">
+        <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+        <input id="cmdk-input" type="text" placeholder="Type a command, or search the site…" autocomplete="off" spellcheck="false">
+        <span id="cmdk-mode-badge" class="cmdk-mode-badge" data-mode="loading" aria-live="polite"></span>
+      </div>
+      <div class="cmdk-list" id="cmdk-list"></div>
+      <div class="cmdk-footer">
+        <span class="cmdk-footer-key"><span class="k">↑</span><span class="k">↓</span> Navigate</span>
+        <span class="cmdk-footer-key"><span class="k">↵</span> Select</span>
+        <span class="cmdk-footer-key"><span class="k">Esc</span> Close</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="cmdk-toast" class="cmdk-toast" role="status" aria-live="polite" hidden>
+    <span class="cmdk-toast-icon">✨</span>
+    <span class="cmdk-toast-text">Semantic search ready</span>
+    <button class="cmdk-toast-close" aria-label="Dismiss">×</button>
+  </div>
+</div>
+
+<script>
+  // ── Wire-up scoped to a single load so the cmdk JS only ever
+  // attaches once. Bundle is ~5 KB before Orama / index fetch.
+  (function () {
+    if ((window as any).__cmdkBound) return;
+    (window as any).__cmdkBound = true;
+
+    const backdrop  = document.getElementById('cmdk-backdrop')!;
+    const input     = document.getElementById('cmdk-input') as HTMLInputElement;
+    const list      = document.getElementById('cmdk-list')!;
+    const modeBadge = document.getElementById('cmdk-mode-badge')!;
+    const toast     = document.getElementById('cmdk-toast')!;
+    const toastBtn  = toast.querySelector('.cmdk-toast-close') as HTMLButtonElement | null;
+    if (!backdrop || !input || !list) return;
+
+    // ── Top-level quick-jump commands
+    const COMMANDS = [
+      { id: 'home',       title: 'Go to home',           icon: 'ph-house',          key: 'H', href: '/' },
+      { id: 'articles',   title: 'Browse articles',      icon: 'ph-newspaper',      key: 'A', href: '/articles/' },
+      { id: 'newsletter', title: 'Newsletter',           icon: 'ph-envelope',       key: 'N', href: '/newsletter/' },
+      { id: 'dossiers',   title: 'Open dossiers',        icon: 'ph-books',          key: 'L', href: '/dossiers/' },
+      { id: 'courses',    title: 'Browse courses',       icon: 'ph-graduation-cap', key: 'C', href: '/courses/' },
+      { id: 'products',   title: 'Browse products',      icon: 'ph-storefront',     key: 'P', href: '/products/' },
+      { id: 'prompts',    title: 'Open prompts',         icon: 'ph-sparkle',        key: 'R', href: '/prompts/' },
+      { id: 'recos',      title: "Sean's Recos",         icon: 'ph-thumbs-up',      key: 'S', href: '/recos/' },
+      { id: 'ventures',   title: 'The Lab — Ventures',   icon: 'ph-flask',          key: 'V', href: '/ventures/' },
+      { id: 'exhibits',   title: 'Open Exhibits',        icon: 'ph-image-square',   key: 'X', href: '/lab/exhibits/' },
+      { id: 'services',   title: 'Services',             icon: 'ph-briefcase',      key: 'W', href: '/services/' },
+      { id: 'about',      title: 'About Sean',           icon: 'ph-user',           key: 'U', href: '/about/sean/' },
+      { id: 'studio',     title: 'About melis.ai',       icon: 'ph-circle',         key: 'M', href: '/about/melis-ai/' },
+    ];
+
+    // ── Lazy-loaded state
+    type IndexFile = {
+      dim: number;
+      model: string;
+      items: Array<{ kind: string; title: string; eyebrow: string; meta: string; icon: string; href: string; vector: number[] }>;
+    };
+    let oramaDb: any = null;
+    let oramaSearch: any = null;
+    let indexFile: IndexFile | null = null;
+    let worker: Worker | null = null;
+    let workerReady = false;
+    let queryEmbedSeq = 0;
+    const pendingEmbeds = new Map<number, (v: number[]) => void>();
+
+    async function ensureIndex(): Promise<IndexFile> {
+      if (indexFile) return indexFile;
+      const res = await fetch('/cmdk-index.json');
+      indexFile = await res.json();
+      return indexFile!;
+    }
+
+    async function ensureOrama(): Promise<void> {
+      if (oramaDb) return;
+      const idx = await ensureIndex();
+      const orama = await import('@orama/orama');
+      oramaSearch = orama.search;
+      oramaDb = await orama.create({
+        schema: {
+          title:   'string',
+          eyebrow: 'string',
+          kind:    'string',
+          // 384-dim vector field for cosine-similarity search
+          embedding: `vector[${idx.dim}]`,
+        },
+      });
+      const docs = idx.items.map((it, i) => ({
+        id: String(i),
+        title: it.title,
+        eyebrow: it.eyebrow,
+        kind: it.kind,
+        embedding: it.vector,
+      }));
+      await orama.insertMultiple(oramaDb, docs);
+    }
+
+    function spawnWorker() {
+      if (worker) return;
+      worker = new Worker('/cmdk-embed-worker.js', { type: 'module' });
+      worker.addEventListener('message', (e: MessageEvent) => {
+        const msg = e.data || {};
+        if (msg.type === 'ready') {
+          workerReady = true;
+          modeBadge.dataset.mode = 'semantic';
+          modeBadge.textContent = '✨';
+          modeBadge.title = 'Semantic search ready';
+          // Re-run current query so vector results appear
+          render(input.value);
+          showToastOnce();
+          return;
+        }
+        if (msg.type === 'embedding' && typeof msg.id === 'number') {
+          const resolver = pendingEmbeds.get(msg.id);
+          if (resolver) {
+            pendingEmbeds.delete(msg.id);
+            resolver(msg.vector);
+          }
+          return;
+        }
+        if (msg.type === 'error') {
+          console.warn('cmdk worker error:', msg.message);
+          modeBadge.dataset.mode = 'lexical';
+          modeBadge.textContent = '';
+        }
+      });
+      worker.postMessage({ type: 'init' });
+    }
+
+    function embedQuery(text: string): Promise<number[]> {
+      return new Promise((resolve) => {
+        const id = ++queryEmbedSeq;
+        pendingEmbeds.set(id, resolve);
+        worker!.postMessage({ type: 'embed', id, text });
+      });
+    }
+
+    function showToastOnce() {
+      if (localStorage.getItem('cmdk-toast-seen') === '1') return;
+      toast.hidden = false;
+      setTimeout(() => { toast.hidden = true; }, 4000);
+    }
+    toastBtn?.addEventListener('click', () => {
+      toast.hidden = true;
+      localStorage.setItem('cmdk-toast-seen', '1');
+    });
+
+    // ── State
+    let activeIdx = 0;
+    let lastRenderId = 0;
+
+    function go(href: string) {
+      window.location.href = href;
+    }
+
+    async function render(query: string) {
+      const renderId = ++lastRenderId;
+      const q = (query || '').trim();
+
+      // ── Atomic-swap render. Build the new list off-DOM first, then
+      //    replace `list`'s children in one operation. Without this
+      //    pattern, the previous innerHTML='' wipe + the async embed
+      //    await left the list empty for 50-200 ms per keystroke, which
+      //    reflowed the modal and flickered the badge + footer rows.
+      const frag = document.createDocumentFragment();
+
+      if (!q) {
+        appendGroup(frag, 'Commands', COMMANDS.map((c) => ({
+          kind: 'command', title: c.title, eyebrow: '', meta: '', icon: c.icon, key: c.key,
+          onSelect: () => go(c.href),
+        })));
+        swapList(frag);
+        setActive(0);
+        return;
+      }
+
+      // ── Command quick-match (substring)
+      const ql = q.toLowerCase();
+      const cmdMatches = COMMANDS.filter((c) => c.title.toLowerCase().includes(ql)).map((c) => ({
+        kind: 'command', title: c.title, eyebrow: '', meta: '', icon: c.icon, key: c.key,
+        onSelect: () => go(c.href),
+      }));
+
+      // ── Index search — BM25 only until worker is ready, then hybrid
+      let idxMatches: any[] = [];
+      try {
+        await ensureOrama();
+        if (workerReady) {
+          const vector = await embedQuery(q);
+          if (renderId !== lastRenderId) return; // newer keystroke arrived
+          // hybridWeights: vector-heavy (0.75) so natural-language queries
+          // like "help me make money" surface conceptually close items
+          // even when BM25 returns false-positive substring matches.
+          // similarity: 0 — keep all vector matches and let the blended
+          // score sort them; otherwise weak vector hits get filtered out.
+          const r = await oramaSearch(oramaDb, {
+            mode: 'hybrid',
+            term: q,
+            vector: { value: vector, property: 'embedding' },
+            hybridWeights: { text: 0.25, vector: 0.75 },
+            similarity: 0,
+            limit: 30,
+            includeVectors: false,
+          });
+          idxMatches = (r.hits || []).map((h: any) => h.document);
+        } else {
+          const r = await oramaSearch(oramaDb, {
+            term: q,
+            properties: ['title', 'eyebrow'],
+            tolerance: 1,
+            limit: 30,
+          });
+          if (renderId !== lastRenderId) return;
+          idxMatches = (r.hits || []).map((h: any) => h.document);
+        }
+      } catch (err) {
+        // Should never happen but fail open — substring search
+        idxMatches = (indexFile?.items || []).filter((i) =>
+          i.title.toLowerCase().includes(ql) || (i.eyebrow || '').toLowerCase().includes(ql)
+        ).slice(0, 30);
+      }
+
+      // A newer keystroke might have arrived during the await — bail.
+      if (renderId !== lastRenderId) return;
+
+      // Map Orama hits back to render-shape
+      const idxRender = idxMatches.map((doc: any) => {
+        const it = (indexFile!.items[Number(doc.id)]) || doc;
+        return {
+          kind: it.kind, title: it.title, eyebrow: it.eyebrow, meta: it.meta || '',
+          icon: it.icon, onSelect: () => go(it.href),
+        };
+      });
+
+      if (cmdMatches.length) appendGroup(frag, 'Commands', cmdMatches);
+      if (idxRender.length) appendGroup(frag, workerReady ? 'Results · semantic' : 'Results', idxRender);
+      if (!cmdMatches.length && !idxRender.length) {
+        const empty = document.createElement('div');
+        empty.className = 'cmdk-empty';
+        empty.textContent = 'No matches for "' + query + '"';
+        frag.appendChild(empty);
+      }
+      swapList(frag);
+      setActive(0);
+    }
+
+    function swapList(frag: DocumentFragment) {
+      // Atomic swap — replaceChildren accepts a DocumentFragment and
+      // moves its children into `list` in a single mutation. No
+      // intermediate empty state, no extra reflow.
+      (list as any).replaceChildren(frag);
+    }
+
+    function appendGroup(parent: DocumentFragment, label: string, items: any[]) {
+      const lbl = document.createElement('div');
+      lbl.className = 'cmdk-group-label';
+      lbl.textContent = label;
+      parent.appendChild(lbl);
+      items.forEach((it) => parent.appendChild(itemEl(it)));
+    }
+
+    function itemEl(it: any): HTMLButtonElement {
+      const btn = document.createElement('button');
+      btn.className = 'cmdk-item';
+      btn.type = 'button';
+      const eyebrowHtml = it.eyebrow ? '<div class="cmdk-eyebrow">' + escapeHtml(it.eyebrow) + '</div>' : '';
+      const titleHtml = '<div class="cmdk-title">' + escapeHtml(it.title) + '</div>';
+      const trailing = it.key ? '<span class="cmdk-key">' + escapeHtml(it.key) + '</span>'
+        : (it.meta ? '<span class="cmdk-meta">' + escapeHtml(it.meta) + '</span>' : '');
+      btn.innerHTML =
+        '<span class="cmdk-icon"><i class="ph ' + (it.icon || 'ph-arrow-right') + '"></i></span>' +
+        '<div class="cmdk-body">' + eyebrowHtml + titleHtml + '</div>' +
+        trailing;
+      btn.addEventListener('click', () => { it.onSelect(); closePalette(); });
+      btn.addEventListener('mouseenter', () => {
+        const items = list.querySelectorAll('.cmdk-item');
+        const idx = Array.from(items).indexOf(btn);
+        if (idx >= 0) setActive(idx);
+      });
+      return btn;
+    }
+
+    function escapeHtml(s: string): string {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function setActive(i: number) {
+      const items = list.querySelectorAll('.cmdk-item');
+      activeIdx = Math.max(0, Math.min(i, items.length - 1));
+      items.forEach((el, k) => el.classList.toggle('is-active', k === activeIdx));
+      const el = items[activeIdx] as HTMLElement | undefined;
+      if (el) el.scrollIntoView({ block: 'nearest' });
+    }
+
+    async function openPalette() {
+      backdrop.classList.add('is-open');
+      backdrop.setAttribute('aria-hidden', 'false');
+      input.value = '';
+      // Set the lexical badge immediately; semantic badge swaps in on worker ready.
+      modeBadge.dataset.mode = workerReady ? 'semantic' : 'lexical';
+      modeBadge.textContent = workerReady ? '✨' : '⏳';
+      modeBadge.title = workerReady ? 'Semantic search ready' : 'Loading semantic model…';
+      render('');
+      setTimeout(() => input.focus(), 30);
+      // Kick off lazy work on first open
+      ensureOrama().catch((err) => console.warn('cmdk orama init failed:', err));
+      spawnWorker();
+    }
+    function closePalette() {
+      backdrop.classList.remove('is-open');
+      backdrop.setAttribute('aria-hidden', 'true');
+    }
+
+    // ── Sidebar trigger button
+    function wireTriggers() {
+      document.querySelectorAll<HTMLButtonElement>('.sb-search-btn, #cmdk-trigger').forEach((btn) => {
+        if (btn.dataset.cmdkWired === '1') return;
+        btn.dataset.cmdkWired = '1';
+        btn.addEventListener('click', openPalette);
+      });
+    }
+    wireTriggers();
+    document.addEventListener('astro:page-load', wireTriggers);
+
+    // ── ⌘K / Ctrl+K — toggle
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        if (backdrop.classList.contains('is-open')) closePalette();
+        else openPalette();
+        return;
+      }
+      if (!backdrop.classList.contains('is-open')) return;
+      if (e.key === 'Escape') { e.preventDefault(); closePalette(); return; }
+      if (e.key === 'ArrowDown') { e.preventDefault(); setActive(activeIdx + 1); return; }
+      if (e.key === 'ArrowUp')   { e.preventDefault(); setActive(activeIdx - 1); return; }
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const items = list.querySelectorAll<HTMLElement>('.cmdk-item');
+        if (items[activeIdx]) items[activeIdx].click();
+      }
+    });
+
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+    input.addEventListener('input', (e) => {
+      const v = (e.target as HTMLInputElement).value;
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => render(v), 60);
+    });
+
+    backdrop.addEventListener('click', (e) => {
+      if (e.target === backdrop) closePalette();
+    });
+  })();
+</script>
+
+<style>
+  .cmdk-mode-badge {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-3);
+    opacity: 0.7;
+    min-width: 16px;
+    text-align: right;
+  }
+  .cmdk-mode-badge[data-mode='semantic'] {
+    color: var(--accent);
+    opacity: 0.9;
+  }
+  .cmdk-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 10000;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px 10px 12px;
+    background: rgba(20, 20, 24, 0.92);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(124, 58, 237, 0.35);
+    border-radius: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--text-1);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+    animation: cmdk-toast-in 220ms var(--ease-out);
+  }
+  .cmdk-toast-icon { font-size: 14px; }
+  .cmdk-toast-close {
+    margin-left: 4px;
+    width: 18px;
+    height: 18px;
+    border: none;
+    background: transparent;
+    color: var(--text-3);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0;
+  }
+  .cmdk-toast-close:hover { color: var(--text-1); }
+  @keyframes cmdk-toast-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>

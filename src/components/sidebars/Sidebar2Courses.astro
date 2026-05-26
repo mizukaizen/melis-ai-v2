@@ -15,14 +15,14 @@ const total = items.length;
 const currentSlug = Astro.url.pathname.match(/\/courses\/([^/]+)/)?.[1];
 
 // Coming-soon roster — mockup order + verbatim taglines.
-const SOON: { slug: string; name: string; desc: string; badge: 'RECORDING' | 'SOON' }[] = [
-  { slug: 'claude-cowork-for-professionals', name: 'Claude Cowork for Professionals', desc: 'Cowork mode, Skills, MCPs, agents',     badge: 'RECORDING' },
-  { slug: 'ai-for-management-consultants',   name: 'AI for Management Consultants',   desc: 'Decks, data analysis & client work',     badge: 'SOON' },
-  { slug: 'ai-for-creatives',                name: 'AI for Creatives',                desc: 'Figma, Firefly, image gen & video',      badge: 'SOON' },
-  { slug: 'ai-audio-voice-music-and-sound',  name: 'AI Audio: Voice, Music & Sound',  desc: 'ElevenLabs, Suno & AI sound design',     badge: 'SOON' },
-  { slug: 'build-your-first-ai-agent',       name: 'Build Your First AI Agent',       desc: 'Automate your business without code',    badge: 'SOON' },
-  { slug: 'vibe-coding',                     name: 'Vibe Coding',                     desc: 'Build a real app without code',          badge: 'SOON' },
-  { slug: 'ai-for-solopreneurs',             name: 'AI for Solopreneurs',             desc: 'Run your business with OpenClaw agents', badge: 'SOON' },
+const SOON: { slug: string; name: string; desc: string; badge: 'RECORDING' | 'SOON'; icon: string }[] = [
+  { slug: 'claude-cowork-for-professionals', name: 'Claude Cowork for Professionals', desc: 'Cowork mode, Skills, MCPs, agents',     badge: 'RECORDING', icon: 'ph-laptop' },
+  { slug: 'ai-for-management-consultants',   name: 'AI for Management Consultants',   desc: 'Decks, data analysis & client work',     badge: 'SOON',      icon: 'ph-presentation-chart' },
+  { slug: 'ai-for-creatives',                name: 'AI for Creatives',                desc: 'Figma, Firefly, image gen & video',      badge: 'SOON',      icon: 'ph-palette' },
+  { slug: 'ai-audio-voice-music-and-sound',  name: 'AI Audio: Voice, Music & Sound',  desc: 'ElevenLabs, Suno & AI sound design',     badge: 'SOON',      icon: 'ph-headphones' },
+  { slug: 'build-your-first-ai-agent',       name: 'Build Your First AI Agent',       desc: 'Automate your business without code',    badge: 'SOON',      icon: 'ph-robot' },
+  { slug: 'vibe-coding',                     name: 'Vibe Coding',                     desc: 'Build a real app without code',          badge: 'SOON',      icon: 'ph-code' },
+  { slug: 'ai-for-solopreneurs',             name: 'AI for Solopreneurs',             desc: 'Run your business with OpenClaw agents', badge: 'SOON',      icon: 'ph-user' },
 ];
 ---
 
@@ -35,6 +35,7 @@ const SOON: { slug: string; name: string; desc: string; badge: 'RECORDING' | 'SO
     <div class="sb2-list courses-sb2-list">
 
       <a class="sb2-item" class:list={[{ active: !currentSlug }]} href="/courses/">
+        <i class="ph ph-graduation-cap sb2-icon"></i>
         <div class="sb2-row">
           <div class="sb2-name">All Courses</div>
           <div class="sb2-count">{total}</div>
@@ -43,6 +44,7 @@ const SOON: { slug: string; name: string; desc: string; badge: 'RECORDING' | 'SO
       </a>
 
       <a class="sb2-item" class:list={[{ active: currentSlug === 'ai-mastery-2026' }]} href="/courses/ai-mastery-2026/">
+        <i class="ph ph-sparkle sb2-icon"></i>
         <div class="sb2-row">
           <div class="sb2-name">AI Mastery 2026</div>
           <div class="sb2-count badge-live">LIVE</div>
@@ -58,6 +60,7 @@ const SOON: { slug: string; name: string; desc: string; badge: 'RECORDING' | 'SO
         <div class="panel-group-items">
           {SOON.map((c) => (
             <a class="sb2-item" class:list={[{ active: c.slug === currentSlug }]} href={`/courses/${c.slug}/`}>
+              <i class={`ph ${c.icon} sb2-icon`}></i>
               <div class="sb2-row">
                 <div class="sb2-name">{c.name}</div>
                 <div class={`sb2-count ${c.badge === 'RECORDING' ? 'badge-recording' : 'badge-soon'}`}>{c.badge}</div>

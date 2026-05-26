@@ -63,17 +63,21 @@ const tools = data.tools || [];
             {tools.map((t) => (
               t.url ? (
                 <a class="vd-row" href={withUtm(t.url, item.slug)} target="_blank" rel="noopener nofollow sponsored">
-                  <div class="vd-row-name">{t.name}</div>
-                  {t.attr && <div class="vd-row-attr">{t.attr}</div>}
-                  {t.take && <div class="vd-row-take">{t.take}</div>}
+                  <div>
+                    <div class="vd-row-name">{t.name}</div>
+                    {t.attr && <div class="vd-row-attr">{t.attr}</div>}
+                  </div>
+                  <div class="vd-row-take">{t.take || ''}</div>
                   <div class="vd-row-cta">{t.cta || 'Visit'} ↗</div>
                 </a>
               ) : (
                 <div class="vd-row">
-                  <div class="vd-row-name">{t.name}</div>
-                  {t.attr && <div class="vd-row-attr">{t.attr}</div>}
-                  {t.take && <div class="vd-row-take">{t.take}</div>}
-                  {t.cta && <div class="vd-row-cta vd-row-cta-muted">{t.cta}</div>}
+                  <div>
+                    <div class="vd-row-name">{t.name}</div>
+                    {t.attr && <div class="vd-row-attr">{t.attr}</div>}
+                  </div>
+                  <div class="vd-row-take">{t.take || ''}</div>
+                  <div class="vd-row-cta vd-row-cta-muted">{t.cta || ''}</div>
                 </div>
               )
             ))}

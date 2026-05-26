@@ -1,0 +1,424 @@
+---
+// FillInBlankController — single-mount controller that turns every
+// .pv-var span inside .pc-pre (and .spc-pre on prompt detail pages)
+// into a clickable, contentEditable placeholder.
+//
+// Architecture:
+//   • Memory: a Map<placeholder, value> backed by localStorage at
+//     `melis-prompts-fillin-v1`. Survives reload + cross-session.
+//   • Cascade: filling [COMPANY NAME] on one card auto-fills it on
+//     every other card mounted at the same time.
+//   • Lifecycle: re-runs on `astro:page-load` so newly mounted cards
+//     after view-transitions get wired. Listener attachment is
+//     idempotent via dataset markers.
+//   • Wrapping strategy: PromptCard.astro already wraps brackets in
+//     `<span class="pv-var">…</span>`. We don't walk text nodes; we
+//     just promote each existing `.pv-var` inside `.pc-pre` to also
+//     carry the `.pv` class and the listeners. Simpler + zero false
+//     positives.
+//   • The controller's <div> uses transition:persist so the toast
+//     element and the closure-captured memory survive navigation.
+//
+// Mounted in AppLayout. The controller adds two pieces of UI to each
+// prompt card that contains any .pv-var:
+//   • `.pc-progress` (N / M filled) — appended next to the expand btn
+//   • `.pc-btn-reset` (two-step) — inserted before the copy button
+// On the single-prompt detail page (`.single-prompt-card`), the same
+// reset + progress get added inside `.spc-footer`.
+---
+
+<div id="fillin-root" transition:persist="fillin-root">
+  <div class="fillin-toast" id="fillin-toast" role="status" aria-live="polite"></div>
+</div>
+
+<script>
+  (function () {
+    'use strict';
+    if ((window as any).__fillinBound) return;
+    (window as any).__fillinBound = true;
+
+    const STORAGE_KEY = 'melis-prompts-fillin-v1';
+    const memory = new Map<string, string>();
+
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        Object.entries(saved).forEach(([k, v]) => memory.set(k, String(v)));
+      }
+    } catch (_) {
+      // Corrupted storage — start fresh
+    }
+
+    function saveMemory() {
+      const obj: Record<string, string> = {};
+      memory.forEach((v, k) => { obj[k] = v; });
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); } catch (_) {}
+    }
+
+    // ── Toast ────────────────────────────────────────────────────
+    let toastTimer: ReturnType<typeof setTimeout> | null = null;
+    function showToast(msg: string) {
+      const toast = document.getElementById('fillin-toast');
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+
+    // ── Cascade ──────────────────────────────────────────────────
+    // Updates memory + propagates the visual state to every other
+    // `.pv` with the same data-placeholder. Skips the source span
+    // (we'd overwrite the user's in-flight edit) and any other
+    // span currently in editing mode.
+    function cascade(placeholder: string, value: string | null, source: HTMLElement | null) {
+      if (value && value !== placeholder) memory.set(placeholder, value);
+      else memory.delete(placeholder);
+      saveMemory();
+
+      document.querySelectorAll<HTMLElement>('.pv').forEach((other) => {
+        if (other === source) return;
+        if (other.dataset.placeholder !== placeholder) return;
+        if (other.classList.contains('editing')) return;
+        if (value && value !== placeholder) {
+          other.textContent = value;
+          other.classList.add('filled');
+        } else {
+          other.textContent = placeholder;
+          other.classList.remove('filled');
+        }
+      });
+
+      document.querySelectorAll<HTMLElement>('.pc, .single-prompt-card').forEach(updateProgressForCard);
+    }
+
+    function updateProgressForCard(card: HTMLElement) {
+      const pvs = card.querySelectorAll<HTMLElement>('.pv');
+      const prog = card.querySelector<HTMLElement>('[data-fillin-progress]');
+      if (!prog) return;
+      const filled = Array.from(pvs).filter((pv) => pv.classList.contains('filled')).length;
+      const total = pvs.length;
+      prog.textContent = `${filled} / ${total} filled`;
+      prog.classList.toggle('complete', total > 0 && filled === total);
+    }
+
+    // ── Card setup ───────────────────────────────────────────────
+    function wireCard(card: HTMLElement) {
+      if (card.dataset.fillinWired === '1') return;
+      // Find all .pv-var spans inside the prompt body — these become
+      // interactive .pv placeholders. If the card has none, skip.
+      const pres = card.querySelectorAll<HTMLElement>('.pc-pre, .spc-pre');
+      let pvs: HTMLElement[] = [];
+      pres.forEach((pre) => {
+        if (pre.dataset.noFill === '1') return; // opt-out
+        pre.querySelectorAll<HTMLElement>('.pv-var').forEach((span) => {
+          // Promote: add `.pv` and the placeholder data attribute.
+          span.classList.add('pv');
+          const text = span.textContent || '';
+          span.dataset.placeholder = text;
+          span.dataset.original = text;
+          // Apply remembered value
+          if (memory.has(text)) {
+            span.textContent = memory.get(text)!;
+            span.classList.add('filled');
+          }
+          pvs.push(span);
+        });
+      });
+      if (pvs.length === 0) {
+        card.dataset.fillinWired = '1';
+        return;
+      }
+
+      // Inject progress + reset UI into the card footer.
+      injectCardChrome(card, pvs);
+      attachPvHandlers(card, pvs);
+      attachBodyExpandClick(card);
+
+      card.dataset.fillinWired = '1';
+      const progressEl = card.querySelector<HTMLElement>('[data-fillin-progress]');
+      if (progressEl) updateProgressForCard(card);
+    }
+
+    function injectCardChrome(card: HTMLElement, pvs: HTMLElement[]) {
+      const footer = card.querySelector<HTMLElement>('.pc-footer, .spc-footer');
+      if (!footer) return;
+
+      // Progress counter — append next to expand button (left cluster).
+      if (!footer.querySelector('[data-fillin-progress]')) {
+        const prog = document.createElement('span');
+        prog.className = 'pc-progress';
+        prog.dataset.fillinProgress = '1';
+        prog.textContent = `0 / ${pvs.length} filled`;
+        const expandBtn = footer.querySelector('.pc-expand-btn');
+        if (expandBtn && expandBtn.parentElement) {
+          expandBtn.parentElement.insertBefore(prog, expandBtn);
+        } else {
+          footer.insertBefore(prog, footer.firstChild);
+        }
+      }
+
+      // Reset button — insert before copy button, both wrapped in a
+      // right-cluster div so the Reset↔Copy gap is 8 px (paired) and
+      // doesn't inherit the footer's looser 10 px gap. Matches the
+      // mockup's two-cluster pattern (left = progress+expand, right
+      // = reset+copy).
+      if (!footer.querySelector('[data-fillin-reset]')) {
+        const reset = document.createElement('button');
+        reset.type = 'button';
+        reset.className = 'pc-btn-reset';
+        reset.dataset.fillinReset = '1';
+        reset.textContent = 'Reset';
+        wireResetButton(card, reset, pvs);
+        const copyBtn = footer.querySelector<HTMLElement>('.pc-copy-btn, .spc-copy');
+        if (copyBtn) {
+          // Wrap reset + copy in a paired-actions div. If the footer
+          // already wraps copy (some templates may evolve), reuse it.
+          let cluster = copyBtn.parentElement;
+          const alreadyClustered = cluster && cluster.classList.contains('pc-actions-right');
+          if (!alreadyClustered) {
+            cluster = document.createElement('div');
+            cluster.className = 'pc-actions-right';
+            copyBtn.parentElement!.insertBefore(cluster, copyBtn);
+            cluster.appendChild(copyBtn); // moves copyBtn into cluster
+          }
+          cluster!.insertBefore(reset, copyBtn);
+        } else {
+          footer.appendChild(reset);
+        }
+      }
+    }
+
+    function attachPvHandlers(card: HTMLElement, pvs: HTMLElement[]) {
+      pvs.forEach((pv) => {
+        pv.contentEditable = 'false';
+        pv.spellcheck = false;
+
+        function checkFilled() {
+          const text = (pv.textContent || '').trim();
+          const placeholder = (pv.dataset.placeholder || '').trim();
+          const isFilled = text.length > 0 && text !== placeholder;
+          pv.classList.toggle('filled', isFilled);
+          cascade(placeholder, isFilled ? text : null, pv);
+        }
+
+        function enterEdit() {
+          // Lock min-width so the box stays at least its placeholder
+          // width while editing — prevents the layout from snapping.
+          const w = pv.getBoundingClientRect().width;
+          pv.style.minWidth = `${Math.ceil(w)}px`;
+          pv.contentEditable = 'true';
+          pv.classList.add('editing');
+          const placeholder = (pv.dataset.placeholder || '').trim();
+          const isPlaceholder = (pv.textContent || '').trim() === placeholder;
+          if (isPlaceholder) {
+            pv.textContent = '';
+            pv.focus();
+          } else {
+            pv.focus();
+            const range = document.createRange();
+            range.selectNodeContents(pv);
+            const sel = window.getSelection();
+            if (sel) {
+              sel.removeAllRanges();
+              sel.addRange(range);
+            }
+          }
+        }
+
+        function exitEdit() {
+          pv.contentEditable = 'false';
+          pv.classList.remove('editing');
+          if (!(pv.textContent || '').trim()) {
+            pv.textContent = pv.dataset.placeholder || '';
+          }
+          checkFilled();
+        }
+
+        function focusSibling(direction: 1 | -1) {
+          const idx = pvs.indexOf(pv);
+          const next = pvs[idx + direction];
+          pv.blur();
+          if (next) setTimeout(() => {
+            // Cross-card sibling? Just focus first one in same card.
+            // (Within-card only — Tab between cards is too unpredictable.)
+            const sameCard = next.closest('.pc, .single-prompt-card') === card;
+            if (sameCard) {
+              const wAndE = next as HTMLElement & { __enterEdit?: () => void };
+              if (wAndE.__enterEdit) wAndE.__enterEdit();
+            }
+          }, 40);
+        }
+
+        // Expose enterEdit on the element so focusSibling can call it
+        // from any pv (avoids closure complexity).
+        (pv as any).__enterEdit = enterEdit;
+
+        pv.addEventListener('mousedown', (e) => {
+          if (!pv.classList.contains('editing')) {
+            e.preventDefault();
+            enterEdit();
+          }
+        });
+        // Stop click + mouseup from bubbling so the .pc-body
+        // expand-on-click handler doesn't fire when the user is
+        // interacting with a bracket field.
+        pv.addEventListener('click', (e) => { e.stopPropagation(); });
+        pv.addEventListener('mouseup', (e) => { e.stopPropagation(); });
+        pv.addEventListener('blur', exitEdit);
+        pv.addEventListener('input', checkFilled);
+        pv.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') { e.preventDefault(); pv.blur(); }
+          else if (e.key === 'Escape') {
+            e.preventDefault();
+            pv.textContent = pv.dataset.placeholder || '';
+            pv.classList.remove('filled');
+            pv.blur();
+          }
+          else if (e.key === 'Tab') {
+            e.preventDefault();
+            focusSibling(e.shiftKey ? -1 : 1);
+          }
+        });
+      });
+    }
+
+    function attachBodyExpandClick(card: HTMLElement) {
+      // Make the collapsed prompt-body itself a click target — clicking
+      // anywhere in the dark code-area expands the card (same as the
+      // "Show full prompt ↓" button). Skips:
+      //   • .pv clicks — bracket fields keep their own edit handler
+      //   • text-selection drags — when the user has selected text we
+      //     don't yank the card open under them
+      //   • already-expanded cards — the explicit "Hide" button is the
+      //     only way back, and we don't want to lie with pointer cursor
+      const body = card.querySelector<HTMLElement>('.pc-body');
+      if (!body || body.dataset.fillinBodyClick === '1') return;
+      body.dataset.fillinBodyClick = '1';
+      const expandBtn = card.querySelector<HTMLButtonElement>('.pc-expand-btn, [data-pc-expand]');
+      if (!expandBtn) return;
+      // Capture mousedown coords so we can tell a click from a drag.
+      // Selection is the right gate but it's set async on mouseup; by
+      // tracking pointer-move distance we avoid expanding on the
+      // mouseup of a text-selection drag.
+      let downX = 0, downY = 0;
+      body.addEventListener('mousedown', (e) => {
+        downX = (e as MouseEvent).clientX;
+        downY = (e as MouseEvent).clientY;
+      });
+      body.addEventListener('click', (e) => {
+        if (card.classList.contains('is-expanded')) return;
+        const target = e.target as Element | null;
+        if (target && target.closest && target.closest('.pv')) return;
+        // If the cursor moved noticeably between mousedown and mouseup,
+        // treat it as a drag/select rather than a click.
+        const moved = Math.hypot((e as MouseEvent).clientX - downX, (e as MouseEvent).clientY - downY);
+        if (moved > 4) return;
+        const sel = window.getSelection();
+        if (sel && sel.toString().length > 0) return;
+        expandBtn.click();
+      });
+    }
+
+    function wireResetButton(card: HTMLElement, btn: HTMLButtonElement, pvs: HTMLElement[]) {
+      let confirmTimer: ReturnType<typeof setTimeout> | null = null;
+      btn.addEventListener('click', () => {
+        if (btn.classList.contains('confirming')) {
+          // Confirmed — clear this card's pvs + cascade-clear matching
+          // placeholders globally + remove from memory.
+          pvs.forEach((pv) => {
+            const placeholder = pv.dataset.placeholder || '';
+            pv.textContent = placeholder;
+            pv.classList.remove('filled');
+            pv.style.minWidth = '';
+            memory.delete(placeholder);
+          });
+          saveMemory();
+          // Cascade — clear matching .pv elsewhere
+          pvs.forEach((pv) => {
+            const placeholder = pv.dataset.placeholder || '';
+            document.querySelectorAll<HTMLElement>('.pv').forEach((other) => {
+              if (other.dataset.placeholder !== placeholder) return;
+              other.textContent = placeholder;
+              other.classList.remove('filled');
+            });
+          });
+          document.querySelectorAll<HTMLElement>('.pc, .single-prompt-card').forEach(updateProgressForCard);
+          btn.classList.remove('confirming');
+          btn.textContent = 'Reset';
+          if (confirmTimer) clearTimeout(confirmTimer);
+          showToast('Reset — cleared this card and matching fields elsewhere');
+        } else {
+          btn.classList.add('confirming');
+          btn.textContent = 'Click again to confirm';
+          if (confirmTimer) clearTimeout(confirmTimer);
+          confirmTimer = setTimeout(() => {
+            btn.classList.remove('confirming');
+            btn.textContent = 'Reset';
+          }, 3000);
+        }
+      });
+    }
+
+    // ── Copy hijack ──────────────────────────────────────────────
+    // The card grid + detail page already have copy buttons that
+    // read `.pc-raw` / `.spc-raw` text content. With our edits, the
+    // raw text is now out-of-date — we need to compose the prompt
+    // from the live `.pv-var` spans + surrounding text. Intercept
+    // copy clicks and substitute.
+    function composePromptText(card: HTMLElement): string {
+      const pre = card.querySelector<HTMLElement>('.pc-pre, .spc-pre');
+      if (!pre) return '';
+      // innerText gives us the text with .pv values inlined
+      // (contentEditable spans render their current textContent).
+      return (pre.innerText || pre.textContent || '').trim();
+    }
+
+    // Intercept copy clicks at the document level (capture phase) so we
+    // run before any other click handler on the button.
+    document.addEventListener('click', (e) => {
+      const target = e.target as Element | null;
+      if (!target || !target.closest) return;
+      const btn = target.closest<HTMLButtonElement>('[data-pc-copy], [data-fillin-copy]');
+      if (!btn) return;
+      const card = btn.closest<HTMLElement>('.pc, .single-prompt-card');
+      if (!card) return;
+      // Only override if this card has any .pv spans (i.e. it has
+      // been wired). Otherwise the original copy handler keeps working.
+      const pvs = card.querySelectorAll('.pv');
+      if (pvs.length === 0) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const text = composePromptText(card);
+      try {
+        navigator.clipboard.writeText(text).then(() => {
+          const original = btn.innerHTML;
+          btn.classList.add('is-copied');
+          btn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><path d="M3 8l3 3 7-7"/></svg> Copied';
+          const filled = Array.from(pvs).filter((pv) => pv.classList.contains('filled')).length;
+          const total = pvs.length;
+          showToast(
+            filled === total
+              ? 'Copied — all blanks filled'
+              : `Copied — ${total - filled} blank${total - filled === 1 ? '' : 's'} still to fill`
+          );
+          setTimeout(() => {
+            btn.classList.remove('is-copied');
+            btn.innerHTML = original;
+          }, 1500);
+        });
+      } catch (_) {
+        btn.textContent = 'Select & copy';
+      }
+    }, true);
+
+    // ── Main entry ──────────────────────────────────────────────
+    function wireAll() {
+      document.querySelectorAll<HTMLElement>('.pc, .single-prompt-card').forEach(wireCard);
+    }
+    wireAll();
+    document.addEventListener('astro:page-load', wireAll);
+    document.addEventListener('astro:after-swap', wireAll);
+  })();
+</script>

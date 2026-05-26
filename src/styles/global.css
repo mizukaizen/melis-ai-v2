@@ -357,11 +357,20 @@ main.content .pane.in-room .section-header {
 }
 .pc-footer {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   margin-top: auto;
-  padding-top: 4px;
+  padding: 4px 14px 0;
   gap: 10px;
+}
+/* Three zones: progress (auto) | expand (flex:1 centred) | cluster (auto).
+   The expand button grows to fill the middle band; its text is centred
+   inside that band. Flex-grow keeps the layout collision-free at any
+   card width — geometric centring (absolute) overlapped the Reset
+   button at narrow widths. */
+.pc-footer .pc-expand-btn {
+  flex: 1 1 auto;
+  text-align: center;
+  min-width: 0;
 }
 .pc-expand-btn {
   background: none;
@@ -372,7 +381,7 @@ main.content .pane.in-room .section-header {
   letter-spacing: 0.02em;
   cursor: pointer;
   padding: 2px 0;
-  text-align: left;
+  text-align: center;
   transition: opacity 0.15s ease;
 }
 .pc-expand-btn:hover { opacity: 0.7; }
@@ -401,13 +410,21 @@ main.content .pane.in-room .section-header {
     0 0 0 1px var(--cat-color, rgba(255, 255, 255, 0.14)),
     0 8px 28px rgba(0, 0, 0, 0.45);
 }
+/* `!important` to beat mockup.css line 3707 which forces
+   `.pc { max-height: 440px !important }` on every card. Without
+   `!important` here, "Show full prompt" hid the fade but the card
+   stayed clipped — user couldn't actually read the rest. */
 .pc.is-expanded {
-  max-height: none;
-  overflow: visible;
+  max-height: none !important;
+  overflow: visible !important;
   align-self: start;
 }
-.pc.is-expanded .pc-body { max-height: none; }
-.pc.is-expanded .pc-fade { opacity: 0; }
+.pc.is-expanded .pc-body {
+  max-height: none !important;
+  overflow: visible !important;
+  min-height: 0;
+}
+.pc.is-expanded .pc-fade { display: none; }
 
 /* Payoff-pill filter row */
 .pc-type-toggle {
@@ -439,6 +456,626 @@ main.content .pane.in-room .section-header {
   border-color: var(--accent);
   color: var(--accent);
   background: rgba(124, 58, 237, 0.10);
+}
+
+/* ── About pages — story hero + chapters + timeline + values + roadmap
+ *    + item-grid + cta-panel. Ported verbatim from
+ *    _cowork/outputs/website-rebrand/melis-ai-shared.css (lines 178-353,
+ *    685-855). The mockup loads this file via <link rel="stylesheet">;
+ *    v2 never imported it, so /about/sean + /about/melis-ai rendered
+ *    these classes (story-hero, chapter, roadmap, item-card, cta-panel,
+ *    btn, rule) as unstyled divs — collapsed to a vertical text stack
+ *    instead of the intended 2-column hero + 3-col surfaces grid +
+ *    chapter blocks with numbers/images.
+ *    Token names mapped to v2: --border → --border-2, --border-light →
+ *    --border-1, --text → --text-1, --accent-soft → --accent-subtle.
+ */
+
+/* Inline section divider */
+.section-body hr.rule {
+  border: none;
+  border-top: 1px solid var(--border-1);
+  margin: 56px 0;
+}
+
+/* Story hero — portrait + meta on the right side */
+.section-body .story-hero {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 40px;
+  align-items: start;
+  margin-bottom: 56px;
+}
+.section-body .story-portrait {
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+}
+.section-body .story-portrait img { width: 100%; display: block; }
+.section-body .story-hero-name {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  margin: 0 0 6px;
+}
+.section-body .story-hero-role {
+  font-size: 13px;
+  color: var(--text-2);
+  margin-bottom: 18px;
+}
+.section-body .story-hero-meta {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--text-3);
+  margin-bottom: 18px;
+}
+.section-body .story-hero-tagline {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin: 28px 0 12px;
+}
+.section-body .story-hero-tagline em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 400;
+}
+.section-body .story-hero-intro {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-2);
+  max-width: 760px;
+}
+
+/* Chapter blocks — numbered story sections */
+.section-body .chapter {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 32px;
+  padding: 40px 0;
+  border-top: 1px solid var(--border-1);
+}
+.section-body .chapter-num {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: 0.2em;
+  padding-top: 8px;
+}
+.section-body .chapter-title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin-bottom: 4px;
+}
+.section-body .chapter-title em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 500;
+}
+.section-body .chapter-subtitle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 22px;
+}
+.section-body .chapter-body {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-2);
+  max-width: 760px;
+}
+.section-body .chapter-body p { margin-bottom: 16px; }
+.section-body .chapter-body p:last-child { margin-bottom: 0; }
+.section-body .chapter-body em { color: var(--text-1); font-style: italic; }
+.section-body .chapter-body a {
+  color: var(--accent);
+  border-bottom: 1px solid rgba(124, 58, 237, 0.4);
+}
+.section-body .chapter-body a:hover { border-bottom-color: var(--accent); }
+.section-body .chapter-images {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  margin-top: 22px;
+}
+.section-body .chapter-image {
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 14px;
+}
+.section-body .chapter-caption {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-top: 10px;
+}
+
+/* Career timeline */
+.section-body .timeline {
+  border-top: 1px solid var(--border-1);
+  margin-top: 48px;
+}
+.section-body .timeline-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 32px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--border-1);
+}
+.section-body .timeline-year {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--text-3);
+  padding-top: 4px;
+}
+.section-body .timeline-org {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  margin-bottom: 4px;
+  color: var(--text-1);
+}
+.section-body .timeline-role {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.section-body .timeline-desc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-2);
+  max-width: 720px;
+}
+
+/* Values grid */
+.section-body .values-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border-1);
+  border: 1px solid var(--border-1);
+  margin-top: 28px;
+}
+.section-body .value-card {
+  background: var(--bg);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.section-body .value-icon { font-size: 24px; line-height: 1; }
+.section-body .value-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+.section-body .value-desc {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-2);
+}
+
+/* Roadmap (about-studio) */
+.section-body .roadmap { margin-top: 28px; }
+.section-body .roadmap-row {
+  display: grid;
+  grid-template-columns: 40px 220px 1fr;
+  gap: 24px;
+  align-items: start;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--border-1);
+}
+.section-body .roadmap-row:first-child {
+  border-top: 1px solid var(--border-1);
+}
+.section-body .roadmap-status {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  color: var(--accent);
+  text-align: center;
+}
+.section-body .roadmap-status.done { color: var(--text-2); }
+.section-body .roadmap-status.pending { color: var(--text-3); }
+.section-body .roadmap-phase {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.section-body .roadmap-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--text-1);
+  margin-top: 2px;
+}
+.section-body .roadmap-desc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+
+/* Item grid (3-col surfaces grid on about-studio) */
+.section-body .item-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border-1);
+  border: 1px solid var(--border-1);
+}
+@media (max-width: 900px) {
+  .section-body .item-grid { grid-template-columns: 1fr; }
+}
+.section-body .item-card {
+  background: var(--bg);
+  padding: 28px 24px;
+  cursor: pointer;
+  transition: background 200ms var(--ease);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 200px;
+  text-decoration: none;
+  color: inherit;
+}
+.section-body .item-card:hover { background: var(--surface); }
+.section-body .item-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-body .item-status {
+  padding: 1px 7px;
+  border-radius: 3px;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  border: 1px solid var(--border-1);
+}
+.section-body .item-status.live {
+  color: var(--accent);
+  border-color: rgba(124, 58, 237, 0.4);
+  background: var(--accent-subtle);
+}
+.section-body .item-status.flight {
+  color: rgba(255, 200, 80, 0.9);
+  border-color: rgba(255, 200, 80, 0.35);
+  background: rgba(255, 200, 80, 0.08);
+}
+.section-body .item-status.parked { color: var(--text-3); }
+.section-body .item-status.coming { color: var(--text-3); border-style: dashed; }
+.section-body .item-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  color: var(--text-1);
+}
+.section-body .item-title em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 500;
+}
+.section-body .item-line {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-2);
+  flex: 1;
+}
+.section-body .item-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  display: flex;
+  gap: 14px;
+  border-top: 1px solid var(--border-1);
+  padding-top: 12px;
+  margin-top: 6px;
+}
+
+/* CTA panel + btn */
+.section-body .cta-panel {
+  background: var(--surface);
+  border: 1px solid var(--border-1);
+  padding: 36px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  margin-top: 36px;
+}
+.section-body .cta-panel-text { flex: 1; }
+.section-body .cta-panel h3 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  margin: 0 0 8px;
+}
+.section-body .cta-panel h3 em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 500;
+}
+.section-body .cta-panel p {
+  font-size: 14px;
+  color: var(--text-2);
+  margin: 0;
+}
+.section-body .cta-panel .btn,
+.section-body a.btn {
+  display: inline-flex;
+  align-items: center;
+  background: var(--accent);
+  color: white;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 12px 18px;
+  border-radius: 4px;
+  border: 1px solid var(--accent);
+  cursor: pointer;
+  text-decoration: none;
+  transition: filter 160ms var(--ease);
+  white-space: nowrap;
+}
+.section-body .cta-panel .btn:hover,
+.section-body a.btn:hover { filter: brightness(1.1); }
+
+/* Back-link in hero (mockup-only — Astro routing handles browser back).
+   Hidden but kept in DOM so any markup that includes it doesn't break. */
+.section-header-inner .back-link { display: none !important; }
+
+/* ── Fill-in-the-blank prompt placeholders.
+ *
+ * Live prompts already render their brackets as
+ *   <span class="pv-var">[NAME]</span>
+ * (PromptCard.astro's highlightVars). FillInBlankController.astro
+ * promotes each `.pv-var` inside `.pc-pre` to also carry the `.pv`
+ * class which makes it click-to-edit. States:
+ *
+ *   .pv               — empty placeholder (violet, mirrors .pv-var)
+ *   .pv.editing       — contentEditable, focused
+ *   .pv.filled        — user-supplied value (signal/teal)
+ *   .pv.filled.editing — re-editing a filled value
+ *
+ * box-decoration-break: clone keeps the pill rendering clean when a
+ * long placeholder wraps onto two lines.
+ *
+ * Mockup: _cowork/outputs/website-rebrand/prompts-fill-in-blank-mockup.html
+ */
+.pc-pre .pv,
+.pc-pre .pv-var.pv {
+  display: inline;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: rgba(124, 58, 237, 0.18);
+  color: var(--accent);
+  border: 1px solid rgba(124, 58, 237, 0.32);
+  border-radius: 3px;
+  padding: 1px 8px;
+  margin: 0;
+  cursor: pointer;
+  transition: background 0.15s var(--ease), color 0.15s var(--ease), border-color 0.15s var(--ease);
+  outline: none;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.pc-pre .pv:hover {
+  background: rgba(124, 58, 237, 0.32);
+  color: var(--text-1);
+}
+.pc-pre .pv.editing {
+  display: inline-block;
+  background: var(--bg);
+  color: var(--text-1);
+  border-color: rgba(124, 58, 237, 0.55);
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.18);
+  cursor: text;
+}
+.pc-pre .pv.filled {
+  background: rgba(94, 234, 212, 0.10);
+  color: #5eead4;
+  border-color: rgba(94, 234, 212, 0.32);
+}
+.pc-pre .pv.filled:hover {
+  background: rgba(94, 234, 212, 0.32);
+  color: var(--text-1);
+}
+.pc-pre .pv.filled.editing {
+  background: var(--bg);
+  color: var(--text-1);
+  border-color: #5eead4;
+  box-shadow: 0 0 0 2px rgba(94, 234, 212, 0.18);
+}
+
+/* Per-card progress counter + reset button (injected by controller). */
+.pc-progress {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  align-self: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.pc-progress.complete { color: #5eead4; }
+.pc-btn-reset {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: 1px solid var(--border-2);
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s var(--ease);
+  white-space: nowrap;
+}
+.pc-btn-reset:hover {
+  border-color: #f87171;
+  color: #f87171;
+}
+.pc-btn-reset.confirming {
+  background: rgba(248, 113, 113, 0.10);
+  border-color: #f87171;
+  color: #f87171;
+}
+
+/* Right-side paired actions cluster (Reset + Copy). The controller
+   wraps both buttons in this div so they sit 8 px apart — reads as a
+   single action pair rather than two separate decisions. Footer's
+   own `gap: 10px` only spaces this cluster from the left items. */
+.pc-footer .pc-actions-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Collapsed prompt body is itself a click target — signals "click to
+   read the rest". Cascade the pointer to every descendant so the
+   cursor doesn't flicker between pointer (container) and text (over
+   <pre> content). Editing brackets still want the I-beam — re-asserted
+   below. Expanded body reverts to default on the container so over-text
+   inherits the I-beam (correct for reading/selecting). */
+.pc:not(.is-expanded) .pc-body,
+.pc:not(.is-expanded) .pc-body * {
+  cursor: pointer;
+}
+.pc:not(.is-expanded) .pc-body .pv.editing {
+  cursor: text;
+}
+.pc.is-expanded .pc-body {
+  cursor: default;
+}
+
+/* Single-prompt detail page also gets the fill-in treatment via the
+   same selectors — .spc-pre uses .pv-var the same way. */
+.spc-pre .pv,
+.spc-pre .pv-var.pv {
+  display: inline;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: rgba(124, 58, 237, 0.18);
+  color: var(--accent);
+  border: 1px solid rgba(124, 58, 237, 0.32);
+  border-radius: 3px;
+  padding: 1px 8px;
+  cursor: pointer;
+  transition: background 0.15s var(--ease), color 0.15s var(--ease), border-color 0.15s var(--ease);
+  outline: none;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.spc-pre .pv:hover {
+  background: rgba(124, 58, 237, 0.32);
+  color: var(--text-1);
+}
+.spc-pre .pv.editing {
+  display: inline-block;
+  background: var(--bg);
+  color: var(--text-1);
+  border-color: rgba(124, 58, 237, 0.55);
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.18);
+  cursor: text;
+}
+.spc-pre .pv.filled {
+  background: rgba(94, 234, 212, 0.10);
+  color: #5eead4;
+  border-color: rgba(94, 234, 212, 0.32);
+}
+.spc-pre .pv.filled.editing {
+  background: var(--bg);
+  color: var(--text-1);
+  border-color: #5eead4;
+  box-shadow: 0 0 0 2px rgba(94, 234, 212, 0.18);
+}
+
+/* Fill-in-the-blank toast (cascade notifications, reset confirmations).
+   Bottom-centre, signal-teal border, transient. */
+.fillin-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(60px);
+  background: rgba(28, 28, 37, 0.96);
+  backdrop-filter: blur(10px);
+  border: 1px solid #5eead4;
+  color: #5eead4;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  padding: 12px 22px;
+  border-radius: 6px;
+  opacity: 0;
+  transition: all 0.3s var(--ease);
+  pointer-events: none;
+  z-index: 10000;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+.fillin-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* Sidebar2 row icon: hover + active state accents.
+   Base styling lives in mockup.css (.sb2-icon → muted text-3, 13px,
+   opacity 0.55). On hover / active the icon picks up the accent colour
+   and full opacity, matching the panel-item.pi-icon treatment used by
+   /recos and /prompts surfaces. */
+.sidebar-2 .sb2-pane:not([data-pane="prompts"]) .sb2-item:hover .sb2-icon {
+  color: var(--accent);
+  opacity: 0.9;
+}
+.sidebar-2 .sb2-pane:not([data-pane="prompts"]) .sb2-item.active .sb2-icon {
+  color: var(--accent);
+  opacity: 1;
 }
 
 /* ════════════════════════════════════════════════════════════════

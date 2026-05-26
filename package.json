@@ -7,16 +7,20 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
+    "prebuild": "node scripts/build-cmdk-index.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "extract": "node scripts/extract-mockup-data.mjs",
-    "optimize-images": "node scripts/optimize-images.mjs"
+    "optimize-images": "node scripts/optimize-images.mjs",
+    "build-cmdk-index": "node scripts/build-cmdk-index.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.14",
     "@astrojs/react": "^4.4.2",
     "@astrojs/sitemap": "^3.7.2",
     "@astrojs/vercel": "^8.2.11",
+    "@huggingface/transformers": "^4.2.0",
+    "@orama/orama": "^3.1.18",
     "@tailwindcss/vite": "^4.3.0",
     "astro": "^5.18.0",
     "phosphor-react": "^1.4.1",
@@ -37,5 +41,11 @@
     "pngjs": "^7.0.0",
     "typescript": "^5.6.0"
   },
-  "packageManager": "pnpm@10.32.1"
+  "packageManager": "pnpm@10.32.1",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "onnxruntime-node",
+      "protobufjs"
+    ]
+  }
 }
