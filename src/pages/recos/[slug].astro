@@ -1,8 +1,11 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro';
 import SectionHero from '../../components/SectionHero.astro';
+import ShelfSection from '../../components/recos/ShelfSection.astro';
+import ListSection from '../../components/recos/ListSection.astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { itemHero, landingHero } from '../../lib/hero-image';
+import { normaliseReco } from '../../lib/recos';
 
 export const prerender = true;
 
@@ -14,77 +17,59 @@ export async function getStaticPaths() {
   }));
 }
 
-function withUtm(rawUrl: string, slug: string): string {
-  try {
-    const u = new URL(rawUrl);
-    u.searchParams.set('utm_source', 'melis-ai');
-    u.searchParams.set('utm_medium', 'recos');
-    u.searchParams.set('utm_campaign', slug);
-    return u.toString();
-  } catch { return rawUrl; }
-}
-
 type Props = { item: CollectionEntry<'recos'> };
 const { item } = Astro.props as Props;
 const data = item.data;
 const cover = (data.cover && data.cover.startsWith('/'))
   ? data.cover
   : itemHero('recos', data.title.replace(/<[^>]+>/g, ''), item.slug) || landingHero('recos');
-const tools = data.tools || [];
+
+const view = data.status === 'live'
+  ? await normaliseReco(data as any, item.slug)
+  : null;
+
+const heroEyebrow = view
+  ? [view.eyebrow, view.volume].filter(Boolean).join(' · ')
+  : data.eyebrow;
+const sectionsWithShelves = view ? view.sections.filter((s) => s.shelfItems.length > 0) : [];
 ---
 
 <AppLayout title={data.title} pane="recos" inRoom description={data.lede}>
   <SectionHero
     cover={cover}
-    eyebrow={data.eyebrow}
+    eyebrow={heroEyebrow}
     title={data.title}
     titleHtml={data.titleHtml}
   />
 
   <section class="section-body">
-    <div class="v6-detail">
-      {data.status === 'coming-soon' ? (
-        <div class="reco-stub">
-          <h2 class="h2">Coming soon.</h2>
-          <p class="body-lead">I'm building this list slowly — only adding things I genuinely use. Check back, or hit <a href="/newsletter/" style="color: var(--accent); border-bottom: 1px solid currentColor;">subscribe</a> to get notified when it lands.</p>
-          <p class="body-lead">In the meantime, the four lists that <em>are</em> live: <a href="/recos/tools-i-use-daily/">Software</a> · <a href="/recos/hardware-that-holds-up/">Gear</a> · <a href="/recos/books-that-compound/">Books</a> · <a href="/recos/newsletters-i-read/">Newsletters</a>.</p>
-        </div>
-      ) : (
-        <>
-          <section class="vd-section">
-            <h3 class="vd-h3">What I actually <em>use</em>.</h3>
-            <div class="vd-prose">
-              <p>No affiliate padding. No "this changed my life!!" copy. These are the tools, books, courses, and apps I genuinely use and would buy again. If a link earns me anything, I'll say so on the line. Otherwise it doesn't.</p>
-            </div>
-          </section>
+    {data.status === 'coming-soon' && (
+      <div class="reco-stub">
+        <h2 class="h2">Coming soon.</h2>
+        <p class="body-lead">I'm building this list slowly — only adding things I genuinely use. Check back, or hit <a href="/newsletter/" style="color: var(--accent); border-bottom: 1px solid currentColor;">subscribe</a> to get notified when it lands.</p>
+        <p class="body-lead">In the meantime, the four lists that <em>are</em> live: <a href="/recos/software/">Software</a> · <a href="/recos/hardware/">Hardware</a> · <a href="/recos/books/">Books</a> · <a href="/recos/newsletters/">Newsletters</a>.</p>
+      </div>
+    )}
 
-          <div class="section-eyebrow-small">The list</div>
-          <div class="vd-rows">
-            {tools.map((t) => (
-              t.url ? (
-                <a class="vd-row" href={withUtm(t.url, item.slug)} target="_blank" rel="noopener nofollow sponsored">
-                  <div>
-                    <div class="vd-row-name">{t.name}</div>
-                    {t.attr && <div class="vd-row-attr">{t.attr}</div>}
-                  </div>
-                  <div class="vd-row-take">{t.take || ''}</div>
-                  <div class="vd-row-cta">{t.cta || 'Visit'} ↗</div>
-                </a>
-              ) : (
-                <div class="vd-row">
-                  <div>
-                    <div class="vd-row-name">{t.name}</div>
-                    {t.attr && <div class="vd-row-attr">{t.attr}</div>}
-                  </div>
-                  <div class="vd-row-take">{t.take || ''}</div>
-                  <div class="vd-row-cta vd-row-cta-muted">{t.cta || ''}</div>
-                </div>
-              )
+    {view && (
+      <div class="reco-detail-v7">
+        {view.lede && <p class="section-lead">{view.lede}</p>}
+
+        {sectionsWithShelves.length > 0 && (
+          <>
+            <div class="section-eyebrow-row" id="highlights-eyebrow">
+              <span class="label"><em>Highlights.</em></span>
+              <span class="meta">Top picks · {view.totalShelfItems} of {view.totalItems}</span>
+            </div>
+            {sectionsWithShelves.map((section, idx) => (
+              <ShelfSection section={section} shelfIndex={idx + 1} />
             ))}
-          </div>
-        </>
-      )}
-    </div>
+          </>
+        )}
+
+        <ListSection sections={view.sections} totalItems={view.totalItems} />
+      </div>
+    )}
   </section>
 
   <style>
