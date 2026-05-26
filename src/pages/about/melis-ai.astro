@@ -123,19 +123,21 @@ import LayerDivider     from '../../components/about/brand/LayerDivider.astro';
     z-index: 0;
   }
   .melis-hero-bg img {
-    width: 100%; height: 100%;
+    width: 105%; height: 105%;          /* slight overscale so blur doesn't reveal edges */
+    margin: -2.5% 0 0 -2.5%;
     object-fit: cover;
     display: block;
+    filter: blur(10px) saturate(0.9);
   }
   .melis-hero-veil {
     position: absolute; inset: 0;
     background: linear-gradient(
       to top,
-      rgba(15, 15, 15, 0.95) 0%,
-      rgba(15, 15, 15, 0.78) 30%,
-      rgba(15, 15, 15, 0.42) 60%,
-      rgba(15, 15, 15, 0.18) 90%,
-      rgba(15, 15, 15, 0.04) 100%
+      rgba(15, 15, 15, 0.96) 0%,
+      rgba(15, 15, 15, 0.86) 35%,
+      rgba(15, 15, 15, 0.62) 65%,
+      rgba(15, 15, 15, 0.38) 90%,
+      rgba(15, 15, 15, 0.22) 100%
     );
     z-index: 1;
   }
