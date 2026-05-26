@@ -1,0 +1,64 @@
+---
+// Section 18 · Sub-brands. Placeholder per Sean's plan: list of 6
+// sub-brand names + 1-line descriptions. No full identity guides.
+
+const SUBBRANDS = [
+  { name: 'Lighthouse',    role: 'Strategic foresight + reports' },
+  { name: 'Holy Signal',   role: 'AI alignment for solo operators' },
+  { name: 'Phantom Ink',   role: 'Ghostwritten dispatches + reports' },
+  { name: 'Nightglass',    role: 'Premium ops dashboards' },
+  { name: 'Motif',         role: 'Brand systems for AI-first studios' },
+  { name: 'Hive Doctrine', role: 'Operator philosophy + ritual surfaces' },
+];
+---
+
+<section id="subbrands" data-brand-section class="melis-section">
+  <div class="melis-section-eyebrow-row">
+    <span class="num">18</span>
+    <span class="name">Toolkit · Sub-brands</span>
+    <span class="line"></span>
+  </div>
+  <h2 class="melis-section-title">Six sub-brands in flight. <em>One family.</em></h2>
+
+  <p class="brand-stub-lede">Each sub-brand shares the canonical melis.ai design tokens. <em>Full identity guidelines for each available to collaborators.</em></p>
+
+  <div class="subbrand-list">
+    {SUBBRANDS.map((s) => (
+      <div class="subbrand-row">
+        <div class="subbrand-name">{s.name}</div>
+        <div class="subbrand-role">{s.role}</div>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style is:global>
+  .subbrand-list {
+    margin-top: 40px;
+    border-top: 1px solid var(--border-2, rgba(232,227,216,0.08));
+  }
+  .subbrand-row {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 24px;
+    align-items: baseline;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.06));
+  }
+  .subbrand-name {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    color: var(--text-1, var(--text));
+  }
+  .subbrand-role {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--text-2);
+  }
+  @media (max-width: 720px) {
+    .subbrand-row { grid-template-columns: 1fr; gap: 4px; padding: 14px 0; }
+  }
+</style>

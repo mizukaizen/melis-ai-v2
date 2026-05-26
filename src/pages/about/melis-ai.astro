@@ -18,21 +18,15 @@ import Voice        from '../../components/about/brand/Voice.astro';
 import Imagery      from '../../components/about/brand/Imagery.astro';
 import Influences   from '../../components/about/brand/Influences.astro';
 import Placeholders from '../../components/about/brand/Placeholders.astro';
+import Channels         from '../../components/about/brand/Channels.astro';
+import SubBrands        from '../../components/about/brand/SubBrands.astro';
+import ComponentLibrary from '../../components/about/brand/ComponentLibrary.astro';
+import DoDont           from '../../components/about/brand/DoDont.astro';
+import Closing          from '../../components/about/brand/Closing.astro';
+import Sources          from '../../components/about/brand/Sources.astro';
 
-// Sections still rendered as placeholder anchors so the sb2 scroll-spy
-// has targets while content lands progressively. Each pending section
-// gets eyebrow + title + a single placeholder block.
-type Pending = { id: string; num: string; group: string; name: string };
-const PENDING: Pending[] = [
-  { id: 'website',       num: '15', group: 'Where the brand lives',  name: 'The website' },
-  { id: 'soul',          num: '16', group: 'Where the brand lives',  name: 'Soul of the Machine' },
-  { id: 'youtube',       num: '17', group: 'Where the brand lives',  name: 'YouTube' },
-  { id: 'subbrands',     num: '18', group: 'Toolkit',                 name: 'Sub-brands' },
-  { id: 'library',       num: '19', group: 'Toolkit',                 name: 'Component library' },
-  { id: 'dodont',        num: '20', group: 'Conclusion',              name: "Do · Don't" },
-  { id: 'closing',       num: '21', group: 'Conclusion',              name: 'Closing' },
-  { id: 'sources',       num: '§',  group: 'Conclusion',              name: 'Sources' },
-];
+// All 22 brand book sections + § Sources are now backed by dedicated
+// components — no PENDING placeholders remaining.
 ---
 
 <AppLayout
@@ -65,21 +59,12 @@ const PENDING: Pending[] = [
     <Placeholders slug="dataviz" />
     <Placeholders slug="accessibility" />
     <Influences />
-
-    {PENDING.map((s) => (
-      <section id={s.id} data-brand-section class="melis-section melis-section-placeholder">
-        <div class="melis-section-eyebrow-row">
-          <span class="num">{s.num}</span>
-          <span class="name">{s.group} · {s.name}</span>
-          <span class="line"></span>
-        </div>
-        <h2 class="melis-section-title">{s.name}</h2>
-        <p class="melis-section-placeholder-body">
-          <em>Section content lands in a subsequent commit in this PR.</em>
-          This anchor exists so the sb2 scroll-spy has a target.
-        </p>
-      </section>
-    ))}
+    <Channels />
+    <SubBrands />
+    <ComponentLibrary />
+    <DoDont />
+    <Closing />
+    <Sources />
   </section>
 </AppLayout>
 
