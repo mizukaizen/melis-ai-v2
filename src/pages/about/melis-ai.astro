@@ -9,13 +9,13 @@ import Promise   from '../../components/about/brand/Promise.astro';
 import Values    from '../../components/about/brand/Values.astro';
 import Goal      from '../../components/about/brand/Goal.astro';
 import Stance    from '../../components/about/brand/Stance.astro';
+import Lexicon   from '../../components/about/brand/Lexicon.astro';
 
 // Sections still rendered as placeholder anchors so the sb2 scroll-spy
 // has targets while content lands progressively. Each pending section
 // gets eyebrow + title + a single placeholder block.
 type Pending = { id: string; num: string; group: string; name: string };
 const PENDING: Pending[] = [
-  { id: 'lexicon',       num: 'L',  group: 'Why we exist',          name: 'The Lexicon' },
   { id: 'compass',       num: 'C',  group: 'Why we exist',          name: 'The Compass' },
   { id: 'wordmark',      num: '05', group: 'How we appear',          name: 'Wordmark' },
   { id: 'colour',        num: '06', group: 'How we appear',          name: 'Colour' },
@@ -56,6 +56,7 @@ const PENDING: Pending[] = [
     <Values />
     <Goal />
     <Stance />
+    <Lexicon />
 
     {PENDING.map((s) => (
       <section id={s.id} data-brand-section class="melis-section melis-section-placeholder">

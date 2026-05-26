@@ -1,0 +1,113 @@
+---
+// Section L · The Lexicon · concepts worth carrying forward.
+// 33 terms in 5 language groupings, each paired with a hand-coded
+// W500 geometric glyph. Data in src/data/lexicon.ts; glyphs are
+// rendered as inner SVG markup wrapped by a 24×24 viewBox here.
+
+import { LEXICON, LEXICON_GROUPS } from '../../../data/lexicon';
+---
+
+<section id="lexicon" data-brand-section class="melis-section">
+  <div class="melis-section-eyebrow-row">
+    <span class="num">L</span>
+    <span class="name">The Lexicon · concepts worth carrying forward</span>
+    <span class="line"></span>
+  </div>
+  <h2 class="melis-section-title">Thirty-three concepts humanity must take forward. <em>Things worth honouring, embedding, returning to.</em></h2>
+
+  <div class="melis-prose">
+    <p>English is a literal language. It does not have single words for many of the concepts other traditions encoded thousands of years ago — the right moment versus clock time, the gentle sadness at impermanence, fearless truth-telling at risk to oneself. The Lexicon is melis.ai's canon of those concepts: thirty-three terms drawn from Greek, Latin, Japanese, Sanskrit, and beyond, each one paired with a hand-coded geometric glyph. The glyph is an act of preservation; the word is the heart.</p>
+    <p>These appear throughout our surfaces — section anchors, dispatch sign-offs, course chapters, eventually physical products — as quiet reminders. Different in kind from the functional icons (Phosphor) we use for buttons and navigation. Sigils mark <em>concepts</em>; icons mark <em>objects</em>.</p>
+  </div>
+
+  {LEXICON_GROUPS.map((group) => {
+    const items = LEXICON.filter((t) => group.languages.includes(t.language));
+    return (
+      <div class="lex-group">
+        <div class="lex-section-head"><span>{group.label}</span></div>
+        <div class="lex-grid">
+          {items.map((t) => (
+            <article class="lex-card">
+              <span class="lex-glyph">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" set:html={t.sigil} />
+              </span>
+              <div class="lex-num">{t.num} · {t.language}</div>
+              <h4 class="lex-word">
+                {t.term}
+                {t.translit && <span class="translit">{t.translit}</span>}
+              </h4>
+              <p class="lex-gloss">{t.gloss}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    );
+  })}
+</section>
+
+<style is:global>
+  .lex-group { margin-top: 56px; }
+  .lex-section-head {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.08));
+  }
+  .lex-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .lex-card {
+    padding: 26px 28px;
+    background: rgba(255,255,255,0.015);
+    border: 1px solid var(--border-2, rgba(232,227,216,0.08));
+    display: flex; flex-direction: column;
+  }
+  .lex-glyph {
+    width: 40px; height: 40px;
+    color: var(--accent);
+    margin-bottom: 18px;
+    display: inline-flex;
+  }
+  .lex-glyph svg { width: 100%; height: 100%; }
+  .lex-num {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 8px;
+  }
+  .lex-word {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 1.15;
+    margin: 0 0 12px;
+    color: var(--text-1, var(--text));
+  }
+  .lex-word .translit {
+    font-family: var(--font-mono);
+    font-style: normal;
+    font-size: 10px;
+    color: var(--text-3);
+    margin-left: 10px;
+    letter-spacing: 0.06em;
+    vertical-align: 3px;
+  }
+  .lex-gloss {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--text-2);
+    margin: auto 0 0;
+  }
+  @media (max-width: 1100px) {
+    .lex-grid { grid-template-columns: 1fr; }
+  }
+</style>
