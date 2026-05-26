@@ -1,10 +1,10 @@
 ---
-// Placeholder sections — Spacing & layout · Motion · Data viz ·
-// Accessibility. Per Sean's plan: detailed specs are internal,
-// available to collaborators. Renders one stub at a time so callers
-// can interleave with neighbouring fully-ported sections in source
-// order (Spacing sits between Typography and Voice; Motion / DataViz /
-// Accessibility sit between Imagery and Influences).
+// Principle stubs for Spacing & layout · Motion · Data viz ·
+// Accessibility. Each renders with the canonical section chrome
+// (eyebrow row + Cormorant title + 2–3 sentence prose body) — no
+// dashed-border placeholder treatment, no "available to collaborators"
+// framing. Voice lifted from Manifesto/Promise: short, declarative,
+// principle-first.
 
 interface Props {
   slug: 'spacing' | 'motion' | 'dataviz' | 'accessibility';
@@ -12,24 +12,36 @@ interface Props {
 
 const { slug } = Astro.props;
 
-const STUBS = {
+type Stub = {
+  num: string;
+  group: string;
+  name: string;
+  title: string;
+  body: string;
+};
+
+const STUBS: Record<Props['slug'], Stub> = {
   spacing: {
     num: '08', group: 'How we appear', name: 'Spacing & layout',
-    lede: 'Detailed spacing tokens (4 / 8 / 16 / 24 / 44 / 64 / 96 px) and the 720 px / 1100 px reading-column widths are part of the internal layout grid. <em>Available to collaborators on request.</em>',
+    title: 'Generous, considered, never tight.',
+    body: 'Whitespace earns its place. The page breathes because every block has room to be what it is — body copy at a comfortable reading column, sections separated by air, chrome that frames without crowding. <em>Density is not depth.</em> When a layout feels crowded, the answer is almost never another column.',
   },
   motion: {
     num: '11', group: 'How we appear', name: 'Motion',
-    lede: 'Restrained, intentional, reverent of attention. Easing curves, durations, motion-reduction defaults — all internal. <em>Available to collaborators on request.</em>',
+    title: 'Restrained, purposeful, never decorative.',
+    body: 'Things move when meaning requires it — a state change, a transition between rooms, a focus shift that draws the eye to where the work is now. We don\'t animate to signal effort. A still page that holds attention is worth more than a page that performs liveliness. <em>Honest before impressive.</em>',
   },
   dataviz: {
     num: '12', group: 'How we appear', name: 'Data viz',
-    lede: 'One chart, one primary colour. Maximise data-ink, minimise chart-junk. Token-tied palettes for sequential / diverging / categorical scales. <em>Internal — available to collaborators on request.</em>',
+    title: 'Honest before impressive.',
+    body: 'Charts that tell the truth even when the truth is messy. One chart, one primary colour. Maximise data, minimise chrome. If a chart needs decoration to be interesting, the underlying data isn\'t the point — and we should be writing prose instead.',
   },
   accessibility: {
     num: '13', group: 'How we appear', name: 'Accessibility',
-    lede: 'Accessibility is a brand decision, not a compliance afterthought. WCAG AA contrast targets, keyboard-first interaction, motion-reduction honoured, prose-clarity standards. <em>Internal accessibility spec available to collaborators on request.</em>',
+    title: 'WCAG AA is the floor, not the goal.',
+    body: 'Contrast targets hit. Focus states visible. Motion-reduction honoured. Keyboard-first interaction across every surface. Accessibility is a brand decision, not a compliance afterthought — <em>the surface tells you what we think of the audience.</em>',
   },
-} as const;
+};
 
 const s = STUBS[slug];
 ---
@@ -40,23 +52,9 @@ const s = STUBS[slug];
     <span class="name">{s.group} · {s.name}</span>
     <span class="line"></span>
   </div>
-  <h2 class="melis-section-title">{s.name}</h2>
-  <p class="brand-stub-lede" set:html={s.lede} />
-</section>
+  <h2 class="melis-section-title">{s.title}</h2>
 
-<style is:global>
-  .brand-stub-lede {
-    max-width: 720px;
-    font-size: 16px;
-    line-height: 1.7;
-    color: var(--text-2);
-    margin: 0;
-  }
-  .brand-stub-lede em {
-    font-style: italic;
-    color: var(--accent);
-    font-family: var(--font-display);
-    font-size: 18px;
-    font-weight: 400;
-  }
-</style>
+  <div class="melis-prose">
+    <p set:html={s.body} />
+  </div>
+</section>
