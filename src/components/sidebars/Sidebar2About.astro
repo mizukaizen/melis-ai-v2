@@ -1,7 +1,13 @@
 ---
+// Sidebar2About — sb2 for /about/sean (the biography route).
+// /about/melis-ai now uses Sidebar2MelisAI (brand-book TOC).
+// /about/legals  now uses Sidebar2Legals.
+// All three are routed independently by Sidebar2.astro.
+
 const path = Astro.url.pathname;
 const isSean = path.startsWith('/about/sean');
 const isStudio = path.startsWith('/about/melis-ai');
+const isLegals = path.startsWith('/about/legals');
 
 // Chapter TOC for /about/sean/ — anchor IDs match the chapter divs in
 // src/_html/pane-about.html (ch01-ch09 + timeline + drives).
@@ -18,15 +24,6 @@ const SEAN_CHAPTERS: { id: string; label: string; num?: string }[] = [
   { id: 'ch09',     label: 'The Long Bet',           num: '09' },
   { id: 'timeline', label: 'Career Timeline' },
   { id: 'drives',   label: 'What Drives Me' },
-];
-
-// Chapter TOC for /about/melis-ai/ — anchor IDs match the section ids
-// in src/_html/pane-about-studio.html.
-const STUDIO_CHAPTERS: { id: string; label: string }[] = [
-  { id: 'what',      label: 'What is melis.ai' },
-  { id: 'mission',   label: 'The Mission' },
-  { id: 'inside',    label: "What's Live · Five Surfaces" },
-  { id: 'roadmap',   label: 'The Roadmap' },
 ];
 ---
 
@@ -50,7 +47,14 @@ const STUDIO_CHAPTERS: { id: string; label: string }[] = [
           <div class="sb2-name">melis.ai</div>
           <div class="sb2-count">the studio</div>
         </div>
-        <div class="sb2-desc">Studio behind it all</div>
+        <div class="sb2-desc">Studio + brand system</div>
+      </a>
+      <a class="sb2-item" class:list={[{ active: isLegals }]} href="/about/legals/">
+        <div class="sb2-row">
+          <div class="sb2-name">Legals</div>
+          <div class="sb2-count">policy</div>
+        </div>
+        <div class="sb2-desc">Privacy + terms</div>
       </a>
     </div>
 
@@ -60,17 +64,6 @@ const STUDIO_CHAPTERS: { id: string; label: string }[] = [
         {SEAN_CHAPTERS.map((c) => (
           <a class="about-toc-item" href={`#${c.id}`} data-toc-target={c.id}>
             {c.num && <span class="toc-num">{c.num}</span>}
-            <span class="toc-label">{c.label}</span>
-          </a>
-        ))}
-      </nav>
-    )}
-
-    {isStudio && (
-      <nav class="about-toc" data-about-toc>
-        <div class="about-toc-label">Chapters</div>
-        {STUDIO_CHAPTERS.map((c) => (
-          <a class="about-toc-item" href={`#${c.id}`} data-toc-target={c.id}>
             <span class="toc-label">{c.label}</span>
           </a>
         ))}

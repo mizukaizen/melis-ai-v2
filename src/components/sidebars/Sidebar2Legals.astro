@@ -1,0 +1,129 @@
+---
+// Sidebar2Legals — sb2 for /about/legals. Two anchor entries:
+// Privacy policy + Terms of service. Same scroll-spy pattern as the
+// melis.ai brand book — observes [data-brand-section][id], toggles
+// .active on the matching TOC link.
+
+const ITEMS = [
+  { id: 'privacy', label: 'Privacy policy' },
+  { id: 'terms',   label: 'Terms of service' },
+];
+---
+
+<aside class="sidebar-2 sb2-legals" transition:persist="sb2-about-legals">
+  <div class="sb2-pane active" data-pane="about-legals">
+    <div class="brand-sb2-header">
+      <span class="brand-sb2-dot"></span>
+      <span>Legals · melis.ai</span>
+    </div>
+
+    <div class="brand-sb2-group">
+      <div class="brand-sb2-group-items">
+        {ITEMS.map((it, i) => (
+          <a class="brand-sb2-item" href={`#${it.id}`} data-brand-toc data-section-id={it.id}>
+            <div class="brand-sb2-row">
+              <span class="brand-sb2-num">{String(i + 1).padStart(2, '0')}</span>
+              <span class="brand-sb2-name">{it.label}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</aside>
+
+<style>
+  .sb2-legals .brand-sb2-header {
+    display: flex; align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    padding: 0 8px;
+    margin: 24px 0 22px;
+  }
+  .sb2-legals .brand-sb2-dot {
+    width: 7px; height: 7px;
+    background: #5eead4;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #5eead4;
+    flex-shrink: 0;
+  }
+  .sb2-legals .brand-sb2-group { padding: 0 8px; }
+  .sb2-legals .brand-sb2-item {
+    display: flex;
+    padding: 8px 12px 8px 14px;
+    border-left: 2px solid transparent;
+    font-size: 12.5px;
+    color: var(--text-2);
+    text-decoration: none;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+  .sb2-legals .brand-sb2-item:hover { color: var(--text-1, var(--text)); }
+  .sb2-legals .brand-sb2-item.active {
+    border-left-color: var(--accent);
+    color: var(--text-1, var(--text));
+    background: rgba(124, 58, 237, 0.08);
+  }
+  .sb2-legals .brand-sb2-row {
+    display: flex; align-items: baseline;
+    gap: 12px; width: 100%;
+  }
+  .sb2-legals .brand-sb2-num {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    color: var(--text-3);
+    min-width: 14px;
+    letter-spacing: 0.05em;
+  }
+  .sb2-legals .brand-sb2-name { flex: 1; line-height: 1.4; }
+</style>
+
+<script>
+  function wireLegalsSb2() {
+    const sb2 = document.querySelector<HTMLElement>('aside.sidebar-2.sb2-legals');
+    if (!sb2) return;
+
+    const tocLinks = Array.from(sb2.querySelectorAll<HTMLAnchorElement>('a[data-brand-toc]'));
+    tocLinks.forEach((link) => {
+      const flagged = link as HTMLAnchorElement & { _wired?: boolean };
+      if (flagged._wired) return;
+      flagged._wired = true;
+      link.addEventListener('click', (e) => {
+        const href = link.getAttribute('href') || '';
+        if (!href.startsWith('#')) return;
+        const target = document.getElementById(href.slice(1));
+        if (!target) return;
+        e.preventDefault();
+        const top = target.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top, behavior: 'smooth' });
+      });
+    });
+
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-brand-section][id]'));
+    if (sections.length === 0) return;
+    function setActive(sid: string | null) {
+      tocLinks.forEach((l) => l.classList.toggle('active', !!sid && l.dataset.sectionId === sid));
+    }
+
+    const observed = new Map<string, IntersectionObserverEntry>();
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => observed.set(e.target.id, e));
+        const visible = sections
+          .filter((s) => observed.get(s.id)?.isIntersecting)
+          .sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
+        if (visible.length === 0) return;
+        setActive(visible[0].id);
+      },
+      { rootMargin: '-80px 0px -60% 0px', threshold: 0 },
+    );
+    sections.forEach((s) => io.observe(s));
+    setActive(tocLinks[0]?.dataset.sectionId || null);
+  }
+
+  document.addEventListener('astro:page-load', wireLegalsSb2);
+  if (document.readyState !== 'loading') wireLegalsSb2();
+</script>

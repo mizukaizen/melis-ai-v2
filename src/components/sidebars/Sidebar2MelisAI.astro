@@ -1,0 +1,259 @@
+---
+// Sidebar2MelisAI — sb2 for /about/melis-ai. Hosts the consolidated
+// studio + brand book TOC. "The studio" intro is the first sb2 entry
+// (anchor: #the-studio). Then 5 chevron-collapsible groups for the
+// 22 brand book sections.
+//
+// transition:persist="sb2-about-melis-ai" — survives in-page anchor
+// nav cleanly. Mirrors the gold-standard mockup at
+// _cowork/outputs/website-rebrand/about-brand-canonical-chrome.html.
+
+type Item = { id: string; num: string; name: string; sub?: string };
+type Group = { glyph: string; label: string; items: Item[] };
+
+const GROUPS: Group[] = [
+  {
+    glyph: '◎',
+    label: 'Why we exist',
+    items: [
+      { id: 'manifesto', num: '00', name: 'Manifesto' },
+      { id: 'promise',   num: '01', name: 'Promise' },
+      { id: 'values',    num: '02', name: 'Values' },
+      { id: 'goal',      num: '03', name: 'Goal' },
+      { id: 'stance',    num: '04', name: "Stance · what we're not" },
+      { id: 'lexicon',   num: 'L',  name: 'The Lexicon', sub: '33 concepts' },
+      { id: 'compass',   num: 'C',  name: 'The Compass', sub: '15 frames' },
+    ],
+  },
+  {
+    glyph: '◐',
+    label: 'How we appear',
+    items: [
+      { id: 'wordmark',      num: '05', name: 'Wordmark' },
+      { id: 'colour',        num: '06', name: 'Colour' },
+      { id: 'typography',    num: '07', name: 'Typography' },
+      { id: 'spacing',       num: '08', name: 'Spacing & layout' },
+      { id: 'voice',         num: '09', name: 'Voice' },
+      { id: 'imagery',       num: '10', name: 'Imagery' },
+      { id: 'motion',        num: '11', name: 'Motion' },
+      { id: 'dataviz',       num: '12', name: 'Data viz' },
+      { id: 'accessibility', num: '13', name: 'Accessibility' },
+      { id: 'influences',    num: '14', name: 'Influences' },
+    ],
+  },
+  {
+    glyph: '◇',
+    label: 'Where the brand lives',
+    items: [
+      { id: 'website',   num: '15', name: 'The website' },
+      { id: 'soul',      num: '16', name: 'Soul of the Machine' },
+      { id: 'youtube',   num: '17', name: 'YouTube' },
+    ],
+  },
+  {
+    glyph: '◈',
+    label: 'Toolkit',
+    items: [
+      { id: 'subbrands', num: '18', name: 'Sub-brands' },
+      { id: 'library',   num: '19', name: 'Component library' },
+    ],
+  },
+  {
+    glyph: '✓',
+    label: 'Conclusion',
+    items: [
+      { id: 'dodont',  num: '20', name: "Do · Don't" },
+      { id: 'closing', num: '21', name: 'Closing' },
+      { id: 'sources', num: '§',  name: 'Sources' },
+    ],
+  },
+];
+---
+
+<aside class="sidebar-2 sb2-melis-ai" transition:persist="sb2-about-melis-ai">
+  <div class="sb2-pane active" data-pane="about-studio">
+    <div class="brand-sb2-header">
+      <span class="brand-sb2-dot"></span>
+      <span>melis.ai · brand system · v2026.04.29</span>
+    </div>
+
+    <a class="brand-sb2-item brand-sb2-studio" href="#the-studio" data-brand-toc data-section-id="the-studio">
+      <div class="brand-sb2-row">
+        <span class="brand-sb2-num">⊚</span>
+        <span class="brand-sb2-name">The studio<span class="brand-sb2-sub">what melis.ai is</span></span>
+      </div>
+    </a>
+
+    {GROUPS.map((g) => (
+      <div class="brand-sb2-group">
+        <div class="brand-sb2-group-header" data-pgh-toggle>
+          <span class="gh-left">
+            <span class="glyph">{g.glyph}</span>
+            <span>{g.label}</span>
+          </span>
+          <span class="chev">▾</span>
+        </div>
+        <div class="brand-sb2-group-items">
+          {g.items.map((it) => (
+            <a class="brand-sb2-item" href={`#${it.id}`} data-brand-toc data-section-id={it.id}>
+              <div class="brand-sb2-row">
+                <span class="brand-sb2-num">{it.num}</span>
+                <span class="brand-sb2-name">
+                  {it.name}
+                  {it.sub && <span class="brand-sb2-sub">{it.sub}</span>}
+                </span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</aside>
+
+<style>
+  /* Scoped to .sb2-melis-ai — won't leak onto other surfaces. Mirrors
+     the gold-standard brand book sb2 chrome verbatim. */
+  .sb2-melis-ai .brand-sb2-header {
+    display: flex; align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    padding: 0 8px;
+    margin: 24px 0 22px;
+  }
+  .sb2-melis-ai .brand-sb2-dot {
+    width: 7px; height: 7px;
+    background: #5eead4;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #5eead4;
+    flex-shrink: 0;
+  }
+
+  .sb2-melis-ai .brand-sb2-studio {
+    margin: 0 8px 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.08));
+  }
+
+  .sb2-melis-ai .brand-sb2-group { margin-bottom: 18px; padding: 0 8px; }
+  .sb2-melis-ai .brand-sb2-group-header {
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text-3);
+    padding: 4px 6px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .sb2-melis-ai .brand-sb2-group-header .gh-left { display: flex; align-items: center; gap: 8px; }
+  .sb2-melis-ai .brand-sb2-group-header .glyph { color: var(--accent); opacity: 0.5; font-size: 11px; }
+  .sb2-melis-ai .brand-sb2-group-header .chev {
+    opacity: 0.4;
+    font-size: 10px;
+    transition: transform 0.15s ease;
+  }
+  .sb2-melis-ai .brand-sb2-group.is-collapsed .chev { transform: rotate(-90deg); }
+  .sb2-melis-ai .brand-sb2-group.is-collapsed .brand-sb2-group-items { display: none; }
+
+  .sb2-melis-ai .brand-sb2-item {
+    display: flex;
+    padding: 7px 12px 7px 14px;
+    border-left: 2px solid transparent;
+    font-size: 12.5px;
+    color: var(--text-2);
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+  .sb2-melis-ai .brand-sb2-item:hover { color: var(--text-1, var(--text)); }
+  .sb2-melis-ai .brand-sb2-item.active {
+    border-left-color: var(--accent);
+    color: var(--text-1, var(--text));
+    background: rgba(124, 58, 237, 0.08);
+  }
+  .sb2-melis-ai .brand-sb2-row {
+    display: flex; align-items: baseline;
+    gap: 12px; width: 100%;
+  }
+  .sb2-melis-ai .brand-sb2-num {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    color: var(--text-3);
+    min-width: 14px;
+    letter-spacing: 0.05em;
+  }
+  .sb2-melis-ai .brand-sb2-name { flex: 1; line-height: 1.4; }
+  .sb2-melis-ai .brand-sb2-sub {
+    display: block;
+    font-size: 10px;
+    color: var(--text-3);
+    margin-top: 2px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+</style>
+
+<script>
+  // Group collapse + smooth-scroll + scroll-spy. Re-binds each page-load
+  // so view-transitions don't strand stale listeners.
+  function wireMelisAiSb2() {
+    const sb2 = document.querySelector<HTMLElement>('aside.sidebar-2.sb2-melis-ai');
+    if (!sb2) return;
+
+    sb2.querySelectorAll<HTMLElement>('.brand-sb2-group-header').forEach((header) => {
+      if (header.dataset.wired === '1') return;
+      header.dataset.wired = '1';
+      header.addEventListener('click', () => {
+        header.parentElement?.classList.toggle('is-collapsed');
+      });
+    });
+
+    const tocLinks = Array.from(sb2.querySelectorAll<HTMLAnchorElement>('a[data-brand-toc]'));
+    tocLinks.forEach((link) => {
+      const flagged = link as HTMLAnchorElement & { _wired?: boolean };
+      if (flagged._wired) return;
+      flagged._wired = true;
+      link.addEventListener('click', (e) => {
+        const href = link.getAttribute('href') || '';
+        if (!href.startsWith('#')) return;
+        const target = document.getElementById(href.slice(1));
+        if (!target) return;
+        e.preventDefault();
+        const top = target.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top, behavior: 'smooth' });
+      });
+    });
+
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-brand-section][id]'));
+    if (sections.length === 0) return;
+
+    function setActive(sid: string | null) {
+      tocLinks.forEach((l) => l.classList.toggle('active', !!sid && l.dataset.sectionId === sid));
+    }
+
+    const observed = new Map<string, IntersectionObserverEntry>();
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => observed.set(e.target.id, e));
+        const visible = sections
+          .filter((s) => observed.get(s.id)?.isIntersecting)
+          .sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
+        if (visible.length === 0) return;
+        setActive(visible[0].id);
+      },
+      { rootMargin: '-80px 0px -60% 0px', threshold: 0 },
+    );
+    sections.forEach((s) => io.observe(s));
+    setActive(tocLinks[0]?.dataset.sectionId || null);
+  }
+
+  document.addEventListener('astro:page-load', wireMelisAiSb2);
+  if (document.readyState !== 'loading') wireMelisAiSb2();
+</script>
