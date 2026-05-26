@@ -5,6 +5,8 @@
 // references /brand/cover-image.png (copied in Part 4); six-quality
 // tiles render as labelled placeholders if assets aren't shipped yet.
 
+import UpsellCard from './UpsellCard.astro';
+
 type Quality = { num: string; title: string; body: string; img: string };
 const QUALITIES: Quality[] = [
   { num: '01 · Aesthetic', title: 'Tilt-shift miniature world.',  img: '/brand/six-qualities/01-tilt-shift-miniature-world.png',  body: 'Strong, visible tilt-shift blur. <em>The figure sits at the focal plane</em> — sharp band in the centre, soft Gaussian blur above and below, bokeh halos where the lamplight catches. The optical effect is what creates the miniature feeling, not any visible frame.' },
@@ -64,6 +66,13 @@ const CEILING = [
   <ul class="melis-ul">
     {CEILING.map((c) => <li set:html={c} />)}
   </ul>
+
+  <UpsellCard
+    eyebrow="Skill · Claw Mart"
+    body="Want this in your own work? The <em>melis-ai-paper-craft</em> skill is the canonical prompt formula — published on Claw Mart for any operator."
+    cta="See the skill"
+    href="#"
+  />
 </section>
 
 <style is:global>

@@ -3,6 +3,8 @@
 // etymology (Meli · Melissa · Melissae) as a sub-section. Source:
 // brand-guidelines.html lines 4820-4934.
 
+import UpsellCard from './UpsellCard.astro';
+
 const ETYMOLOGY = [
   {
     term: 'μέλι',
@@ -70,6 +72,13 @@ const ETYMOLOGY = [
       </article>
     ))}
   </div>
+
+  <UpsellCard
+    eyebrow="Studio · Services"
+    body="Want a wordmark designed this way? Identity work for AI-first studios — the same system, applied to yours."
+    cta="See services"
+    href="/services"
+  />
 </section>
 
 <style is:global>

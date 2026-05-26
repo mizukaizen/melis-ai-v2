@@ -3,6 +3,8 @@
 // avoid→prefer comparison table + banlist. Source: brand-guidelines.html
 // lines 5145-5274.
 
+import UpsellCard from './UpsellCard.astro';
+
 type Principle = { num: string; title: string; body: string };
 const PRINCIPLES: Principle[] = [
   { num: '01 · Voice', title: 'Direct.',           body: 'Lead with the actual claim. Cut the warm-up. <em>"I built Australia\'s first retail digital human"</em> — not "I\'ve been thinking about how AI changes retail and recently had the opportunity to work on something exciting…"' },
@@ -76,6 +78,13 @@ const BANLIST = ['cutting-edge', 'leveraging', 'passionate about', 'thought lead
   </div>
 
   <p class="melis-aside">If a sentence relies on one of these words to make its point, the sentence has not yet been written.</p>
+
+  <UpsellCard
+    eyebrow="Dispatch · Soul of the Machine"
+    body="More copy written like this. <em>Soul of the Machine</em> is the bi-weekly dispatch from the studio — what's being built, what's being learned, what's being thrown out."
+    cta="Subscribe"
+    href="/newsletter"
+  />
 </section>
 
 <style is:global>

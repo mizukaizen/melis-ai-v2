@@ -1,0 +1,91 @@
+---
+// Subtle in-context upsell card — small footprint, no banner energy.
+// Eyebrow + one-line body + arrow link. Used at the end of select
+// brand-book sections to surface a relevant product or surface
+// without breaking the editorial flow.
+
+interface Props {
+  eyebrow: string;
+  body: string;        // may contain inline <em>
+  cta: string;
+  href: string;
+}
+
+const { eyebrow, body, cta, href } = Astro.props;
+const external = /^https?:/.test(href);
+---
+
+<a
+  class="upsell-card"
+  href={href}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noopener noreferrer' : undefined}
+>
+  <div class="upsell-eyebrow">{eyebrow}</div>
+  <p class="upsell-body" set:html={body} />
+  <span class="upsell-cta">
+    <span>{cta}</span>
+    <span class="upsell-arrow" aria-hidden="true">→</span>
+  </span>
+</a>
+
+<style is:global>
+  .upsell-card {
+    display: block;
+    margin: 56px 0 0;
+    max-width: 720px;
+    padding: 22px 24px;
+    background: rgba(124, 58, 237, 0.04);
+    border: 1px solid rgba(124, 58, 237, 0.18);
+    border-left: 2px solid var(--accent);
+    text-decoration: none;
+    color: inherit;
+    transition: background 180ms ease, border-color 180ms ease;
+  }
+  .upsell-card:hover,
+  .upsell-card:focus-visible {
+    background: rgba(124, 58, 237, 0.07);
+    border-color: rgba(124, 58, 237, 0.36);
+    border-left-color: var(--accent);
+  }
+  .upsell-card:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .upsell-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .upsell-body {
+    margin: 0 0 12px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text-2);
+  }
+  .upsell-body em {
+    font-style: italic;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 15px;
+  }
+  .upsell-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-1, var(--text));
+  }
+  .upsell-arrow {
+    color: var(--accent);
+    transition: transform 180ms ease;
+  }
+  .upsell-card:hover .upsell-arrow,
+  .upsell-card:focus-visible .upsell-arrow {
+    transform: translateX(4px);
+  }
+</style>
