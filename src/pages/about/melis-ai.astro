@@ -128,16 +128,22 @@ import LayerDivider     from '../../components/about/brand/LayerDivider.astro';
     object-fit: cover;
     display: block;
     filter: blur(10px) saturate(0.9);
+    /* Image fades to transparent at the bottom — mirrors the canonical
+       .section-hero-bg mask-image pattern (src/styles/global.css:179,
+       --hero-fade token). The papercraft texture dissolves into the
+       felt var(--bg) where the page body picks up below. */
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+            mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
   }
   .melis-hero-veil {
     position: absolute; inset: 0;
     background: linear-gradient(
       to top,
-      rgba(15, 15, 15, 0.96) 0%,
-      rgba(15, 15, 15, 0.86) 35%,
-      rgba(15, 15, 15, 0.62) 65%,
-      rgba(15, 15, 15, 0.38) 90%,
-      rgba(15, 15, 15, 0.22) 100%
+      rgba(15, 15, 15, 0.90) 0%,
+      rgba(15, 15, 15, 0.72) 35%,
+      rgba(15, 15, 15, 0.45) 65%,
+      rgba(15, 15, 15, 0.28) 90%,
+      rgba(15, 15, 15, 0.16) 100%
     );
     z-index: 1;
   }
