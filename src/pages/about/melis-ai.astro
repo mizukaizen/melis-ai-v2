@@ -25,6 +25,7 @@ import DoDont           from '../../components/about/brand/DoDont.astro';
 import Closing          from '../../components/about/brand/Closing.astro';
 import Sources          from '../../components/about/brand/Sources.astro';
 import Legals           from '../../components/about/brand/Legals.astro';
+import LayerDivider     from '../../components/about/brand/LayerDivider.astro';
 
 // All 22 brand book sections + § Sources are now backed by dedicated
 // components — no PENDING placeholders remaining.
@@ -50,6 +51,8 @@ import Legals           from '../../components/about/brand/Legals.astro';
     <Stance />
     <Lexicon />
     <Compass />
+
+    <LayerDivider slug="identity" />
     <Wordmark />
     <Colour />
     <Typography />
@@ -60,9 +63,15 @@ import Legals           from '../../components/about/brand/Legals.astro';
     <Placeholders slug="dataviz" />
     <Placeholders slug="accessibility" />
     <Influences />
+
+    <LayerDivider slug="channels" />
     <Channels />
+
+    <LayerDivider slug="toolkit" />
     <SubBrands />
     <ComponentLibrary />
+
+    <LayerDivider slug="conclusion" />
     <DoDont />
     <Closing />
     <Sources />

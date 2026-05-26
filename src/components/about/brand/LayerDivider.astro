@@ -1,0 +1,146 @@
+---
+// Full-bleed layer divider — separates the major brand book layers.
+// Pattern from brand-guidelines.html lines 4804-4817 (and parallels
+// for ld-channels, ld-toolkit, ld-conclusion). Renders a sharp
+// paper-craft background behind a dark veil, with mono numeral +
+// Cormorant title + lede + meta line + bottom rule.
+
+interface Props {
+  slug: 'identity' | 'channels' | 'toolkit' | 'conclusion';
+}
+
+const { slug } = Astro.props;
+
+const DIVIDERS = {
+  identity: {
+    numeral: 'II — Identity',
+    title:   'How we <em>appear</em>.',
+    tagline: 'The visual and verbal language that makes melis.ai recognisable across every surface — wordmark, palette, typography, voice, imagery, motion. The grammar of the brand.',
+    meta:    '10 sections · §05 → §14',
+    alt:     'A small paper figure at a paper-craft typography workbench — paper colour swatches, paper type-blocks, paper specimen sheets, lit by warm amber lamp and cool teal twilight from a paper window.',
+  },
+  channels: {
+    numeral: 'III — Channels',
+    title:   'Where the brand <em>lives</em>.',
+    tagline: 'Three channels carry the work into the world. The website holds it. The newsletter delivers it daily. YouTube reaches the people who haven\'t found us yet. Everything else stays out.',
+    meta:    '3 sections · §15 → §17',
+    alt:     'A small paper figure at a paper-craft transmission room — paper microphone, paper-craft glowing screen, paper transmission tower visible through a window with a soft amber beacon at twilight.',
+  },
+  toolkit: {
+    numeral: 'IV — Toolkit',
+    title:   'The <em>working</em> layer.',
+    tagline: 'The reference shelf — the family of sub-brands and the hand-coded component library. What you reach for when building anything new.',
+    meta:    '2 sections · §18 → §19',
+    alt:     'A small paper figure at a paper-craft assembly workbench — modular paper components arranged in a grid, paper tools on a pegboard, paper hearth glowing in the corner, cool teal twilight from a paper window.',
+  },
+  conclusion: {
+    numeral: 'V — Conclusion',
+    title:   'What to <em>remember</em>.',
+    tagline: 'A shortlist of rules that survive every revision, and an honest note on where this brand currently stands. The bit you\'d pin above the desk.',
+    meta:    '2 sections · §20 → §21',
+    alt:     'A small paper figure at a paper-craft writing desk by lamplight, finishing the final notes of a long document.',
+  },
+} as const;
+
+const d = DIVIDERS[slug];
+const bg = `/brand/dividers/ld-${slug}-bg.png`;
+---
+
+<section class={`layer-divider ld-${slug}`}>
+  <div class="ld-bg">
+    <img class="ld-bg-sharp" src={bg} alt={d.alt} loading="lazy" />
+  </div>
+  <div class="ld-veil"></div>
+  <div class="ld-inner">
+    <div class="ld-numeral">{d.numeral}</div>
+    <h2 class="ld-title" set:html={d.title} />
+    <p class="ld-tagline">{d.tagline}</p>
+    <div class="ld-meta">{d.meta}</div>
+    <div class="ld-line"></div>
+  </div>
+</section>
+
+<style is:global>
+  .layer-divider {
+    position: relative;
+    margin: 96px -60px 96px;  /* breaks the .melis-main padding to go full-bleed */
+    min-height: 380px;
+    overflow: hidden;
+    display: flex; align-items: flex-end;
+    isolation: isolate;
+  }
+  .ld-bg {
+    position: absolute; inset: 0;
+    z-index: 0;
+  }
+  .ld-bg img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .layer-divider .ld-veil {
+    position: absolute; inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(15, 15, 15, 0.96) 0%,
+      rgba(15, 15, 15, 0.72) 40%,
+      rgba(15, 15, 15, 0.30) 75%,
+      rgba(15, 15, 15, 0.10) 100%
+    );
+    z-index: 1;
+  }
+  .layer-divider .ld-inner {
+    position: relative;
+    z-index: 2;
+    padding: 56px 60px 48px;
+    max-width: 880px;
+    width: 100%;
+  }
+  .layer-divider .ld-numeral {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+  .layer-divider .ld-title {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: 56px;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--text-1, var(--text));
+    margin: 0 0 18px;
+  }
+  .layer-divider .ld-title em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+  .layer-divider .ld-tagline {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--text-2);
+    max-width: 640px;
+    margin: 0 0 28px;
+  }
+  .layer-divider .ld-meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 16px;
+  }
+  .layer-divider .ld-line {
+    height: 1px;
+    width: 60px;
+    background: var(--accent);
+  }
+  @media (max-width: 1100px) {
+    .layer-divider { margin-left: 0; margin-right: 0; }
+    .layer-divider .ld-inner { padding: 40px 24px; }
+    .layer-divider .ld-title { font-size: 40px; }
+  }
+</style>
