@@ -80,8 +80,8 @@ const GROUPS: Group[] = [
 
 <aside class="sidebar-2 sb2-melis-ai" transition:persist="sb2-about-melis-ai">
   <div class="sb2-pane active" data-pane="about-studio">
-    <div class="brand-sb2-header">
-      <span>Mythos</span>
+    <div class="sb2-header">
+      <div class="sb2-title"><em>Brand mythos</em></div>
     </div>
 
     {GROUPS.map((g) => (
@@ -112,28 +112,10 @@ const GROUPS: Group[] = [
 </aside>
 
 <style>
-  /* Scoped to .sb2-melis-ai — won't leak onto other surfaces. Mirrors
-     the gold-standard brand book sb2 chrome verbatim. */
-  .sb2-melis-ai .brand-sb2-header {
-    display: flex; align-items: center;
-    gap: 8px;
-    font-family: var(--font-mono);
-    font-size: 9.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: var(--accent);
-    padding: 0 8px;
-    margin: 24px 0 22px;
-  }
-  .sb2-melis-ai .brand-sb2-dot {
-    width: 7px; height: 7px;
-    background: #5eead4;
-    border-radius: 50%;
-    box-shadow: 0 0 10px #5eead4;
-    flex-shrink: 0;
-  }
-
-  .sb2-melis-ai .brand-sb2-group { margin-bottom: 18px; padding: 0 8px; }
+  /* Scoped to .sb2-melis-ai — interior styles only. The header uses
+     the canonical .sb2-header/.sb2-title chrome from mockup.css (same
+     treatment as Dossiers / Articles / Ventures). */
+  .sb2-melis-ai .brand-sb2-group { margin: 18px 0 18px; padding: 0 8px; }
   .sb2-melis-ai .brand-sb2-group-header {
     display: flex; align-items: center; justify-content: space-between;
     font-family: var(--font-mono);
