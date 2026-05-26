@@ -1,0 +1,111 @@
+---
+// /about/legals — stub for Privacy + Terms. Substantive policy lands later.
+import AppLayout from '../../layouts/AppLayout.astro';
+---
+
+<AppLayout
+  title="Legals"
+  pane="about-legals"
+  description="Privacy policy and terms of service for melis.ai."
+>
+  <section class="legals-main">
+    <div class="legals-hero">
+      <div class="legals-hero-eyebrow">About <span class="sep">·</span> Legals</div>
+      <h1 class="legals-hero-title"><em>Legals</em>.</h1>
+      <p class="legals-hero-intro">Privacy policy and terms of service. <em>Coming soon</em> — substantive policy in draft. For now, melis.ai operates under standard Australian consumer law and treats subscriber data with the same care any sensible operator would.</p>
+    </div>
+
+    <details class="legals-section" open>
+      <summary>Privacy policy</summary>
+      <div class="legals-body">
+        <p>Coming soon — substantive policy in draft. melis.ai collects only what's needed to deliver the products and services you request (email for newsletters, account data for purchases, the bare minimum analytics to keep the site honest). Nothing is sold, traded, or surrendered to third parties beyond the operational tools required to run a small operator-led studio.</p>
+        <p>Questions in the meantime: <a href="mailto:sean@melis.ai">sean@melis.ai</a>.</p>
+      </div>
+    </details>
+
+    <details class="legals-section">
+      <summary>Terms of service</summary>
+      <div class="legals-body">
+        <p>Coming soon — substantive policy in draft. Products and services are sold as-described. Digital products are non-refundable once delivered. Services (sprints, advisory) operate under standard scope-of-work and acceptance terms agreed in writing before kickoff.</p>
+        <p>Questions in the meantime: <a href="mailto:sean@melis.ai">sean@melis.ai</a>.</p>
+      </div>
+    </details>
+  </section>
+</AppLayout>
+
+<style is:global>
+  .legals-main {
+    padding: 28px 60px 120px;
+    max-width: 720px;
+  }
+  .legals-hero { margin-bottom: 64px; }
+  .legals-hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 22px;
+  }
+  .legals-hero-eyebrow .sep { color: var(--text-3); opacity: 0.6; margin: 0 8px; }
+  .legals-hero-title {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: 56px;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    margin: 0 0 24px;
+    color: var(--text-1, var(--text));
+  }
+  .legals-hero-title em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+  .legals-hero-intro {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-2);
+    margin: 0;
+    max-width: 620px;
+  }
+  .legals-hero-intro em {
+    font-style: italic;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 400;
+  }
+  .legals-section {
+    border-top: 1px solid var(--border-2, rgba(232,227,216,0.08));
+    padding: 24px 0;
+  }
+  .legals-section summary {
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 22px;
+    color: var(--text-1, var(--text));
+    letter-spacing: -0.01em;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .legals-section summary::after {
+    content: '+';
+    font-family: var(--font-mono);
+    font-size: 18px;
+    color: var(--accent);
+    margin-left: 12px;
+  }
+  .legals-section[open] summary::after { content: '−'; }
+  .legals-body {
+    margin-top: 18px;
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--text-2);
+  }
+  .legals-body p { margin: 0 0 14px; }
+  .legals-body a { color: var(--accent); border-bottom: 1px solid currentColor; }
+</style>

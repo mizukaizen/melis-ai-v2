@@ -1,0 +1,131 @@
+---
+// /about/brand — the brand system. Ported from the standalone
+// brand-guidelines.html into the canonical chrome.
+//
+// Scaffold commit: hero + section dividers only. Section components
+// land in subsequent commits per the PR plan.
+
+import AppLayout from '../../layouts/AppLayout.astro';
+---
+
+<AppLayout
+  title="About · The brand"
+  pane="about-brand"
+  description="The brand system — manifesto, voice, imagery, lexicon, sigils. Published, not hidden."
+>
+  <section class="brand-main">
+    <div class="brand-topbar">
+      <div class="brand-topbar-left">
+        <span class="brand-signal-dot"></span>
+        <span>melis.ai · brand system · v2026.04.29</span>
+      </div>
+      <div class="brand-topbar-right">LIVING DOCUMENT</div>
+    </div>
+
+    <div class="brand-hero">
+      <div class="brand-hero-eyebrow">About <span class="sep">·</span> The brand</div>
+      <h1 class="brand-hero-title">The brand <em>system</em>.</h1>
+      <div class="brand-hero-meta">
+        <span>A living document</span><span class="sep">·</span>
+        <span>v2026.04.29</span><span class="sep">·</span>
+        <span>22 sections</span><span class="sep">·</span>
+        <span>33 concepts</span><span class="sep">·</span>
+        <span>15 frames</span>
+      </div>
+      <p class="brand-hero-intro">Everything that holds melis.ai together — the <em>manifesto</em>, the visual language, the voice, the imagery, the sigils, the lexicon. Published, not hidden. If you copy it, copy it <em>well</em>.</p>
+    </div>
+
+    <p class="brand-stub-note">Brand book sections land progressively. Sub-sections will be wired into this page in subsequent commits.</p>
+  </section>
+</AppLayout>
+
+<style is:global>
+  /* Brand book chrome — scoped under .brand-main so it can't leak. */
+  .brand-main {
+    padding: 28px 60px 120px;
+    max-width: none;
+  }
+  .brand-topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: lowercase;
+    color: var(--text-3);
+    padding-bottom: 32px;
+    margin-bottom: 56px;
+    border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.08));
+  }
+  .brand-topbar-left { display: flex; align-items: center; gap: 10px; }
+  .brand-signal-dot {
+    width: 8px; height: 8px;
+    background: #5eead4;
+    border-radius: 50%;
+    box-shadow: 0 0 12px #5eead4;
+  }
+  .brand-topbar-right {
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .brand-hero { margin-bottom: 96px; max-width: 880px; }
+  .brand-hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 22px;
+  }
+  .brand-hero-eyebrow .sep { color: var(--text-3); opacity: 0.6; margin: 0 8px; }
+  .brand-hero-title {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: 72px;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    margin: 0 0 28px;
+    color: var(--text-1, var(--text));
+  }
+  .brand-hero-title em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+  .brand-hero-meta {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    display: flex; flex-wrap: wrap; gap: 8px 18px;
+  }
+  .brand-hero-meta .sep { color: var(--text-3); opacity: 0.5; }
+  .brand-hero-intro {
+    margin-top: 36px;
+    max-width: 640px;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-2);
+  }
+  .brand-hero-intro em {
+    color: var(--accent);
+    font-style: italic;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .brand-stub-note {
+    margin-top: 64px;
+    padding: 18px 22px;
+    border: 1px dashed var(--border-2, rgba(232,227,216,0.14));
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--text-3);
+    line-height: 1.7;
+    max-width: 800px;
+  }
+</style>
