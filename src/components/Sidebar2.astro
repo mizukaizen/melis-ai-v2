@@ -11,6 +11,7 @@ import Ventures from './sidebars/Sidebar2Ventures.astro';
 import Courses from './sidebars/Sidebar2Courses.astro';
 import Exhibits from './sidebars/Sidebar2Exhibits.astro';
 import About from './sidebars/Sidebar2About.astro';
+import BrandBook from './sidebars/Sidebar2BrandBook.astro';
 import Products from './sidebars/Sidebar2Products.astro';
 import Prompts from './sidebars/Sidebar2Prompts.astro';
 import Dossiers from './sidebars/Sidebar2Dossiers.astro';
@@ -31,7 +32,8 @@ const { pane } = Astro.props;
 {(pane === 'projects' || pane === 'ventures') && <Ventures />}
 {pane === 'courses' && <Courses />}
 {pane === 'exhibits' && <Exhibits />}
-{(pane === 'about' || pane === 'about-studio' || pane === 'about-brand' || pane === 'about-legals') && <About />}
+{pane === 'about-brand' && <BrandBook />}
+{(pane === 'about' || pane === 'about-studio' || pane === 'about-legals') && <About />}
 {pane === 'products' && <Products />}
 {pane === 'prompts' && <Prompts />}
 {pane === 'library' && <Dossiers />}
