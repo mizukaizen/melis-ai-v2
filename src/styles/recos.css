@@ -13,42 +13,6 @@
  * RecoCard component class-references them by palette name.
  * ════════════════════════════════════════════════════════════════ */
 
-/* ─── sb2 — hybrid TOC + sister-cats additions ─────────────────── */
-.sb2-divider {
-  padding: 18px 22px 8px;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--text-3);
-  border-top: 1px solid var(--border);
-  margin-top: 8px;
-}
-.sidebar-2 .sb2-pane[data-pane="recos"] .sb2-item .roman {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: 14px;
-  color: var(--accent);
-  width: 18px;
-  flex-shrink: 0;
-  line-height: 1;
-}
-.sidebar-2 .sb2-pane[data-pane="recos"] .sb2-item .current-marker {
-  font-family: var(--font-display);
-  font-style: italic;
-  color: var(--text-3);
-  font-size: 11px;
-  margin-left: 6px;
-}
-
-/* TOC active state — accent left border + violet wash. Reuses the
-   canonical .sb2-item.active treatment from mockup.css but slightly
-   stronger background tint to read as the "current TOC entry". */
-.sidebar-2 .sb2-pane[data-pane="recos"] .sb2-item.active .roman {
-  color: var(--accent);
-  font-weight: 500;
-}
-
 /* ─── Section lead (italic Cormorant under the hero) ───────────── */
 .reco-detail-v7 .section-lead {
   font-family: var(--font-display);
@@ -93,20 +57,25 @@
 /* ─── Shelf header + shelf rack ────────────────────────────────── */
 .reco-detail-v7 .shelf-header {
   display: grid;
-  grid-template-columns: 80px 1fr auto;
-  align-items: baseline;
-  gap: 32px;
+  grid-template-columns: 60px 1fr auto;
+  align-items: center;
+  gap: 24px;
   margin: 64px 0 40px;
   padding-bottom: 18px;
   border-bottom: 1px solid var(--border);
 }
 .reco-detail-v7 .shelf-header:first-of-type { margin-top: 0; }
-.reco-detail-v7 .shelf-header .roman {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 400;
-  font-size: 26px;
+/* Phosphor icon at the left of the shelf-header, replacing the prior
+   italic violet roman numeral. Sized so it reads as a peer to the
+   Cormorant title without dominating it. */
+.reco-detail-v7 .shelf-header .shelf-header-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  line-height: 1;
   color: var(--accent);
+  opacity: 0.85;
 }
 .reco-detail-v7 .shelf-header .title {
   font-family: var(--font-display);

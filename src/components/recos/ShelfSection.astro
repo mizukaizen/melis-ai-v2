@@ -3,9 +3,9 @@
 // decorative shelf line, and bottom shelf label. Renders only when
 // the section actually has shelfItems (highlight=true subset).
 //
-// Mockup classes verbatim:
-//   .shelf-header (id="<section-id>") > .roman + .title + .count
-//   .shelf > .shelf-rack > .card[] + .shelf-line + .shelf-label
+// Shelf-header layout (no more roman numerals — Phosphor icon at the
+// left edge in muted accent, then italicised title, then count meta):
+//   .shelf-header (id="shelf-<id>") > .shelf-header-icon + .title + .count
 
 import RecoCard from './RecoCard.astro';
 import type { NormalisedSection } from '../../lib/recos';
@@ -24,7 +24,7 @@ const entryNo = String(count).padStart(2, '0');
 ---
 
 <div class="shelf-header" id={`shelf-${section.id}`}>
-  <span class="roman">{section.romanNumeral}</span>
+  <span class="shelf-header-icon"><i class={`ph ${section.icon}`}></i></span>
   <span class="title" set:html={section.title.replace(/(\b\w+)$/, '<em>$1</em>')} />
   <span class="count">{entryNo} entries · Shelf {shelfNo}</span>
 </div>
