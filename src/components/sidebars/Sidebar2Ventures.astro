@@ -142,7 +142,7 @@ function statusColor(s: Status): string {
                 const isStub = stubSlugs.has(v.slug);
                 return (
                   <a class:list={['panel-item', { 'is-stub': isStub }]} href={`/ventures/${v.slug}/`}>
-                    <i class={`ph ${isStub ? 'ph-circle' : 'ph-circle-fill'} pi-icon`} style={`color:${statusColor(status)};opacity:${isStub ? '0.55' : '0.85'};font-size:8px`}></i>
+                    <i class={`${isStub ? 'ph' : 'ph-fill'} ph-circle pi-icon`} style={`color:${statusColor(status)};opacity:${isStub ? '0.55' : '0.85'};font-size:8px`}></i>
                     <div class="pi-body">
                       <div class="pi-title">{v.name}</div>
                       <div class="pi-meta">{v.meta}</div>
