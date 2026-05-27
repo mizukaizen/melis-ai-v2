@@ -3,6 +3,13 @@
 // Accessibility. Each renders with the canonical section chrome
 // (eyebrow row + Cormorant title + 2–3 sentence prose body). Voice
 // lifted from Manifesto/Promise — short, declarative, principle-first.
+//
+// Below the principle, sections marked as having locked content reveal
+// a LockedSection tile that gates the detailed brand-guidelines spec
+// (token tables, motion easings, chart specimens). One page-level
+// password handler unlocks every locked block at once.
+
+import LockedSection from './LockedSection.astro';
 
 interface Props {
   slug: 'spacing' | 'motion' | 'dataviz' | 'accessibility';
@@ -42,6 +49,42 @@ const STUBS: Record<Props['slug'], Stub> = {
 };
 
 const s = STUBS[slug];
+
+const SPACING_SCALE = [
+  { label: 'xs',  px: 4,  note: 'Tight pairs only — adjacent icons, inline gaps' },
+  { label: 'sm',  px: 8,  note: 'Base unit. Every other value snaps to a multiple of this' },
+  { label: 'md',  px: 16, note: 'Default body gap, card inner padding' },
+  { label: 'lg',  px: 24, note: 'Group separators inside a card' },
+  { label: 'xl',  px: 44, note: 'Section gap on tight layouts' },
+  { label: '2xl', px: 64, note: 'Section gap on standard layouts' },
+  { label: '3xl', px: 96, note: 'Section gap on editorial / spacious layouts' },
+];
+const READING_WIDTHS = [
+  { px: 720,  label: 'Standard reading pane',  note: 'Default body column. Wider than this, comfort drops sharply.' },
+  { px: 1100, label: 'Wide pane',              note: 'Reserved for grids, dashboards, and chart-heavy data viz.' },
+  { px: 232,  label: 'Primary sidebar',        note: 'Fixed on desktop. Never resizes; never collapses on touch.' },
+];
+
+const MOTION_EASINGS = [
+  { name: '--ease-out',    spec: 'cubic-bezier(0.16, 1, 0.3, 1)', when: 'Default. Quick start, slow settle. State changes, reveals, content swaps.' },
+  { name: '--ease-in-out', spec: 'cubic-bezier(0.4, 0, 0.2, 1)',  when: 'Two-way motion. Drawer open/close, tab swaps, drag-and-drop returns.' },
+  { name: '--ease-linear', spec: 'linear',                         when: 'Continuous motion only. Loaders, progress bars, scroll-driven timelines.' },
+];
+const MOTION_DURATIONS = [
+  { ms: 120,  name: 'Tap feedback',     note: 'Button press, chip toggle, microinteraction acknowledgement.' },
+  { ms: 200,  name: 'State change',     note: 'Hover, focus, active. The bulk of the motion budget.' },
+  { ms: 320,  name: 'Reveal',           note: 'Tooltip, callout appear, inline expand.' },
+  { ms: 480,  name: 'Page transition',  note: 'Astro view-transitions, modal open, room change.' },
+];
+
+const DATAVIZ_PALETTE = [
+  { role: 'Primary',     hex: '#7C3AED', use: 'One per chart. The "look here" colour. Maximum 1 series gets this.' },
+  { role: 'Secondary',   hex: '#A1A5B0', use: 'Comparison series. Always lighter weight than primary.' },
+  { role: 'Sequential',  hex: '#4C1D95 → #DDD6FE', use: 'Single-hue ramp for ordinal data — heatmaps, density.' },
+  { role: 'Diverging',   hex: '#5EEAD4 ↔ #F87171', use: 'Two-hue ramp from positive (teal) to negative (rose), neutral in the middle.' },
+  { role: 'Positive',    hex: '#5EEAD4', use: 'Deltas, gains, "above target". Same teal as system live indicators.' },
+  { role: 'Negative',    hex: '#F87171', use: 'Deltas, losses, "below target". Reserved — not for emphasis.' },
+];
 ---
 
 <section id={slug} data-brand-section class="melis-section">
@@ -55,4 +98,228 @@ const s = STUBS[slug];
   <div class="melis-prose">
     <p set:html={s.body} />
   </div>
+
+  {slug === 'spacing' && (
+    <LockedSection slug="spacing-tokens" title="Detailed spacing tokens · reading widths · sidebar dimensions">
+      <div class="locked-grid">
+        <div class="locked-card">
+          <div class="locked-card-eyebrow">Spacing scale · 8px base</div>
+          <table class="locked-table">
+            <thead><tr><th>Token</th><th>Value</th><th>When</th></tr></thead>
+            <tbody>
+              {SPACING_SCALE.map((row) => (
+                <tr>
+                  <td><code>{row.label}</code></td>
+                  <td><span class="locked-bar" style={`width:${row.px}px`}></span> <span class="locked-px">{row.px} px</span></td>
+                  <td>{row.note}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p class="locked-foot">Every value snaps to a multiple of 8. The xs (4px) exists for adjacent icon pairs only — never as a primary gap.</p>
+        </div>
+        <div class="locked-card">
+          <div class="locked-card-eyebrow">Reading widths</div>
+          <ul class="locked-list">
+            {READING_WIDTHS.map((w) => (
+              <li>
+                <strong>{w.px} px</strong> · {w.label}
+                <span class="locked-note">{w.note}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </LockedSection>
+  )}
+
+  {slug === 'motion' && (
+    <LockedSection slug="motion-tokens" title="Easings, durations, motion-reduction defaults">
+      <div class="locked-grid">
+        <div class="locked-card">
+          <div class="locked-card-eyebrow">Easings · three curves</div>
+          <table class="locked-table">
+            <thead><tr><th>Token</th><th>Curve</th><th>When</th></tr></thead>
+            <tbody>
+              {MOTION_EASINGS.map((e) => (
+                <tr>
+                  <td><code>{e.name}</code></td>
+                  <td><code class="locked-spec">{e.spec}</code></td>
+                  <td>{e.when}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p class="locked-foot">Default is <code>--ease-out</code>. <em>Opacity-only when possible; transform-only when necessary. Never both.</em></p>
+        </div>
+        <div class="locked-card">
+          <div class="locked-card-eyebrow">Durations · four steps</div>
+          <table class="locked-table">
+            <thead><tr><th>Duration</th><th>Role</th><th>Examples</th></tr></thead>
+            <tbody>
+              {MOTION_DURATIONS.map((d) => (
+                <tr>
+                  <td><code>{d.ms} ms</code></td>
+                  <td>{d.name}</td>
+                  <td>{d.note}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p class="locked-foot"><strong>prefers-reduced-motion:</strong> any duration over 120 ms collapses to an instant state change. Easings still apply for tap feedback; transitions for reveals and page changes are dropped entirely.</p>
+        </div>
+      </div>
+    </LockedSection>
+  )}
+
+  {slug === 'dataviz' && (
+    <LockedSection slug="dataviz-palette" title="Chart palette · KPI typography · chart-card chrome">
+      <div class="locked-grid">
+        <div class="locked-card">
+          <div class="locked-card-eyebrow">Chart palette · functional roles</div>
+          <table class="locked-table locked-table-palette">
+            <thead><tr><th>Role</th><th>Hex</th><th>When</th></tr></thead>
+            <tbody>
+              {DATAVIZ_PALETTE.map((p) => (
+                <tr>
+                  <td>{p.role}</td>
+                  <td><code class="locked-spec">{p.hex}</code></td>
+                  <td>{p.use}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p class="locked-foot">No pies, no 3D, no rainbow categorical scales. Every chart has a headline that states the takeaway in plain English — the chart proves it.</p>
+        </div>
+        <div class="locked-card">
+          <div class="locked-card-eyebrow">KPI + chart-card chrome</div>
+          <ul class="locked-list">
+            <li><strong>Value</strong> · 40px Cormorant 300, letter-spacing −0.02em. Numerals tabular.</li>
+            <li><strong>Eyebrow</strong> · 10px mono, 0.18em tracking, uppercase, text-3.</li>
+            <li><strong>Delta</strong> · 11px mono, ↑ green / ↓ rose / · text-3 for neutral.</li>
+            <li><strong>Chart headline</strong> · 18px Cormorant 400, italic-accent on the verb that carries the claim.</li>
+            <li><strong>Caption</strong> · n / source / updated — mono 10px, text-3, separator dots.</li>
+            <li><strong>Gridlines</strong> · #252525, 1px, dashed 2,3. Solid only on the zero/baseline.</li>
+          </ul>
+        </div>
+      </div>
+    </LockedSection>
+  )}
 </section>
+
+<style is:global>
+  .locked-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 8px;
+  }
+  .locked-card {
+    padding: 24px 26px;
+    border: 1px solid var(--border-2, rgba(232,227,216,0.08));
+    background: rgba(255,255,255,0.015);
+    border-radius: 4px;
+  }
+  .locked-card-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .locked-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .locked-table th {
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    padding: 8px 12px 10px 0;
+    border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.10));
+    font-weight: 500;
+  }
+  .locked-table td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.05));
+    color: var(--text-2);
+    line-height: 1.5;
+    vertical-align: middle;
+  }
+  .locked-table td:first-child { white-space: nowrap; }
+  .locked-table code {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--accent);
+    background: rgba(124, 58, 237, 0.08);
+    padding: 2px 6px;
+    border-radius: 2px;
+  }
+  .locked-spec {
+    font-size: 10px !important;
+    letter-spacing: 0.02em;
+  }
+  .locked-bar {
+    display: inline-block;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 1px;
+    vertical-align: middle;
+    margin-right: 10px;
+    max-width: 100px;
+  }
+  .locked-px {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-2);
+    letter-spacing: 0.04em;
+  }
+  .locked-foot {
+    margin: 16px 0 0;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--text-3);
+    font-style: italic;
+  }
+  .locked-foot em {
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 14px;
+  }
+  .locked-foot code {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    font-style: normal;
+  }
+  .locked-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .locked-list li {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--text-2);
+    padding-left: 14px;
+    border-left: 1px solid var(--border-2, rgba(232,227,216,0.10));
+  }
+  .locked-list li strong {
+    color: var(--text-1, var(--text));
+    font-weight: 500;
+  }
+  .locked-list .locked-note {
+    display: block;
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--text-3);
+  }
+</style>

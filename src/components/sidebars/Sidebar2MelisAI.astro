@@ -8,7 +8,7 @@
 // nav cleanly. Mirrors the gold-standard mockup at
 // _cowork/outputs/website-rebrand/about-brand-canonical-chrome.html.
 
-type Item = { id: string; num: string; name: string; sub?: string };
+type Item = { id: string; num: string; name: string; sub?: string; locked?: boolean };
 type Group = { glyph: string; label: string; items: Item[] };
 
 const GROUPS: Group[] = [
@@ -32,11 +32,11 @@ const GROUPS: Group[] = [
       { id: 'wordmark',      num: '05', name: 'Wordmark' },
       { id: 'colour',        num: '06', name: 'Colour' },
       { id: 'typography',    num: '07', name: 'Typography' },
-      { id: 'spacing',       num: '08', name: 'Spacing & layout' },
+      { id: 'spacing',       num: '08', name: 'Spacing & layout', locked: true },
       { id: 'voice',         num: '09', name: 'Voice' },
       { id: 'imagery',       num: '10', name: 'Imagery' },
-      { id: 'motion',        num: '11', name: 'Motion' },
-      { id: 'dataviz',       num: '12', name: 'Data viz' },
+      { id: 'motion',        num: '11', name: 'Motion', locked: true },
+      { id: 'dataviz',       num: '12', name: 'Data viz', locked: true },
       { id: 'accessibility', num: '13', name: 'Accessibility' },
       { id: 'influences',    num: '14', name: 'Influences' },
     ],
@@ -95,13 +95,27 @@ const GROUPS: Group[] = [
         </div>
         <div class="brand-sb2-group-items">
           {g.items.map((it) => (
-            <a class="brand-sb2-item" href={`#${it.id}`} data-brand-toc data-section-id={it.id}>
+            <a
+              class:list={['brand-sb2-item', { 'is-locked': it.locked }]}
+              href={`#${it.id}`}
+              data-brand-toc
+              data-section-id={it.id}
+              data-brand-locked={it.locked ? '' : undefined}
+            >
               <div class="brand-sb2-row">
                 <span class="brand-sb2-num">{it.num}</span>
                 <span class="brand-sb2-name">
                   {it.name}
                   {it.sub && <span class="brand-sb2-sub">{it.sub}</span>}
                 </span>
+                {it.locked && (
+                  <span class="brand-sb2-lock" aria-label="Locked · password required" title="Locked · password required">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="5" y="11" width="14" height="9" rx="1.5"/>
+                      <path d="M 8 11 V 7 A 4 4 0 0 1 16 7 V 11"/>
+                    </svg>
+                  </span>
+                )}
               </div>
             </a>
           ))}
@@ -166,6 +180,26 @@ const GROUPS: Group[] = [
     letter-spacing: 0.05em;
   }
   .sb2-melis-ai .brand-sb2-name { flex: 1; line-height: 1.4; }
+  .sb2-melis-ai .brand-sb2-lock {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    width: 11px;
+    height: 11px;
+    color: var(--text-3);
+    opacity: 0.7;
+    transition: color 0.15s, opacity 0.15s;
+  }
+  .sb2-melis-ai .brand-sb2-lock svg { width: 100%; height: 100%; }
+  .sb2-melis-ai .brand-sb2-item.is-locked:hover .brand-sb2-lock {
+    color: var(--accent);
+    opacity: 1;
+  }
+  /* Hide the lock icon once the page-level unlock has fired (the
+     page JS toggles data-brand-locked → .is-unlocked on the link). */
+  .sb2-melis-ai .brand-sb2-item.is-locked.is-unlocked .brand-sb2-lock {
+    display: none;
+  }
   .sb2-melis-ai .brand-sb2-sub {
     display: block;
     font-size: 10px;
