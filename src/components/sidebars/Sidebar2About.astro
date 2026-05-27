@@ -76,7 +76,12 @@ const CHAPTERS: { id: string; title: string; subtitle?: string; num?: string; ic
         if (!el) return;
         e.preventDefault();
         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        setActive(id);
+        // Don't setActive here — the IntersectionObserver settles the
+        // highlight when the smooth scroll lands. Calling setActive on
+        // click caused a "flash" of the destination, then a bounce as
+        // the IO picked up intermediate sections passing through the
+        // viewport, then a re-settle on the destination. Mirrors the
+        // melis-ai sidebar behaviour.
         history.replaceState(null, '', `#${id}`);
       });
     });
