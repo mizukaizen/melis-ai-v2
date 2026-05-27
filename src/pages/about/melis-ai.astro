@@ -105,8 +105,13 @@ import LayerDivider     from '../../components/about/brand/LayerDivider.astro';
      lines 4377-4408. */
   .melis-hero-cover {
     position: relative;
-    margin: -28px -60px 72px;  /* break the .melis-main padding to go full-bleed */
-    min-height: 560px;          /* match canonical .section-header-inner */
+    /* Negative bottom margin pulls following sections up into the empty
+       fade zone at the bottom of the hero box, so Manifesto opens just
+       below where the cover image visually dissolves rather than after
+       a long empty felt gap. Hero box itself stays 560px tall to match
+       the canonical cover image height. */
+    margin: -28px -60px -160px;
+    min-height: 560px;
     overflow: hidden;
     display: flex; align-items: flex-start;
     isolation: isolate;
