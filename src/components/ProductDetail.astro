@@ -71,18 +71,6 @@ const siblingsDisplay = siblings.slice(0, 4);
         {wasPrice && <span class="pd-buy-price-was">{wasPrice}</span>}
         {saveLabel && <span class="pd-buy-save">{saveLabel}</span>}
       </div>
-      <div class="pd-buy-cta">
-        <StripeBuyButton productSlug={slug} label={`Get for ${priceLabel}`} />
-      </div>
-      <div class="pd-buy-note">
-        <i class="ph ph-lock" aria-hidden="true"></i>
-        <span>Limited launch pricing</span>
-      </div>
-      <ul class="pd-trust">
-        <li><i class="ph ph-check" aria-hidden="true"></i> One-time payment — no subscription</li>
-        <li><i class="ph ph-check" aria-hidden="true"></i> Delivered to your inbox instantly</li>
-        <li><i class="ph ph-check" aria-hidden="true"></i> Lifetime updates included</li>
-      </ul>
       <div class="pd-included">
         <div class="pd-included-label">What's included</div>
         <ul class="pd-included-list">
@@ -90,6 +78,26 @@ const siblingsDisplay = siblings.slice(0, 4);
             <li><i class="ph ph-check-circle" aria-hidden="true"></i> {line}</li>
           ))}
         </ul>
+      </div>
+      <ul class="pd-trust">
+        <li><i class="ph ph-check" aria-hidden="true"></i> One-time payment — no subscription</li>
+        <li><i class="ph ph-check" aria-hidden="true"></i> Delivered to your inbox instantly</li>
+        <li><i class="ph ph-check" aria-hidden="true"></i> Lifetime updates included</li>
+      </ul>
+      <div class="pd-buy-note">
+        <i class="ph ph-lock" aria-hidden="true"></i>
+        <span>Limited launch pricing</span>
+      </div>
+      <div class="pd-buy-cta-row">
+        <div class="pd-buy-cta pd-buy-cta-primary">
+          <StripeBuyButton productSlug={slug} label={`Get for ${priceLabel}`} />
+        </div>
+        {slug !== 'complete-arsenal' && (
+          <a class="pd-buy-cta-bundle" href="/products/complete-arsenal/">
+            <span class="pd-buy-cta-bundle-label">Get everything</span>
+            <span class="pd-buy-cta-bundle-meta">The Complete Arsenal · $197</span>
+          </a>
+        )}
       </div>
     </aside>
   </div>
