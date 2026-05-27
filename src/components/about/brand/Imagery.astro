@@ -10,20 +10,17 @@ import LockedSection from './LockedSection.astro';
 import fs from 'node:fs';
 import path from 'node:path';
 
-// Surface application — the 10 canonical surfaces the brand has to
-// land cleanly on. Files live at public/brand/surfaces/01..10.webp.
-const SURFACES: { file: string; name: string; intent: string }[] = [
-  { file: '01-instagram-square--toolkit.webp',           name: 'Instagram square',     intent: 'Toolkit grid · 1080×1080' },
-  { file: '02-instagram-carousel--single-concept.webp',  name: 'Instagram carousel',   intent: 'Single-concept frame' },
-  { file: '03-youtube-thumbnail--operator-scene.webp',   name: 'YouTube thumbnail',    intent: 'Operator scene · 1280×720' },
-  { file: '04-youtube-banner--studio-wide.webp',         name: 'YouTube banner',       intent: 'Studio-wide' },
-  { file: '05-linkedin-header--council.webp',            name: 'LinkedIn header',      intent: 'Council scene' },
-  { file: '06-email-banner--letterpress.webp',           name: 'Email banner',         intent: 'Letterpress treatment' },
-  { file: '07-website-hero--operator-systems.webp',      name: 'Website hero',         intent: 'Operator systems' },
-  { file: '08-twitter-post--single-concept.webp',        name: 'X / Twitter post',     intent: 'Single concept' },
-  { file: '09-course-hero--journey.webp',                name: 'Course hero',          intent: 'Journey scene' },
-  { file: '10-product-card--single-object.webp',         name: 'Product card',         intent: 'Single object' },
-];
+// Surface application — 10 canonical surfaces rendered INSIDE realistic
+// platform mockups (Instagram phone frame with handle + caption,
+// YouTube thumbnail + channel banner with subscribe button, LinkedIn
+// post chrome, Email banner with subject line, Website hero strip,
+// X/Twitter post, Course hero, Product card). Verbatim markup from
+// brand-guidelines.html lines 5429–5687 with image paths rewritten
+// to /brand/surfaces/*.webp.
+const surfacesHtml = fs.readFileSync(
+  path.resolve(process.cwd(), 'src/components/about/brand/_bg-surfaces-body.html'),
+  'utf8',
+);
 
 // Cinematic library — 87 reference images across 7 categories
 // (angle, atmosphere, composition, lens, light, setting, treatment).
@@ -133,22 +130,7 @@ const CEILING = [
   <p class="melis-prose"><span>The visual language has to land cleanly on every surface the brand reaches — feed posts, headers, hero strips, product cards, email banners, course covers. Same papercraft world, ten different framings.</span></p>
 
   <LockedSection slug="surfaces" title="10 surface mockups · Instagram · YouTube · LinkedIn · Email · Web">
-    <div class="imagery-surface-grid">
-      {SURFACES.map((s) => (
-        <figure
-          class="imagery-surface"
-          data-lightbox-src={`/brand/surfaces/${s.file}`}
-          data-lightbox-caption={`${s.name} — ${s.intent}`}
-          tabindex="0"
-        >
-          <img src={`/brand/surfaces/${s.file}`} alt={`${s.name} — ${s.intent}`} loading="lazy" />
-          <figcaption>
-            <span class="imagery-surface-name">{s.name}</span>
-            <span class="imagery-surface-intent">{s.intent}</span>
-          </figcaption>
-        </figure>
-      ))}
-    </div>
+    <div class="bg-port bg-port-locked imagery-surfaces-port" set:html={surfacesHtml} />
   </LockedSection>
 
   <h3 class="imagery-subhead">Cinematic library. <em>87 references, seven categories.</em></h3>
@@ -290,56 +272,11 @@ const CEILING = [
     .imagery-quality-grid { grid-template-columns: 1fr; }
   }
 
-  /* Surface application grid — 10 framings of the brand */
-  .imagery-surface-grid {
-    margin-top: 32px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-  }
-  .imagery-surface {
-    margin: 0;
-    border: 1px solid var(--border-2, rgba(232,227,216,0.08));
-    background: rgba(255,255,255,0.015);
-    overflow: hidden;
-    display: flex; flex-direction: column;
-    cursor: zoom-in;
-    transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1), border-color 250ms ease;
-  }
-  .imagery-surface:hover,
-  .imagery-surface:focus-visible {
-    transform: translateY(-2px);
-    border-color: var(--accent);
-  }
-  .imagery-surface:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-  .imagery-surface img {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 16 / 10;
-    object-fit: cover;
-    background: #0a0a0a;
-  }
-  .imagery-surface figcaption {
-    padding: 12px 14px 14px;
-    display: flex; flex-direction: column; gap: 3px;
-  }
-  .imagery-surface-name {
-    font-family: var(--font-display);
-    font-weight: 400;
-    font-size: 15px;
-    color: var(--text-1, var(--text));
-  }
-  .imagery-surface-intent {
-    font-family: var(--font-mono);
-    font-size: 9.5px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--text-3);
-  }
+  /* Surface application — renders inside .bg-port via the verbatim
+     brand-guidelines markup (Instagram phone frame, YouTube thumbnail,
+     LinkedIn post, Email banner, etc). Spacing tweak: the brand-port
+     surface block is wide; constrain it to the section frame. */
+  .imagery-surfaces-port { margin-top: 8px; }
 
   /* Cinematic + tactile library — stacked categories of thumbnails */
   .imagery-cat-stack {
@@ -407,11 +344,9 @@ const CEILING = [
   }
 
   @media (max-width: 1100px) {
-    .imagery-surface-grid { grid-template-columns: repeat(2, 1fr); }
     .imagery-thumb-grid { grid-template-columns: repeat(3, 1fr); }
   }
   @media (max-width: 640px) {
-    .imagery-surface-grid { grid-template-columns: 1fr; }
     .imagery-thumb-grid { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
