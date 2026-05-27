@@ -6,6 +6,68 @@
 // tiles render as labelled placeholders if assets aren't shipped yet.
 
 import UpsellCard from './UpsellCard.astro';
+import LockedSection from './LockedSection.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+// Surface application — the 10 canonical surfaces the brand has to
+// land cleanly on. Files live at public/brand/surfaces/01..10.webp.
+const SURFACES: { file: string; name: string; intent: string }[] = [
+  { file: '01-instagram-square--toolkit.webp',           name: 'Instagram square',     intent: 'Toolkit grid · 1080×1080' },
+  { file: '02-instagram-carousel--single-concept.webp',  name: 'Instagram carousel',   intent: 'Single-concept frame' },
+  { file: '03-youtube-thumbnail--operator-scene.webp',   name: 'YouTube thumbnail',    intent: 'Operator scene · 1280×720' },
+  { file: '04-youtube-banner--studio-wide.webp',         name: 'YouTube banner',       intent: 'Studio-wide' },
+  { file: '05-linkedin-header--council.webp',            name: 'LinkedIn header',      intent: 'Council scene' },
+  { file: '06-email-banner--letterpress.webp',           name: 'Email banner',         intent: 'Letterpress treatment' },
+  { file: '07-website-hero--operator-systems.webp',      name: 'Website hero',         intent: 'Operator systems' },
+  { file: '08-twitter-post--single-concept.webp',        name: 'X / Twitter post',     intent: 'Single concept' },
+  { file: '09-course-hero--journey.webp',                name: 'Course hero',          intent: 'Journey scene' },
+  { file: '10-product-card--single-object.webp',         name: 'Product card',         intent: 'Single object' },
+];
+
+// Cinematic library — 87 reference images across 7 categories
+// (angle, atmosphere, composition, lens, light, setting, treatment).
+// Tactile library — 30 diagrammatic patterns across 7 categories.
+// File discovery is via import.meta.glob (build-time) so adding new
+// reference images is a drop-in operation — no code change needed.
+const CINEMATIC_CATEGORIES: { key: string; label: string }[] = [
+  { key: 'angle',       label: 'Camera angles'        },
+  { key: 'atmosphere',  label: 'Atmospherics'         },
+  { key: 'composition', label: 'Compositions'         },
+  { key: 'lens',        label: 'Lens treatments'      },
+  { key: 'light',       label: 'Lighting moods'       },
+  { key: 'setting',     label: 'Settings'             },
+  { key: 'treatment',   label: 'Stylistic treatments' },
+];
+
+const TACTILE_CATEGORIES: { key: string; label: string }[] = [
+  { key: 'chart',       label: 'Chart treatments'  },
+  { key: 'comparison',  label: 'Comparisons'       },
+  { key: 'flow',        label: 'Flows'             },
+  { key: 'hierarchy',   label: 'Hierarchies'       },
+  { key: 'layered',     label: 'Layered diagrams'  },
+  { key: 'matrix',      label: 'Matrices'          },
+  { key: 'process',     label: 'Processes'         },
+];
+
+// Read the libraries directly from /public at build time — public
+// assets aren't processed by Vite so import.meta.glob is the wrong
+// tool and triggers an ENFILE on 100+ files. fs.readdirSync is a
+// straight directory read.
+const PUBLIC_ROOT = path.resolve(process.cwd(), 'public/brand');
+function listLibrary(dir: string): string[] {
+  const full = path.join(PUBLIC_ROOT, dir);
+  if (!fs.existsSync(full)) return [];
+  return fs.readdirSync(full)
+    .filter((f) => f.endsWith('.webp'))
+    .sort()
+    .map((f) => `/brand/${dir}/${f}`);
+}
+const CINEMATIC_FILES = listLibrary('cinematic-library');
+const TACTILE_FILES   = listLibrary('tactile-library');
+function filesByCat(files: string[], key: string) {
+  return files.filter((p) => p.includes(`/${key}-`));
+}
 
 type Quality = { num: string; title: string; body: string; img: string };
 const QUALITIES: Quality[] = [
@@ -66,6 +128,81 @@ const CEILING = [
   <ul class="melis-ul">
     {CEILING.map((c) => <li set:html={c} />)}
   </ul>
+
+  <h3 class="imagery-subhead">Surface application. <em>Ten surfaces, one language.</em></h3>
+  <p class="melis-prose"><span>The visual language has to land cleanly on every surface the brand reaches — feed posts, headers, hero strips, product cards, email banners, course covers. Same papercraft world, ten different framings.</span></p>
+
+  <div class="imagery-surface-grid">
+    {SURFACES.map((s) => (
+      <figure class="imagery-surface">
+        <img src={`/brand/surfaces/${s.file}`} alt={`${s.name} — ${s.intent}`} loading="lazy" />
+        <figcaption>
+          <span class="imagery-surface-name">{s.name}</span>
+          <span class="imagery-surface-intent">{s.intent}</span>
+        </figcaption>
+      </figure>
+    ))}
+  </div>
+
+  <h3 class="imagery-subhead">Cinematic library. <em>87 references, seven categories.</em></h3>
+  <p class="melis-prose"><span>The reference shelf for image direction — camera angles, atmospherics, compositions, lens treatments, lighting moods, settings, and stylistic treatments. When a brief calls for "low heroic angle, dust motes, warm interior," this catalogue is what we point at.</span></p>
+
+  <LockedSection slug="cinematic-library" title="87 cinematic reference images · 7 categories">
+    <div class="imagery-cat-stack">
+      {CINEMATIC_CATEGORIES.map((cat) => {
+        const files = filesByCat(CINEMATIC_FILES, cat.key);
+        return (
+          <div class="imagery-cat-block">
+            <div class="imagery-cat-head">
+              <span class="imagery-cat-label">{cat.label}</span>
+              <span class="imagery-cat-count">{files.length}</span>
+            </div>
+            <div class="imagery-thumb-grid">
+              {files.map((src) => {
+                const name = src.split('/').pop()!.replace(/\.webp$/, '').replace(/^[a-z]+-\d+-/, '').replace(/-/g, ' ');
+                return (
+                  <figure class="imagery-thumb">
+                    <img src={src} alt={name} loading="lazy" />
+                    <figcaption>{name}</figcaption>
+                  </figure>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </LockedSection>
+
+  <h3 class="imagery-subhead">Tactile library. <em>30 diagrammatic patterns.</em></h3>
+  <p class="melis-prose"><span>Reference shelf for diagrams — how we communicate structure, sequence, hierarchy, and comparison without falling into generic infographic territory. Every one rendered in the canonical papercraft language.</span></p>
+
+  <LockedSection slug="tactile-library" title="30 diagrammatic references · 7 categories">
+    <div class="imagery-cat-stack">
+      {TACTILE_CATEGORIES.map((cat) => {
+        const files = filesByCat(TACTILE_FILES, cat.key);
+        return (
+          <div class="imagery-cat-block">
+            <div class="imagery-cat-head">
+              <span class="imagery-cat-label">{cat.label}</span>
+              <span class="imagery-cat-count">{files.length}</span>
+            </div>
+            <div class="imagery-thumb-grid">
+              {files.map((src) => {
+                const name = src.split('/').pop()!.replace(/\.webp$/, '').replace(/^[a-z]+-\d+-/, '').replace(/-/g, ' ');
+                return (
+                  <figure class="imagery-thumb">
+                    <img src={src} alt={name} loading="lazy" />
+                    <figcaption>{name}</figcaption>
+                  </figure>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </LockedSection>
 
   <UpsellCard
     eyebrow="Skill · Claw Mart"
@@ -134,5 +271,108 @@ const CEILING = [
   .imagery-quality-body em { font-style: italic; color: var(--accent); }
   @media (max-width: 1100px) {
     .imagery-quality-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Surface application grid — 10 framings of the brand */
+  .imagery-surface-grid {
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .imagery-surface {
+    margin: 0;
+    border: 1px solid var(--border-2, rgba(232,227,216,0.08));
+    background: rgba(255,255,255,0.015);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .imagery-surface img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    background: #0a0a0a;
+  }
+  .imagery-surface figcaption {
+    padding: 12px 14px 14px;
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .imagery-surface-name {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 15px;
+    color: var(--text-1, var(--text));
+  }
+  .imagery-surface-intent {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  /* Cinematic + tactile library — stacked categories of thumbnails */
+  .imagery-cat-stack {
+    display: flex; flex-direction: column;
+    gap: 32px;
+  }
+  .imagery-cat-block { display: flex; flex-direction: column; gap: 12px; }
+  .imagery-cat-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.08));
+  }
+  .imagery-cat-label {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 18px;
+    color: var(--text-1, var(--text));
+  }
+  .imagery-cat-count {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .imagery-thumb-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .imagery-thumb {
+    margin: 0;
+    border: 1px solid var(--border-2, rgba(232,227,216,0.06));
+    background: rgba(255,255,255,0.01);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .imagery-thumb img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background: #0a0a0a;
+  }
+  .imagery-thumb figcaption {
+    padding: 8px 10px 10px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.04em;
+    color: var(--text-3);
+    text-transform: capitalize;
+    line-height: 1.4;
+  }
+
+  @media (max-width: 1100px) {
+    .imagery-surface-grid { grid-template-columns: repeat(2, 1fr); }
+    .imagery-thumb-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .imagery-surface-grid { grid-template-columns: 1fr; }
+    .imagery-thumb-grid { grid-template-columns: repeat(2, 1fr); }
   }
 </style>

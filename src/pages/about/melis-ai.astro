@@ -87,6 +87,38 @@ import LayerDivider     from '../../components/about/brand/LayerDivider.astro';
     <Sources />
     <Legals />
   </section>
+
+  {/* On-brand password modal — replaces native window.prompt for the
+      locked-section unlock flow. Rendered once per page, controlled by
+      the script below. */}
+  <div class="brand-lock-modal" id="brand-lock-modal" hidden role="dialog" aria-modal="true" aria-labelledby="brand-lock-title">
+    <div class="brand-lock-backdrop" data-brand-lock-dismiss></div>
+    <form class="brand-lock-card" id="brand-lock-form">
+      <span class="brand-lock-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4.5" y="11" width="15" height="9.5" rx="1.5"/>
+          <path d="M 8 11 V 7 A 4 4 0 0 1 16 7 V 11"/>
+          <circle cx="12" cy="15.5" r="1.1" fill="currentColor" stroke="none"/>
+        </svg>
+      </span>
+      <div class="brand-lock-eyebrow">Locked section · password required</div>
+      <h2 class="brand-lock-title" id="brand-lock-title">Enter password to view</h2>
+      <p class="brand-lock-body">
+        These sections hold the detailed brand-system specifications.
+        One password unlocks every locked block on the page for the
+        rest of this browser session.
+      </p>
+      <label class="brand-lock-field" for="brand-lock-input">
+        <span class="brand-lock-field-label">Password</span>
+        <input id="brand-lock-input" type="password" autocomplete="off" inputmode="numeric" />
+      </label>
+      <div class="brand-lock-error" id="brand-lock-error" role="alert" hidden>Incorrect password — try again.</div>
+      <div class="brand-lock-actions">
+        <button type="button" class="brand-lock-btn brand-lock-btn-secondary" data-brand-lock-dismiss>Cancel</button>
+        <button type="submit" class="brand-lock-btn brand-lock-btn-primary">Unlock</button>
+      </div>
+    </form>
+  </div>
 </AppLayout>
 
 <script>
@@ -119,6 +151,43 @@ import LayerDivider     from '../../components/about/brand/LayerDivider.astro';
       });
     }
 
+    function openModal() {
+      const modal = document.getElementById('brand-lock-modal') as HTMLElement | null;
+      const input = document.getElementById('brand-lock-input') as HTMLInputElement | null;
+      const error = document.getElementById('brand-lock-error') as HTMLElement | null;
+      if (!modal || !input) return;
+      if (error) error.hidden = true;
+      input.value = '';
+      modal.hidden = false;
+      requestAnimationFrame(() => {
+        modal.classList.add('is-open');
+        input.focus();
+      });
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('brand-lock-modal') as HTMLElement | null;
+      if (!modal) return;
+      modal.classList.remove('is-open');
+      // Wait for transition to finish before hiding.
+      setTimeout(() => { modal.hidden = true; }, 200);
+    }
+
+    function attemptUnlock() {
+      const input = document.getElementById('brand-lock-input') as HTMLInputElement | null;
+      const error = document.getElementById('brand-lock-error') as HTMLElement | null;
+      if (!input) return;
+      const entered = input.value.trim();
+      if (entered === PW) {
+        sessionStorage.setItem(KEY, '1');
+        reveal();
+        closeModal();
+      } else if (error) {
+        error.hidden = false;
+        input.select();
+      }
+    }
+
     function init() {
       if (sessionStorage.getItem(KEY) === '1') reveal();
     }
@@ -126,17 +195,27 @@ import LayerDivider     from '../../components/about/brand/LayerDivider.astro';
     document.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
       const trigger = target.closest<HTMLElement>('[data-locked-trigger]');
-      if (!trigger) return;
-      if (sessionStorage.getItem(KEY) === '1') return; // already unlocked
-
-      const entered = window.prompt('Enter password to view locked sections');
-      if (entered === null) return; // cancelled
-      if (entered === PW) {
-        sessionStorage.setItem(KEY, '1');
-        reveal();
-      } else {
-        window.alert('Incorrect password.');
+      if (trigger && sessionStorage.getItem(KEY) !== '1') {
+        openModal();
+        return;
       }
+      if (target.closest('[data-brand-lock-dismiss]')) {
+        closeModal();
+      }
+    });
+
+    document.addEventListener('submit', (e) => {
+      const form = e.target as HTMLElement;
+      if (form && form.id === 'brand-lock-form') {
+        e.preventDefault();
+        attemptUnlock();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      const modal = document.getElementById('brand-lock-modal');
+      if (modal && !modal.hidden) closeModal();
     });
 
     document.addEventListener('DOMContentLoaded', init);
@@ -581,5 +660,155 @@ import LayerDivider     from '../../components/about/brand/LayerDivider.astro';
     .stance-grid { grid-template-columns: 1fr; }
     .promise-grid { grid-template-columns: 1fr; }
     .value-row { grid-template-columns: 1fr; gap: 6px; }
+  }
+
+  /* ════════════════════════════════════════════════════════════
+   * Brand-lock modal — replaces native prompt() for password unlock.
+   * Brand chrome: dark card, accent purple, mono labels, Cormorant
+   * heading. Backdrop blur. Focus-trap is left to the browser
+   * (autofocus on input + escape to close).
+   * ════════════════════════════════════════════════════════════ */
+  .brand-lock-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .brand-lock-modal[hidden] { display: none; }
+  .brand-lock-backdrop {
+    position: absolute; inset: 0;
+    background: rgba(5, 5, 5, 0.72);
+    backdrop-filter: blur(8px) saturate(0.9);
+    -webkit-backdrop-filter: blur(8px) saturate(0.9);
+    opacity: 0;
+    transition: opacity 180ms ease;
+  }
+  .brand-lock-modal.is-open .brand-lock-backdrop { opacity: 1; }
+  .brand-lock-card {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    padding: 40px 36px 32px;
+    background: linear-gradient(180deg, #1a1a1a 0%, #141414 100%);
+    border: 1px solid rgba(124, 58, 237, 0.32);
+    border-radius: 6px;
+    box-shadow:
+      0 24px 80px rgba(0, 0, 0, 0.6),
+      0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+    display: flex; flex-direction: column;
+    gap: 0;
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+    transition: opacity 220ms ease, transform 220ms ease;
+  }
+  .brand-lock-modal.is-open .brand-lock-card {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  .brand-lock-icon {
+    display: inline-flex;
+    width: 40px; height: 40px;
+    color: var(--accent);
+    margin-bottom: 24px;
+  }
+  .brand-lock-icon svg { width: 100%; height: 100%; }
+  .brand-lock-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .brand-lock-title {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: 28px;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin: 0 0 14px;
+    color: var(--text-1, var(--text));
+  }
+  .brand-lock-body {
+    margin: 0 0 24px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+  .brand-lock-field {
+    display: flex; flex-direction: column;
+    gap: 8px;
+    margin: 0 0 8px;
+  }
+  .brand-lock-field-label {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .brand-lock-field input {
+    width: 100%;
+    padding: 13px 16px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(232, 227, 216, 0.14);
+    border-radius: 4px;
+    color: var(--text-1, var(--text));
+    font-family: var(--font-mono);
+    font-size: 16px;
+    letter-spacing: 0.04em;
+    transition: border-color 160ms ease, background 160ms ease;
+  }
+  .brand-lock-field input:focus {
+    outline: none;
+    border-color: rgba(124, 58, 237, 0.55);
+    background: rgba(124, 58, 237, 0.04);
+  }
+  .brand-lock-error {
+    margin: 12px 0 0;
+    padding: 10px 14px;
+    border-left: 2px solid #f87171;
+    background: rgba(248, 113, 113, 0.06);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: #f87171;
+  }
+  .brand-lock-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 22px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(232, 227, 216, 0.06);
+  }
+  .brand-lock-btn {
+    padding: 11px 22px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+  }
+  .brand-lock-btn-secondary {
+    background: transparent;
+    border: 1px solid rgba(232, 227, 216, 0.14);
+    color: var(--text-2);
+  }
+  .brand-lock-btn-secondary:hover {
+    border-color: rgba(232, 227, 216, 0.32);
+    color: var(--text-1, var(--text));
+  }
+  .brand-lock-btn-primary {
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    color: #fff;
+  }
+  .brand-lock-btn-primary:hover {
+    filter: brightness(1.08);
   }
 </style>
