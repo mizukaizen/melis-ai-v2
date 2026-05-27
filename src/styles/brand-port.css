@@ -1626,7 +1626,7 @@
 
   .bg-port .frame-phone .ig-avatar {
     width: 22px; height: 22px; border-radius: 50%;
-    background: url('./headshot-sean-melis.png') center/cover no-repeat,
+    background: url('/brand/headshot-sean-melis.webp') center/cover no-repeat,
                 linear-gradient(135deg, var(--accent), var(--signal));
   }
 
@@ -1689,7 +1689,7 @@
 
   .bg-port .frame-yt-card .yt-avatar {
     width: 32px; height: 32px; border-radius: 50%;
-    background: url('./headshot-sean-melis.png') center/cover no-repeat,
+    background: url('/brand/headshot-sean-melis.webp') center/cover no-repeat,
                 linear-gradient(135deg, var(--accent), var(--amber));
   }
 
@@ -1732,7 +1732,7 @@
 
   .bg-port .frame-yt-banner .channel-avatar {
     width: 56px; height: 56px; border-radius: 50%;
-    background: url('./headshot-sean-melis.png') center/cover no-repeat,
+    background: url('/brand/headshot-sean-melis.webp') center/cover no-repeat,
                 linear-gradient(135deg, var(--accent), var(--signal));
   }
 
@@ -1777,7 +1777,7 @@
 
   .bg-port .frame-li .li-avatar {
     width: 40px; height: 40px; border-radius: 50%;
-    background: url('./headshot-sean-melis.png') center/cover no-repeat,
+    background: url('/brand/headshot-sean-melis.webp') center/cover no-repeat,
                 linear-gradient(135deg, var(--accent), var(--amber));
   }
 
@@ -1974,7 +1974,7 @@
 
   .bg-port .frame-tw .tw-avatar {
     width: 40px; height: 40px; border-radius: 50%;
-    background: url('./headshot-sean-melis.png') center/cover no-repeat,
+    background: url('/brand/headshot-sean-melis.webp') center/cover no-repeat,
                 linear-gradient(135deg, var(--accent), var(--signal));
     flex-shrink: 0;
   }
