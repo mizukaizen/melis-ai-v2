@@ -147,7 +147,27 @@ import LayerDivider     from '../../components/about/brand/LayerDivider.astro';
   // is needed later, swap for build-time AES-GCM encryption of the
   // locked content.
   (function wireBrandLightbox() {
+    // Portal the lightbox + the password modal to <body> so they escape
+    // any parent containing block (transform / filter / backdrop-filter /
+    // will-change on an ancestor turns position:fixed into "fixed within
+    // that ancestor" — which made the lightbox render under the sidebars
+    // instead of over them).
+    function portalToBody(id: string) {
+      const el = document.getElementById(id);
+      if (el && el.parentElement !== document.body) {
+        document.body.appendChild(el);
+      }
+    }
+    function portalAll() {
+      portalToBody('brand-lightbox');
+      portalToBody('brand-lock-modal');
+    }
+    document.addEventListener('DOMContentLoaded', portalAll);
+    document.addEventListener('astro:page-load', portalAll);
+    if (document.readyState !== 'loading') portalAll();
+
     function openLightbox(src: string, caption: string) {
+      portalToBody('brand-lightbox');
       const lb = document.getElementById('brand-lightbox') as HTMLElement | null;
       const img = document.getElementById('brand-lightbox-img') as HTMLImageElement | null;
       const cap = document.getElementById('brand-lightbox-caption') as HTMLElement | null;
@@ -233,6 +253,12 @@ import LayerDivider     from '../../components/about/brand/LayerDivider.astro';
     }
 
     function openModal() {
+      // Same portal trick as the lightbox — guarantees modal renders
+      // above sidebars regardless of parent stacking contexts.
+      const modalEl = document.getElementById('brand-lock-modal');
+      if (modalEl && modalEl.parentElement !== document.body) {
+        document.body.appendChild(modalEl);
+      }
       const modal = document.getElementById('brand-lock-modal') as HTMLElement | null;
       const input = document.getElementById('brand-lock-input') as HTMLInputElement | null;
       const error = document.getElementById('brand-lock-error') as HTMLElement | null;
