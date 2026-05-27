@@ -1,9 +1,13 @@
 ---
-// Section 19 · Component library. Curated specimen gallery — 16 tiles
-// in a 3-col responsive grid. Each tile renders a real, scaled
-// specimen of a canonical brand pattern: cards, sigils, palette,
-// type stack, buttons, viz, etc. Intent: visual signal that a real
-// design system exists. No source code visible. No copy-paste.
+// Section 19 · Component library. The page-level summary (16 curated
+// specimen tiles) stays public; the full 81-component asset library
+// from brand-guidelines.html sits behind the password gate, mounted
+// as a verbatim HTML embed inside .bg-port so its bespoke CSS resolves
+// via src/styles/brand-port.css.
+
+import LockedSection from './LockedSection.astro';
+import fs from 'node:fs';
+import path from 'node:path';
 
 type Intent = string;
 type Specimen = {
@@ -46,6 +50,14 @@ const SPECIMENS: Specimen[] = [
   { name: 'Quote callout',              intent: 'North Star and edge-quote treatment',         kind: 'quote-block' },
   { name: 'Numbered section eyebrow',   intent: 'Anchor row used by every brand section',      kind: 'section-eyebrow' },
 ];
+
+// Full 81-component library — verbatim brand-guidelines body
+// (lines 6986-8216) vendored to _bg-library-body.html so this
+// component file stays readable.
+const libraryHtml = fs.readFileSync(
+  path.resolve(process.cwd(), 'src/components/about/brand/_bg-library-body.html'),
+  'utf8',
+);
 ---
 
 <section id="library" data-brand-section class="melis-section">
@@ -57,7 +69,7 @@ const SPECIMENS: Specimen[] = [
   <h2 class="melis-section-title">81 components, hand-coded. <em>All in brand language.</em></h2>
 
   <div class="melis-prose">
-    <p>The library is the working layer — UI patterns, editorial blocks, surface tiers, sigils, callouts, charts — every one in the canonical chrome. Below is a curated specimen wall. Visible in product, not packaged for distribution.</p>
+    <p>The library is the working layer — UI patterns, editorial blocks, surface tiers, sigils, callouts, charts — every one in the canonical chrome. Below is a curated specimen wall; the full 81-asset catalogue lives behind the password.</p>
   </div>
 
   <div class="lib-gallery">
@@ -205,6 +217,10 @@ const SPECIMENS: Specimen[] = [
       </article>
     ))}
   </div>
+
+  <LockedSection slug="library-full" title="Full 81-component asset catalogue · loaders, inputs, cards, overlays, data UI, motion, process, matrices, hierarchy, timeline, concepts, callouts">
+    <div class="bg-port bg-port-locked" set:html={libraryHtml} />
+  </LockedSection>
 </section>
 
 <style is:global>
