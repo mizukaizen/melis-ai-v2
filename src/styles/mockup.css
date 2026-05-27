@@ -3005,6 +3005,11 @@
     border-color: rgba(251, 191, 36, 0.4);
     background: rgba(251, 191, 36, 0.14);
   }
+  .pane .room-card-group-pill.is-research {
+    color: #a78bfa;
+    border-color: rgba(167, 139, 250, 0.4);
+    background: rgba(167, 139, 250, 0.12);
+  }
 
   /* ── Dossiers category landing (dossier-card grid + key-concept-table) ── */
   .pane[data-pane="library"] .kct-headstrip { max-width: 1100px; margin: 0 auto 32px; }

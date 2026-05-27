@@ -16,6 +16,84 @@ const COVER_MAP: Record<string, string> = {
 function coverFor(slug: string) {
   return COVER_MAP[slug] || '/section-rooms/ventures-landing.png';
 }
+
+// ── Card model ────────────────────────────────────────────────
+// Unified card list: collection ventures + the three additional
+// prominent ventures from the mockup (no detail pages — display-only
+// on the landing). Each card declares its stage so the grid can sort
+// live → building → research, alphabetical within each group.
+type Stage = 'live' | 'building' | 'research';
+type Card = {
+  slug: string;
+  href: string;
+  cover: string;
+  eyebrow: string;
+  titleHtml: string;
+  lede: string;
+  stage: Stage;
+};
+
+const collectionCards: Card[] = ['lighthouse', 'holy-signal', 'phantom-ink']
+  .map((slug) => ventures.find((v) => v.slug === slug))
+  .filter((v): v is NonNullable<typeof v> => Boolean(v))
+  .map((v) => ({
+    slug: v.slug,
+    href: `/ventures/${v.slug}/`,
+    cover: coverFor(v.slug),
+    eyebrow: v.data.eyebrow ?? '',
+    titleHtml: v.data.titleHtml || v.data.title,
+    lede: v.data.lede ?? '',
+    // Map venture .stage frontmatter ("live"/"building"/etc) onto the
+    // three-stage card model. Fallback "live" so a future venture
+    // missing the field still renders.
+    stage: (['live', 'building', 'research'].includes(v.data.stage as string)
+      ? (v.data.stage as Stage)
+      : 'live'),
+  }));
+
+const inlineCards: Card[] = [
+  {
+    slug: 'hive-doctrine', href: '/ventures/',
+    cover: '/section-rooms/ventures-hive-doctrine.png',
+    eyebrow: 'Sub-brand · Live',
+    titleHtml: 'Hive Doctrine',
+    lede: 'Marketplace + philosophy of multi-agent AI.',
+    stage: 'live',
+  },
+  {
+    slug: 'openclaw', href: '/ventures/',
+    cover: '/section-rooms/ventures-openclaw.png',
+    eyebrow: 'Stack · Live',
+    titleHtml: 'OpenClaw Self-Host',
+    lede: 'The Helsinki rig that runs everything quietly.',
+    stage: 'live',
+  },
+  {
+    slug: 'polymarket-bots', href: '/ventures/',
+    cover: '/section-rooms/ventures-polymarket.png',
+    eyebrow: 'Stack · Live',
+    titleHtml: 'Polymarket Bots',
+    lede: 'Three Rust bots trading 30+ markets unattended.',
+    stage: 'live',
+  },
+];
+
+const STAGE_RANK: Record<Stage, number> = { live: 0, building: 1, research: 2 };
+const STAGE_PILL: Record<Stage, { label: string; cls: string }> = {
+  live:     { label: 'Live',     cls: 'is-signal' },
+  building: { label: 'Building', cls: 'is-orange' },
+  research: { label: 'Research', cls: 'is-research' },
+};
+
+function plainTitle(html: string): string {
+  return html.replace(/<[^>]+>/g, '').toLowerCase();
+}
+
+const cards: Card[] = [...collectionCards, ...inlineCards].sort((a, b) => {
+  const rank = STAGE_RANK[a.stage] - STAGE_RANK[b.stage];
+  if (rank !== 0) return rank;
+  return plainTitle(a.titleHtml).localeCompare(plainTitle(b.titleHtml));
+});
 ---
 
 <AppLayout
@@ -36,58 +114,22 @@ function coverFor(slug: string) {
       <p class="body-lead">Sub-brands and ventures that started as side projects and grew into something worth shipping. Status is honest: live, in flight, or parked.</p>
     </div>
     <div class="room-grid">
-      {ventures.map((v) => (
-        <a class="room-card" href={`/ventures/${v.slug}/`}>
-          <div class="room-card-img" style={`background-image: url('${coverFor(v.slug)}');`}></div>
-          <div class="room-card-veil"></div>
-          {v.data.pill && (
-            <div class={`room-card-group-pill ${v.data.pill.cls || ''}`}>{v.data.pill.label}</div>
-          )}
-          <div class="room-card-arrow">↗</div>
-          <div class="room-card-meta">
-            <div class="room-card-eyebrow">{v.data.eyebrow}</div>
-            <div class="room-card-title" set:html={v.data.titleHtml || v.data.title}></div>
-            <div class="room-card-line">{v.data.lede}</div>
-          </div>
-        </a>
-      ))}
-
-      {/* Three additional prominent ventures from the mockup. No detail
-          pages — these are display-only on the landing. Hrefs target
-          the landing itself (mockup pattern). */}
-      <a class="room-card" href="/ventures/">
-        <div class="room-card-img" style="background-image: url('/section-rooms/ventures-hive-doctrine.png');"></div>
-        <div class="room-card-veil"></div>
-        <div class="room-card-group-pill is-orange">In flight</div>
-        <div class="room-card-arrow">↗</div>
-        <div class="room-card-meta">
-          <div class="room-card-eyebrow">Sub-brand · In flight</div>
-          <div class="room-card-title">Hive Doctrine</div>
-          <div class="room-card-line">Marketplace + philosophy of multi-agent AI.</div>
-        </div>
-      </a>
-      <a class="room-card" href="/ventures/">
-        <div class="room-card-img" style="background-image: url('/section-rooms/ventures-openclaw.png');"></div>
-        <div class="room-card-veil"></div>
-        <div class="room-card-group-pill is-signal">Live</div>
-        <div class="room-card-arrow">↗</div>
-        <div class="room-card-meta">
-          <div class="room-card-eyebrow">Stack · Live</div>
-          <div class="room-card-title">OpenClaw Self-Host</div>
-          <div class="room-card-line">The Helsinki rig that runs everything quietly.</div>
-        </div>
-      </a>
-      <a class="room-card" href="/ventures/">
-        <div class="room-card-img" style="background-image: url('/section-rooms/ventures-polymarket.png');"></div>
-        <div class="room-card-veil"></div>
-        <div class="room-card-group-pill is-signal">Live</div>
-        <div class="room-card-arrow">↗</div>
-        <div class="room-card-meta">
-          <div class="room-card-eyebrow">Stack · Live</div>
-          <div class="room-card-title">Polymarket Bots</div>
-          <div class="room-card-line">Three Rust bots trading 30+ markets unattended.</div>
-        </div>
-      </a>
+      {cards.map((c) => {
+        const pill = STAGE_PILL[c.stage];
+        return (
+          <a class="room-card" href={c.href}>
+            <div class="room-card-img" style={`background-image: url('${c.cover}');`}></div>
+            <div class="room-card-veil"></div>
+            <div class={`room-card-group-pill ${pill.cls}`}>{pill.label}</div>
+            <div class="room-card-arrow">↗</div>
+            <div class="room-card-meta">
+              <div class="room-card-eyebrow">{c.eyebrow}</div>
+              <div class="room-card-title" set:html={c.titleHtml}></div>
+              <div class="room-card-line">{c.lede}</div>
+            </div>
+          </a>
+        );
+      })}
     </div>
 
     <hr class="rule" />
