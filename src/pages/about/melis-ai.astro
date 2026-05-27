@@ -51,13 +51,6 @@ import LayerDivider     from '../../components/about/brand/LayerDivider.astro';
         <div class="melis-hero-rule"></div>
         <p class="melis-hero-lead"><em>The studio behind the work — its why, its look, its voice.</em></p>
         <p class="melis-hero-intro">An AI studio run by Sean Melis from London. Courses, products, dispatches. What follows is everything that holds it together.</p>
-        <div class="melis-hero-meta">
-          <span><strong>22</strong>numbered sections</span>
-          <span><strong>33</strong>lexicon concepts</span>
-          <span><strong>15</strong>compass frames</span>
-          <span><strong>6</strong>sub-brands</span>
-          <span><strong>81</strong>hand-coded components</span>
-        </div>
       </div>
     </header>
 
@@ -112,8 +105,8 @@ import LayerDivider     from '../../components/about/brand/LayerDivider.astro';
      lines 4377-4408. */
   .melis-hero-cover {
     position: relative;
-    margin: -28px -60px 96px;  /* break the .melis-main padding to go full-bleed */
-    min-height: 560px;
+    margin: -28px -60px 72px;  /* break the .melis-main padding to go full-bleed */
+    min-height: 440px;
     overflow: hidden;
     display: flex; align-items: flex-end;
     isolation: isolate;
@@ -203,36 +196,14 @@ import LayerDivider     from '../../components/about/brand/LayerDivider.astro';
   }
   .melis-hero-lead em { font-style: italic; color: var(--accent); }
   .melis-hero-intro {
-    margin: 0 0 36px;
+    margin: 0;
     max-width: 640px;
     font-size: 16px;
     line-height: 1.7;
     color: var(--text-2);
   }
-  .melis-hero-meta {
-    display: flex; flex-wrap: wrap;
-    gap: 8px 28px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--text-3);
-    border-top: 1px solid rgba(232,227,216,0.12);
-    padding-top: 18px;
-  }
-  .melis-hero-meta span {
-    display: inline-flex; align-items: baseline; gap: 8px;
-  }
-  .melis-hero-meta strong {
-    font-family: var(--font-display);
-    font-weight: 400;
-    font-size: 22px;
-    letter-spacing: -0.02em;
-    color: var(--accent);
-    text-transform: none;
-  }
   @media (max-width: 1100px) {
-    .melis-hero-cover { margin-left: 0; margin-right: 0; min-height: 480px; }
+    .melis-hero-cover { margin-left: 0; margin-right: 0; min-height: 400px; }
     .melis-hero-inner { padding: 40px 24px; }
     .melis-hero-title { font-size: 64px; }
   }
