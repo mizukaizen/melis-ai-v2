@@ -27,6 +27,12 @@ import Sources          from '../../components/about/brand/Sources.astro';
 import Legals           from '../../components/about/brand/Legals.astro';
 import LayerDivider     from '../../components/about/brand/LayerDivider.astro';
 
+// Brand-port stylesheet — auto-scoped CSS from brand-guidelines.html
+// so the verbatim HTML embeds (motion demos, charts, contrast matrix
+// etc.) render with their original chrome without leaking styles
+// into the rest of the site. See src/styles/brand-port.css.
+import '../../styles/brand-port.css';
+
 // All 22 brand book sections + § Sources are now backed by dedicated
 // components — no PENDING placeholders remaining.
 ---
