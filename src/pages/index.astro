@@ -21,7 +21,7 @@ import homeHtml from '../_html/pane-home.html?raw';
   // Tunable: BUMP_AT (when to wrap) and LOOP_END (the visible cap).
   // Sub-second margin keeps the wrap below the stall.
   (function wireHeroLoop() {
-    const LOOP_END = 3.7;
+    const LOOP_END = 2.7;
     function attach() {
       const v = document.querySelector<HTMLVideoElement>('video.hero-bg');
       if (!v || (v as HTMLVideoElement & { _heroLoopWired?: boolean })._heroLoopWired) return;
