@@ -127,23 +127,31 @@ import LayerDivider     from '../../components/about/brand/LayerDivider.astro';
     object-fit: cover;
     display: block;
     filter: saturate(0.9);
-    /* Image fades to transparent at the bottom — mirrors the canonical
-       .section-hero-bg mask-image pattern (src/styles/global.css:179,
-       --hero-fade token). The papercraft texture dissolves into the
-       felt var(--bg) where the page body picks up below. */
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
-            mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+    /* Canonical hero fade — same --hero-fade token used on every other
+       section-hero across the site (prompts, dossiers, articles, etc).
+       Image opaque for the top 25%, fades to fully transparent by 95%
+       so the papercraft scene dissolves into the felt var(--bg). */
+    -webkit-mask-image: var(--hero-fade);
+            mask-image: var(--hero-fade);
   }
   .melis-hero-veil {
     position: absolute; inset: 0;
-    background: linear-gradient(
-      to top,
-      rgba(15, 15, 15, 0.90) 0%,
-      rgba(15, 15, 15, 0.72) 35%,
-      rgba(15, 15, 15, 0.45) 65%,
-      rgba(15, 15, 15, 0.28) 90%,
-      rgba(15, 15, 15, 0.16) 100%
-    );
+    /* Top-weighted veil mirrors the canonical .section-hero-veil pattern.
+       Keeps the eyebrow + wordmark legible against the upper image without
+       fighting the mask fade — the bottom stays clean so the image-to-felt
+       transition reads. A second bottom-soft darken (below) gives the
+       wordmark just enough contrast over the lower transparent zone. */
+    background:
+      linear-gradient(180deg,
+        rgba(5, 5, 5, 0.40) 0%,
+        rgba(5, 5, 5, 0.12) 22%,
+        transparent 50%,
+        transparent 100%),
+      linear-gradient(0deg,
+        rgba(15, 15, 15, 0.42) 0%,
+        rgba(15, 15, 15, 0.18) 18%,
+        transparent 40%,
+        transparent 100%);
     z-index: 1;
   }
   .melis-hero-inner {
