@@ -42,13 +42,19 @@ const { slug, title } = Astro.props;
 <style is:global>
   .locked-section {
     margin-top: 32px;
-    max-width: 720px;
+    /* Let the locked block fill the parent section. The trigger
+       tile (text-only) sits comfortably at section width; locked
+       content with grids/charts/tables uses the full canvas. */
+    max-width: 100%;
   }
   .locked-trigger {
+    /* Trigger stays a comfortable reading-tile width even when
+       the section frame is wider. */
     display: flex;
     align-items: center;
     gap: 18px;
     width: 100%;
+    max-width: 720px;
     padding: 20px 24px;
     background: rgba(124, 58, 237, 0.04);
     border: 1px dashed rgba(124, 58, 237, 0.32);
