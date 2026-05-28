@@ -160,6 +160,18 @@ main.content .pane.in-room .section-header {
   padding-top: clamp(16px, 2vh, 28px) !important;
 }
 
+/* Venture detail: the body column (.v6-detail) is max-width 760px and
+   centred, but the hero title block is left-aligned at 880px — so at
+   wide viewports the eyebrow + h1 sat ~200px left of the body text.
+   Centre the hero title block to the same 760px column so the eyebrow,
+   the h1, and the body content all share one left edge. */
+.pane[data-pane="projects"].in-room .section-title-block {
+  max-width: 760px !important;
+  width: 100%;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
 /* ── Prose tier — narrow column for long-form reading.
    Applies to article / newsletter / dossier detail pages. Hero AND
    body both clamp to ~720px so h1, eyebrow, body-lead, prose, lists
