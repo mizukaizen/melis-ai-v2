@@ -564,14 +564,17 @@ main.content .pane.in-room .section-header {
 }
 .section-body .chapter-cover {
   position: relative;
-  width: 100%;
-  height: clamp(180px, 24vh, 240px);
-  border-radius: 8px;
+  /* Full-bleed to the pane edges (like the page hero): break out of the
+     section-body content box by its padding (var(--content-padding-x))
+     plus the 60px auto-margin gap from max-width: calc(100% - 120px).
+     width:auto + symmetric negative margins → border-box == pane width,
+     capped at ~1400px on ultra-wide so it never overflows. */
+  width: auto;
+  height: clamp(200px, 28vh, 300px);
+  margin: 0 calc(-1 * (var(--content-padding-x) + 60px)) 32px;
   overflow: hidden;
-  margin: 0 0 30px;
   background-size: cover;
   background-position: center;
-  border: 1px solid var(--border-2);
   display: flex;
   align-items: flex-end;
 }
@@ -591,7 +594,9 @@ main.content .pane.in-room .section-header {
   display: flex;
   align-items: baseline;
   gap: 18px;
-  padding: 22px 26px;
+  /* Left padding matches the body-text inset (padX + 60px gap) so the
+     chapter title shares a left edge with the prose below it. */
+  padding: 26px calc(var(--content-padding-x) + 60px);
 }
 .section-body .cc-num {
   font-family: var(--font-mono);
