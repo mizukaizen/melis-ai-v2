@@ -19,6 +19,16 @@ const { item } = Astro.props as Props;
 const { Content } = await item.render();
 const data = item.data;
 const cover = dossierHero(data.category);
+
+// keyIdeas come through as markdown-flavoured strings (e.g. "**Hard
+// upper bound.** The window is set during training…"). They're rendered
+// via set:html, so convert the inline markdown bold/italic to real HTML
+// — otherwise the literal ** asterisks show on the page.
+function mdInline(s: string): string {
+  return s
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+}
 ---
 
 <AppLayout title={data.title} pane="library" inRoom description={data.lede}>
@@ -58,7 +68,7 @@ const cover = dossierHero(data.category);
         <section class="dossier-section dossier-keyideas">
           <h2 class="h2">Key <em>ideas</em></h2>
           <ul class="dossier-list">
-            {data.keyIdeas.map((idea) => <li set:html={idea}></li>)}
+            {data.keyIdeas.map((idea) => <li set:html={mdInline(idea)}></li>)}
           </ul>
         </section>
       )}

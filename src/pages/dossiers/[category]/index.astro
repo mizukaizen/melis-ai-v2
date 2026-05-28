@@ -53,9 +53,9 @@ const categoryCover = dossierCategoryHero(category);
 <AppLayout title={cat.title} pane="library" inRoom description={cat.line}>
   <SectionHero
     cover={dossierCategoryHero(category)}
-    eyebrow={`Dossiers · ${cat.title} · ${cat.count}`}
-    title="Dossiers"
-    titleHtml="<em>Dossiers</em>"
+    eyebrow={`Dossiers · ${cat.count}`}
+    title={cat.title}
+    titleHtml={`<em>${cat.title}</em>`}
   />
 
   <section class="section-body">
