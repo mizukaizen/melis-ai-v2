@@ -17,6 +17,7 @@ export const PAST_VENTURES: PastVenture[] = [
     period: '2007 · age 14',
     body: [
       'The first venture, started at 14. Freelance graphic design, video editing, and animation, run as a one-person studio from a Brisbane bedroom for over five years. Clients included Beyond Blue, VideoZoo TV, AusCSP, GamerNet, PDT Architects, QUT Guild, UQ Union, UQSS, and several Counter-Strike: Source esports teams. Built a YouTube channel that did roughly 200,000 cumulative views.',
+      'Lived at seanmelis.com — a hand-coded HTML and CSS site hosted off Dropbox, the first time the personal brand existed at its own domain. Already tracking the same instinct: own the domain, own the file, control the platform.',
       "This is the venture I forget to mention because it sounds too long ago to count. It counts. Every operating habit on this site — own the file, ship the brand, deal with clients, run the channel — was practised before I'd finished high school.",
     ],
   },
@@ -25,13 +26,6 @@ export const PAST_VENTURES: PastVenture[] = [
     period: 'sourcing agency',
     body: [
       'Co-founded a sourcing agency that helped Australian businesses source, negotiate, and ship products from overseas suppliers. End-to-end import assistance — the same pattern that would resurface five years later as the dropshipping era, but at the wholesale layer rather than retail. Ran for just over a year. Useful as a first proper co-founder experience.',
-    ],
-  },
-  {
-    name: 'seanmelis.com',
-    period: 'the first domain',
-    body: [
-      'A hand-coded HTML and CSS site, hosted off Dropbox. The first time the personal brand existed at its own domain. Already tracking the same instinct: own the domain, own the file, control the platform.',
     ],
   },
   {
