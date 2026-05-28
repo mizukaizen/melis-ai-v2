@@ -19,7 +19,11 @@ type Props = { item: CollectionEntry<'ventures'> };
 const { item } = Astro.props as Props;
 const data = item.data;
 const detail = VENTURES_DETAIL[item.slug];
-const eyebrow = detail?.eyebrow || data.eyebrow;
+const rawEyebrow = detail?.eyebrow || data.eyebrow;
+// The status (Live / Building / …) now rides in the coloured eyebrow
+// pill, so strip a trailing "· <status>" from the eyebrow text to
+// avoid saying it twice.
+const eyebrow = rawEyebrow ? rawEyebrow.split('·')[0].trim() : rawEyebrow;
 const titleHtml = detail?.title || data.titleHtml || data.title;
 const lede = detail?.lede || data.lede;
 const strip = detail?.strip || data.strip || [];
@@ -44,6 +48,7 @@ const cover = (data.cover && data.cover.startsWith('/'))
     eyebrow={eyebrow}
     title={data.title}
     titleHtml={titleHtml}
+    eyebrowPill={pill}
   />
 
   <section class="section-body">
@@ -69,10 +74,6 @@ const cover = (data.cover && data.cover.startsWith('/'))
         </div>
       ) : (
         <>
-          {pill && (
-            <span class={`vd-pill ${pill.cls}`}>{pill.label}</span>
-          )}
-
           {strip.length > 0 && (
             <div class="vd-strip">
               {strip.map((s) => (

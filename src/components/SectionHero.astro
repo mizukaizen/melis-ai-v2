@@ -24,6 +24,9 @@ interface Props {
   byline?: string;
   backHref?: string;
   backLabel?: string;
+  /** Optional coloured status pill rendered inline after the eyebrow text.
+      cls is a tone modifier: 'is-signal' | 'is-orange' | 'is-muted' | 'is-research'. */
+  eyebrowPill?: { label: string; cls?: string };
 }
 
 const {
@@ -34,6 +37,7 @@ const {
   byline,
   backHref,
   backLabel,
+  eyebrowPill,
 } = Astro.props;
 ---
 
@@ -45,9 +49,50 @@ const {
       <a class="back-link" href={backHref}>← {backLabel || 'back'}</a>
     )}
     <div class="section-title-block">
-      {eyebrow && <div class="section-eyebrow">{eyebrow}</div>}
+      {(eyebrow || eyebrowPill) && (
+        <div class="section-eyebrow">
+          {eyebrow}
+          {eyebrowPill && (
+            <span class={`section-eyebrow-pill ${eyebrowPill.cls || ''}`}>
+              <span class="section-eyebrow-pill-dot"></span>{eyebrowPill.label}
+            </span>
+          )}
+        </div>
+      )}
       <h1 class="section-title" set:html={titleHtml || title}></h1>
       {byline && <div class="section-byline">{byline}</div>}
     </div>
   </div>
 </section>
+
+<style is:global>
+  .section-eyebrow-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-left: 12px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    vertical-align: middle;
+    transform: translateY(-1px);
+  }
+  .section-eyebrow-pill-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: currentColor; flex-shrink: 0;
+  }
+  .section-eyebrow-pill.is-signal {
+    color: #5eead4; background: rgba(94,234,212,0.10); border-color: rgba(94,234,212,0.34);
+  }
+  .section-eyebrow-pill.is-orange {
+    color: #fb923c; background: rgba(251,146,60,0.10); border-color: rgba(251,146,60,0.34);
+  }
+  .section-eyebrow-pill.is-research {
+    color: #a78bfa; background: rgba(167,139,250,0.10); border-color: rgba(167,139,250,0.34);
+  }
+  .section-eyebrow-pill.is-muted {
+    color: #fbbf24; background: rgba(251,191,36,0.10); border-color: rgba(251,191,36,0.34);
+  }
+</style>
