@@ -548,11 +548,10 @@ main.content .pane.in-room .section-header {
   max-width: 760px;
 }
 
-/* Chapter blocks — numbered story sections */
+/* Chapter blocks — numbered story sections, each led by a full-width
+   papercraft cover strip (life-year scene) with number + title overlaid. */
 .section-body .chapter {
-  display: grid;
-  grid-template-columns: 80px 1fr;
-  gap: 32px;
+  display: block;
   padding: 40px 0;
   border-top: 1px solid var(--border-1);
 }
@@ -563,6 +562,53 @@ main.content .pane.in-room .section-header {
   letter-spacing: 0.2em;
   padding-top: 8px;
 }
+.section-body .chapter-cover {
+  position: relative;
+  width: 100%;
+  height: clamp(180px, 24vh, 240px);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 0 0 30px;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid var(--border-2);
+  display: flex;
+  align-items: flex-end;
+}
+.section-body .chapter-cover-veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top,
+    rgba(8, 7, 6, 0.92) 0%,
+    rgba(8, 7, 6, 0.55) 30%,
+    rgba(8, 7, 6, 0.12) 60%,
+    transparent 100%);
+  pointer-events: none;
+}
+.section-body .chapter-cover-meta {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  padding: 22px 26px;
+}
+.section-body .cc-num {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+}
+.section-body .cc-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3.4vw, 40px);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  margin: 0;
+  color: var(--text-1, #fff);
+}
+.section-body .cc-title em { font-style: italic; color: var(--accent); font-weight: 500; }
 .section-body .chapter-title {
   font-family: var(--font-display);
   font-size: 32px;
