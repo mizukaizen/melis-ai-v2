@@ -11,15 +11,29 @@ const ventures = (await getCollection('ventures')).filter((v) => !v.data.draft);
 
 // Venture cover images available in /section-rooms/. Anything without a
 // dedicated image falls back to the generic ventures-landing scene.
+// Every venture has a dedicated paper-craft cover in /section-rooms/.
 const COVER_MAP: Record<string, string> = {
-  'hive-doctrine': '/section-rooms/ventures-hive-doctrine.png',
-  'holy-signal':   '/section-rooms/ventures-holy-signal.png',
-  'lighthouse':    '/section-rooms/ventures-lighthouse.png',
-  'phantom-ink':   '/section-rooms/ventures-phantom-ink.png',
-  'nightglass':    '/section-rooms/ventures-nightglass.png',
-  'motif':         '/section-rooms/ventures-motif.png',
-  'agent-fleet':   '/section-rooms/ventures-openclaw.png',
-  'aetherboard':   '/section-rooms/ventures-aetherboard.png',
+  'hive-doctrine':     '/section-rooms/ventures-hive-doctrine.png',
+  'holy-signal':       '/section-rooms/ventures-holy-signal.png',
+  'lighthouse':        '/section-rooms/ventures-lighthouse.png',
+  'phantom-ink':       '/section-rooms/ventures-phantom-ink.png',
+  'nightglass':        '/section-rooms/ventures-nightglass.png',
+  'motif':             '/section-rooms/ventures-motif.png',
+  'aetherboard':       '/section-rooms/ventures-aetherboard.png',
+  'agent-fleet':       '/section-rooms/ventures-agent-fleet.png',
+  'dossier':           '/section-rooms/ventures-dossier.png',
+  'prompt-bakery':     '/section-rooms/ventures-prompt-bakery.png',
+  'lila-park':         '/section-rooms/ventures-lila-park.png',
+  'miru':              '/section-rooms/ventures-miru.png',
+  'ai-usage-tracker':  '/section-rooms/ventures-ai-usage-tracker.png',
+  'screencast-studio': '/section-rooms/ventures-screencast-studio.png',
+  'sentinel':          '/section-rooms/ventures-sentinel.png',
+  'ai-sdr':            '/section-rooms/ventures-ai-sdr.png',
+  'consultantos':      '/section-rooms/ventures-consultantos.png',
+  'pantheon':          '/section-rooms/ventures-pantheon.png',
+  'spell-stories':     '/section-rooms/ventures-spell-stories.png',
+  'altar':             '/section-rooms/ventures-altar.png',
+  'nexusos':           '/section-rooms/ventures-nexusos.png',
 };
 function coverFor(slug: string) {
   return COVER_MAP[slug] || '/section-rooms/ventures-landing.png';
