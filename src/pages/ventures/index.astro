@@ -4,6 +4,7 @@ import SectionHero from '../../components/SectionHero.astro';
 import { getCollection } from 'astro:content';
 import { landingHero } from '../../lib/hero-image';
 import { VENTURES_DETAIL } from '../../data/ventures';
+import { PAST_VENTURES, PAST_VENTURES_INTRO, PAST_VENTURES_NOTE } from '../../data/past-ventures';
 
 export const prerender = true;
 
@@ -116,11 +117,104 @@ const cards: Card[] = ventures.map((v) => {
         </a>
       ))}
     </div>
+
+    {/* ── Past ventures — expandable archive, the arc 2007 → today ── */}
+    <hr class="rule" />
+    <div class="pv-archive">
+      <div class="section-eyebrow-small">The arc · 2007 → today</div>
+      <h2 class="h2">Past <em>ventures</em>.</h2>
+      <p class="body-lead pv-intro">{PAST_VENTURES_INTRO}</p>
+
+      <div class="pv-list">
+        {PAST_VENTURES.map((v) => (
+          <details class="pv-item">
+            <summary class="pv-summary">
+              <span class="pv-name">{v.name}</span>
+              <span class="pv-period">{v.period}</span>
+              <span class="pv-chev" aria-hidden="true">+</span>
+            </summary>
+            <div class="pv-body">
+              {v.body.map((p) => <p>{p}</p>)}
+            </div>
+          </details>
+        ))}
+      </div>
+
+      <p class="pv-note">{PAST_VENTURES_NOTE}</p>
+    </div>
   </section>
 
   <div class="footer">
     <div>melis.ai · 2026</div>
     <div>Operator-built · Australia</div>
   </div>
+
+  <style>
+    .pv-archive { max-width: 880px; margin: 8px auto 0; }
+    .pv-intro { margin-bottom: 28px; max-width: 720px; }
+    .pv-list {
+      border-top: 1px solid var(--border-2, rgba(232,227,216,0.08));
+    }
+    .pv-item {
+      border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.08));
+    }
+    .pv-summary {
+      display: flex; align-items: baseline; gap: 16px;
+      padding: 18px 4px;
+      cursor: pointer;
+      list-style: none;
+      transition: color 160ms ease;
+    }
+    .pv-summary::-webkit-details-marker { display: none; }
+    .pv-summary:hover { color: var(--text-1, var(--text)); }
+    .pv-name {
+      flex: 1;
+      font-family: var(--font-display);
+      font-size: 21px;
+      letter-spacing: -0.01em;
+      color: var(--text-1, var(--text));
+    }
+    .pv-period {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      white-space: nowrap;
+    }
+    .pv-chev {
+      font-family: var(--font-display);
+      font-size: 22px;
+      line-height: 1;
+      color: var(--accent);
+      transition: transform 200ms ease;
+      width: 18px; text-align: center;
+    }
+    .pv-item[open] .pv-chev { transform: rotate(45deg); }
+    .pv-body {
+      padding: 0 4px 24px;
+      max-width: 720px;
+    }
+    .pv-body p {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text-2);
+      margin: 0 0 14px;
+    }
+    .pv-body p:last-child { margin-bottom: 0; }
+    .pv-note {
+      margin-top: 28px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.6;
+      letter-spacing: 0.02em;
+      color: var(--text-3);
+      font-style: italic;
+    }
+    @media (max-width: 720px) {
+      .pv-summary { flex-wrap: wrap; gap: 4px 12px; }
+      .pv-name { flex-basis: 100%; }
+    }
+  </style>
 
 </AppLayout>
