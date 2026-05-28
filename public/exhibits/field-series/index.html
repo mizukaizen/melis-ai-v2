@@ -1738,5 +1738,21 @@ if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 }
 </script>
 
+<script data-exhibit-embed-shim>
+(function(){
+  if (window.self === window.top) return; /* only when embedded in the viewer */
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') window.parent.postMessage({ type: 'exhibit-exit' }, '*');
+  });
+  var hint = document.getElementById('kb-hint');
+  if (hint && !hint.querySelector('.esc-key')) {
+    var sep = document.createElement('span'); sep.textContent = '·'; sep.style.opacity = '0.4';
+    var key = document.createElement('span'); key.className = 'key esc-key'; key.textContent = 'ESC';
+    var lbl = document.createElement('span'); lbl.textContent = 'to exit';
+    hint.appendChild(sep); hint.appendChild(key); hint.appendChild(lbl);
+  }
+})();
+</script>
+
 </body>
 </html>
