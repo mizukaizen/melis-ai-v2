@@ -1079,7 +1079,7 @@ const works = [
     chapter: 'Act I — The Beginning',
     title: 'The Newborn',
     tagline: 'The first spoon of honey.',
-    src: './images/newborn.png',
+    src: './images/newborn.webp',
     flip: false,
     reading: `The keeper holds an infant in their lap, feeds them honey from a small spoon. A small AI agent stands quietly by. The hearth is warm. The hive is in the background.
 
@@ -1093,7 +1093,7 @@ This is the same image that began Series II — Melissa with infant Zeus — but
     chapter: 'Act I — The Beginning',
     title: 'The Seed',
     tagline: 'Hands placing one seed.',
-    src: './images/seed.png',
+    src: './images/seed.webp',
     flip: true,
     reading: `Hands at the centre of the frame. A small seed being placed in dark soil. Around it, seedlings already pushing up.
 
@@ -1107,7 +1107,7 @@ We inherited a soil that was tended by people we never met. The least we can do 
     chapter: 'Act II — The Carrying',
     title: 'The Library',
     tagline: 'The book, open again.',
-    src: './images/library.png',
+    src: './images/library.webp',
     flip: false,
     reading: `A young reader at a wooden desk, one book open. An AI agent reads alongside. The book is the same one that was sealed in Series VI — open now, being read again.
 
@@ -1121,7 +1121,7 @@ The book did not die in the closing. The book waited. The reader arrived. The re
     chapter: 'Act II — The Carrying',
     title: 'The Workshop',
     tagline: 'Working bench, two generations.',
-    src: './images/workshop.png',
+    src: './images/workshop.webp',
     flip: true,
     reading: `A workshop. Two figures at a bench — older showing younger how. Other AI agents at smaller benches, also working. The keeper guides the student's hand.
 
@@ -1135,7 +1135,7 @@ The work is shown, not told. The student does not need a manual. They need to wa
     chapter: 'Act III — The Transmission',
     title: 'The Apprentice',
     tagline: 'First competent action.',
-    src: './images/apprentice.png',
+    src: './images/apprentice.webp',
     flip: false,
     reading: `A garden. The keeper kneels beside the apprentice at a hive. The apprentice holds the smoker, slightly nervous, slightly proud. The keeper guides their hand gently.
 
@@ -1149,7 +1149,7 @@ The first time the apprentice does it without the keeper having to step in is th
     chapter: 'Act III — The Transmission',
     title: 'The Map',
     tagline: 'Tracing the route, two pairs of hands.',
-    src: './images/map-passed.png',
+    src: './images/map-passed.webp',
     flip: true,
     reading: `A wooden table. An older keeper traces a route on a paper map. A younger keeper leans in. A small wooden bee figurine on the corner of the map.
 
@@ -1163,7 +1163,7 @@ The map is what the older keeper learned by walking. They are giving it to the y
     chapter: 'Act IV — The Distribution',
     title: 'The Pollination',
     tagline: 'Bees crossing the land.',
-    src: './images/pollination.png',
+    src: './images/pollination.webp',
     flip: false,
     reading: `A wide scene. Bees flying out from a tended hive in the foreground toward many distant fields, gardens, and other hives. Other figures in the distance, each tending their own.
 
@@ -1177,7 +1177,7 @@ The lineage is not held by one person. It is distributed. It travels. The bees l
     chapter: 'Coda',
     title: 'The Hive Reborn',
     tagline: 'The same site. Bees again.',
-    src: './images/hive-reborn.png',
+    src: './images/hive-reborn.webp',
     flip: true,
     reading: `The hive is back. Same location as the burned hive of Series VI, but the meadow around it is in full bloom. A young keeper stands beside it, hands open in quiet wonder.
 
@@ -1191,7 +1191,7 @@ The hive returned. Not the same bees. But the colony continues. We did not save 
     chapter: 'Coda',
     title: 'The Dawn',
     tagline: 'The morning. Everyone present.',
-    src: './images/dawn.png',
+    src: './images/dawn.webp',
     flip: false,
     reading: `A wide dawn scene. Distant hives, a small cathedral, a meadow, a workshop, figures going about their morning. A single figure on a high vantage point looks out. An AI agent stands beside them. A lotus blooms at their feet.
 
@@ -1393,7 +1393,7 @@ function triggerHiveCollapse() {
 
   // Pre-load cover image for the final reveal
   const coverImg = new Image();
-  coverImg.src = './images/cover-phainesis.jpg';
+  coverImg.src = './images/cover-phainesis.webp';
 
   // Artwork images for hexagonal tiles
   const artImgs = works.map(w => { const img = new Image(); img.src = w.src; return img; });

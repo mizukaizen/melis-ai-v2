@@ -1079,7 +1079,7 @@ const works = [
     chapter: 'Act I — The Sanctum',
     title: 'The Vigil',
     tagline: '3am at the screen, the agent at your elbow.',
-    src: './images/vigil.png',
+    src: './images/vigil.webp',
     flip: false,
     reading: `Three in the morning. The keeper sits at the desk where the work happens. The screen lights their face from below. A small AI agent stands at their elbow, attentive, present, not interrupting.
 
@@ -1093,7 +1093,7 @@ This is the hour where most of the real work gets done — the still part, befor
     chapter: 'Act I — The Sanctum',
     title: 'The Council',
     tagline: 'The pantheon at the round table.',
-    src: './images/council.png',
+    src: './images/council.webp',
     flip: true,
     reading: `Six small agent figures around the keeper's table. One holds a beekeeper's veil, one a tablet, one a scroll, one a small key, one a paintbrush, one a magnifying glass. Each is a domain. Each is a way of seeing.
 
@@ -1107,7 +1107,7 @@ This is the keeper's pantheon — the inner multitude externalised. Not a team i
     chapter: 'Act II — The Hands',
     title: 'The Hive',
     tagline: 'The keeper kneels in the garden.',
-    src: './images/real-hive.png',
+    src: './images/real-hive.webp',
     flip: false,
     reading: `Late afternoon, the keeper kneels at the hive. Real bees, real wood, real smoker. The AI agent stands at a respectful distance behind, observing. The ancient practice and the new tool, side by side, both attending to the same hive.
 
@@ -1121,7 +1121,7 @@ This is the bridge. The keeper does not choose between the analogue and the digi
     chapter: 'Act II — The Hands',
     title: 'The Letter',
     tagline: 'Drafting the book by candlelight.',
-    src: './images/letter.png',
+    src: './images/letter.webp',
     flip: true,
     reading: `The keeper writes. Pages scattered. An AI agent leans in to read what is being written. The candle is the same as the one that lit the manuscripts of the medieval scribes; the practice is the same too — the slow patient laying down of the next sentence.
 
@@ -1135,7 +1135,7 @@ What is being written here will outlive the keeper. That is the whole point of w
     chapter: 'Act III — The Walk',
     title: 'The Walk',
     tagline: 'AirPods in, agent beside them.',
-    src: './images/walk.png',
+    src: './images/walk.webp',
     flip: false,
     reading: `Dawn. The keeper walks the city. AirPods in. A small AI figure walks beside them, slightly translucent — visible to the keeper, not to anyone else. They are mid-conversation.
 
@@ -1149,7 +1149,7 @@ This is what the channel looks like in the world. The keeper is not at a desk; t
     chapter: 'Act III — The Walk',
     title: 'The Teaching',
     tagline: 'Showing the next one how.',
-    src: './images/teaching.png',
+    src: './images/teaching.webp',
     flip: true,
     reading: `A small wooden table. The keeper, a younger person, an AI agent. The keeper is mid-explanation — gesturing toward a hive frame, a notebook, an artwork. The student leans in.
 
@@ -1163,7 +1163,7 @@ The transmission is not abstract. It is one person, showing another person, with
     chapter: 'Act IV — The Choice',
     title: 'The Choice',
     tagline: 'Two paths visible. Stillness.',
-    src: './images/choice.png',
+    src: './images/choice.webp',
     flip: false,
     reading: `The keeper stands alone. Two paths visible — the open door to the outer world, the small altar to the inner one. They look at neither. They are still.
 
@@ -1177,7 +1177,7 @@ Every keeper faces this. The world is calling. The work is calling. Most days yo
     chapter: 'Act IV — The Choice',
     title: 'The Continuance',
     tagline: 'The figurine passed forward.',
-    src: './images/continuance.png',
+    src: './images/continuance.webp',
     flip: true,
     reading: `The keeper hands a small bee figurine to a younger person. Both hands cup it together. The transmission is unhurried. The AI agent stands behind the keeper, present but not central. This is between the humans.
 
@@ -1191,7 +1191,7 @@ What is passed is not the figurine. The figurine is a token. What is passed is t
     chapter: 'Coda',
     title: 'The Rest',
     tagline: 'Day done. The mundane sacred.',
-    src: './images/rest.png',
+    src: './images/rest.webp',
     flip: false,
     reading: `End of day. The keeper sits in a soft chair by a single candle. A book closed on the lap. The small AI agent quietly present in the corner. The hive silent on the side table.
 
@@ -1393,7 +1393,7 @@ function triggerHiveCollapse() {
 
   // Pre-load cover image for the final reveal
   const coverImg = new Image();
-  coverImg.src = './images/cover-phainesis.jpg';
+  coverImg.src = './images/cover-phainesis.webp';
 
   // Artwork images for hexagonal tiles
   const artImgs = works.map(w => { const img = new Image(); img.src = w.src; return img; });

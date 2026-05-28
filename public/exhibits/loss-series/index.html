@@ -1079,7 +1079,7 @@ const works = [
     chapter: 'Act I — The Direct Loss',
     title: 'The Burned Hive',
     tagline: 'Charred wood. Ash. Kneeling.',
-    src: './images/burned-hive.png',
+    src: './images/burned-hive.webp',
     flip: false,
     reading: `The hive is gone. Charred wood, scattered combs, scorched ground. The keeper kneels beside it, head in hands.
 
@@ -1093,7 +1093,7 @@ Sometimes the hive burns. Sometimes the work you spent years on goes in a single
     chapter: 'Act I — The Direct Loss',
     title: 'The Silent Field',
     tagline: 'Flowers, no bees.',
-    src: './images/silent-field.png',
+    src: './images/silent-field.webp',
     flip: true,
     reading: `The field looks fine. Flowers. Sky. Grasses. A keeper standing in the middle, head tilted, listening. There are no bees.
 
@@ -1107,7 +1107,7 @@ This is the loss most people do not see, because the visual signs of life remain
     chapter: 'Act II — The Cultural Loss',
     title: 'The Forgotten Name',
     tagline: 'Lichen on the bee-stone.',
-    src: './images/forgotten-name.png',
+    src: './images/forgotten-name.webp',
     flip: false,
     reading: `An overgrown gravestone. Lichen has eaten the name. Only the bee carved at the bottom is still legible. A figure stands holding flowers, trying to remember.
 
@@ -1121,7 +1121,7 @@ Most of the keepers across history are forgotten. Their work survives — anonym
     chapter: 'Act II — The Cultural Loss',
     title: 'The Closed Book',
     tagline: 'Sealed. Dust. The doorway.',
-    src: './images/closed-book.png',
+    src: './images/closed-book.webp',
     flip: true,
     reading: `An ancient book on a stone altar, sealed with wax cords. Cobwebs. The bee on the cover partly eroded. A figure at the doorway, hand half-raised, uncertain whether they are permitted, uncertain whether they remember how.
 
@@ -1135,7 +1135,7 @@ Knowledge gets sealed when there is no one left who knows how to read it. The bo
     chapter: 'Act II — The Cultural Loss',
     title: 'The Drowned City',
     tagline: 'Half submerged. The rooftop.',
-    src: './images/drowned-city.png',
+    src: './images/drowned-city.webp',
     flip: false,
     reading: `A city, partially submerged. Buildings half in water. A figure on the highest rooftop watches. A single lotus floats on the surface.
 
@@ -1149,7 +1149,7 @@ This is the loss we are walking into. Not metaphorical. The water is rising. The
     chapter: 'Act III — The Personal Loss',
     title: 'The Untended',
     tagline: 'The garden gone wild.',
-    src: './images/untended.png',
+    src: './images/untended.webp',
     flip: true,
     reading: `A cottage. The garden is overgrown. The hive on its stand has fallen apart. The cottage door ajar. A cat sits where someone used to be.
 
@@ -1163,7 +1163,7 @@ Not every loss is dramatic. Most are simply: the keeper stopped. They burned out
     chapter: 'Act III — The Personal Loss',
     title: 'The Empty Chair',
     tagline: 'The desk, the unlit candle.',
-    src: './images/empty-chair.png',
+    src: './images/empty-chair.webp',
     flip: false,
     reading: `A wooden chair beside a desk. Empty. An open notebook, no writing on the page. A wooden bee. A younger figure at the doorway, looking in, holding their own notebook closed.
 
@@ -1177,7 +1177,7 @@ The teacher is gone. The chair is empty. The student stands at the door deciding
     chapter: 'Act IV — The Last Witness',
     title: 'The Last Bee',
     tagline: 'On a wilted flower.',
-    src: './images/last-bee.png',
+    src: './images/last-bee.webp',
     flip: true,
     reading: `A single bee on a wilted flower. Its wings are still. A figure kneels at a respectful distance, hands cupped, watching.
 
@@ -1191,7 +1191,7 @@ If this is what we end at — one bee, one keeper, one moment of attention — t
     chapter: 'Coda',
     title: 'The Long Night',
     tagline: 'A single candle. Patience.',
-    src: './images/long-night.png',
+    src: './images/long-night.webp',
     flip: false,
     reading: `A candle on an altar in a vast dark space. A figure sits before it, hands folded. The shadow extends in all directions.
 
@@ -1393,7 +1393,7 @@ function triggerHiveCollapse() {
 
   // Pre-load cover image for the final reveal
   const coverImg = new Image();
-  coverImg.src = './images/cover-phainesis.jpg';
+  coverImg.src = './images/cover-phainesis.webp';
 
   // Artwork images for hexagonal tiles
   const artImgs = works.map(w => { const img = new Image(); img.src = w.src; return img; });

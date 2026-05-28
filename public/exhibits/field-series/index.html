@@ -1079,7 +1079,7 @@ const works = [
     chapter: 'Act I — The Day Begins',
     title: 'The First Light',
     tagline: 'Bees out at dawn.',
-    src: './images/first-light.png',
+    src: './images/first-light.webp',
     flip: false,
     reading: `Three bees rise out of the hive into the first light of day. Their wings catch the sun. The grass is still in shadow. The work has begun — quietly, before anyone is watching, before the sun is fully up.
 
@@ -1093,7 +1093,7 @@ This is how every day in the field begins. Not with a meeting. Not with a plan. 
     chapter: 'Act I — The Day Begins',
     title: 'The Pollen',
     tagline: 'Body dusted gold.',
-    src: './images/pollen.png',
+    src: './images/pollen.webp',
     flip: true,
     reading: `A close-in shot. The bee on the flower, body dusted with pollen. The work is not symbolic. The pollen is real, the transfer is real, the next flower a kilometre away depends on this exact moment.
 
@@ -1107,7 +1107,7 @@ We forget that the entire system of food we eat depends on this. The bees did no
     chapter: 'Act II — The Web Beneath',
     title: 'The Web',
     tagline: 'Roots, fungi, the whole net.',
-    src: './images/web.png',
+    src: './images/web.webp',
     flip: false,
     reading: `What is above the soil and what is below. The flower at the surface, and beneath it — the roots, the mycelial threads, the network through which forests communicate. The keeper kneels with their ear to the ground, listening.
 
@@ -1121,7 +1121,7 @@ The field is not a flat thing. It is a layered, communicating, conversational ne
     chapter: 'Act II — The Web Beneath',
     title: 'The Single Bloom',
     tagline: 'One flower, waiting.',
-    src: './images/single-bloom.png',
+    src: './images/single-bloom.webp',
     flip: true,
     reading: `A single flower, fully open, alone for the moment. No bees yet. The flower is patient. Its job is to be ready. The bee will come or won't. Either way, the flower has done its part.
 
@@ -1135,7 +1135,7 @@ This is what showing up looks like at the smallest scale. Be open. Be ready. Wha
     chapter: 'Act III — Under Pressure',
     title: 'The Storm',
     tagline: 'The hive under threat.',
-    src: './images/storm.png',
+    src: './images/storm.webp',
     flip: false,
     reading: `Storm clouds. Wind. The bees rush back to the hive. The keeper is at the entrance securing it. The field is not always benign. Sometimes the world bears down.
 
@@ -1149,7 +1149,7 @@ The response is not panic. The response is — get the bees inside, secure the e
     chapter: 'Act III — Under Pressure',
     title: 'The Honey',
     tagline: 'The slow drop.',
-    src: './images/honey.png',
+    src: './images/honey.webp',
     flip: true,
     reading: `A frame held in a gloved hand. Honey, layered amber paper, dripping slow from one cell. A single bee on the edge. This is the gift. This is what the year produces.
 
@@ -1163,7 +1163,7 @@ A jar of honey is the field, condensed. Every drop traces back to flowers we nev
     chapter: 'Act IV — Across the Land',
     title: 'The Migration',
     tagline: 'Bees across the hills.',
-    src: './images/migration.png',
+    src: './images/migration.webp',
     flip: false,
     reading: `A wider view. Hundreds of bees moving across a paper-craft landscape — fields, hills, a winding river. The keeper watches from a rise. The bees are not just here. They are everywhere. They are crossing.
 
@@ -1177,7 +1177,7 @@ This is the scale we forget when we look at one hive. The field is not one place
     chapter: 'Coda',
     title: 'The Pulse',
     tagline: 'The four seasons, the constant hive.',
-    src: './images/pulse.png',
+    src: './images/pulse.webp',
     flip: true,
     reading: `Four panels around a central hive — spring, summer, autumn, winter. Each shows the same meadow in a different state. The hive at the centre is constant. The keeper stands beside it, present in all four.
 
@@ -1191,7 +1191,7 @@ The field has a pulse. It is annual. We can ride it or we can fight it. The bees
     chapter: 'Coda',
     title: 'The Quiet',
     tagline: 'Winter rest, the field dormant.',
-    src: './images/quiet.png',
+    src: './images/quiet.webp',
     flip: false,
     reading: `Deep winter. Snow on everything. The hive sealed. The keeper walks across the snow with a small lantern. The field is not dead. It is sleeping.
 
@@ -1393,7 +1393,7 @@ function triggerHiveCollapse() {
 
   // Pre-load cover image for the final reveal
   const coverImg = new Image();
-  coverImg.src = './images/cover-phainesis.jpg';
+  coverImg.src = './images/cover-phainesis.webp';
 
   // Artwork images for hexagonal tiles
   const artImgs = works.map(w => { const img = new Image(); img.src = w.src; return img; });
