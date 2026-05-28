@@ -3,26 +3,32 @@ import AppLayout from '../../layouts/AppLayout.astro';
 import SectionHero from '../../components/SectionHero.astro';
 import { getCollection } from 'astro:content';
 import { landingHero } from '../../lib/hero-image';
+import { VENTURES_DETAIL } from '../../data/ventures';
 
 export const prerender = true;
 
 const ventures = (await getCollection('ventures')).filter((v) => !v.data.draft);
 
+// Venture cover images available in /section-rooms/. Anything without a
+// dedicated image falls back to the generic ventures-landing scene.
 const COVER_MAP: Record<string, string> = {
-  'lighthouse':  '/section-rooms/ventures-lighthouse.png',
-  'holy-signal': '/section-rooms/ventures-holy-signal.png',
-  'phantom-ink': '/section-rooms/ventures-phantom-ink.png',
+  'hive-doctrine': '/section-rooms/ventures-hive-doctrine.png',
+  'holy-signal':   '/section-rooms/ventures-holy-signal.png',
+  'lighthouse':    '/section-rooms/ventures-lighthouse.png',
+  'phantom-ink':   '/section-rooms/ventures-phantom-ink.png',
+  'nightglass':    '/section-rooms/ventures-nightglass.png',
+  'motif':         '/section-rooms/ventures-motif.png',
+  'agent-fleet':   '/section-rooms/ventures-openclaw.png',
 };
 function coverFor(slug: string) {
   return COVER_MAP[slug] || '/section-rooms/ventures-landing.png';
 }
 
 // ── Card model ────────────────────────────────────────────────
-// Unified card list: collection ventures + the three additional
-// prominent ventures from the mockup (no detail pages — display-only
-// on the landing). Each card declares its stage so the grid can sort
-// live → building → research, alphabetical within each group.
-type Stage = 'live' | 'building' | 'research';
+// Every non-draft venture becomes a card. Pill (label + tone) comes
+// from VENTURES_DETAIL so the landing stays in sync with the detail
+// pages. Sorted live → building/launch-ready → research → parked,
+// alphabetical within each tone.
 type Card = {
   slug: string;
   href: string;
@@ -30,68 +36,35 @@ type Card = {
   eyebrow: string;
   titleHtml: string;
   lede: string;
-  stage: Stage;
+  pillLabel: string;
+  pillCls: string;
+  rank: number;
 };
 
-const collectionCards: Card[] = ['lighthouse', 'holy-signal', 'phantom-ink']
-  .map((slug) => ventures.find((v) => v.slug === slug))
-  .filter((v): v is NonNullable<typeof v> => Boolean(v))
-  .map((v) => ({
-    slug: v.slug,
-    href: `/ventures/${v.slug}/`,
-    cover: coverFor(v.slug),
-    eyebrow: v.data.eyebrow ?? '',
-    titleHtml: v.data.titleHtml || v.data.title,
-    lede: v.data.lede ?? '',
-    // Map venture .stage frontmatter ("live"/"building"/etc) onto the
-    // three-stage card model. Fallback "live" so a future venture
-    // missing the field still renders.
-    stage: (['live', 'building', 'research'].includes(v.data.stage as string)
-      ? (v.data.stage as Stage)
-      : 'live'),
-  }));
-
-const inlineCards: Card[] = [
-  {
-    slug: 'hive-doctrine', href: '/ventures/hive-doctrine/',
-    cover: '/section-rooms/ventures-hive-doctrine.png',
-    eyebrow: 'Sub-brand · Live',
-    titleHtml: 'Hive Doctrine',
-    lede: 'Marketplace + philosophy of multi-agent AI.',
-    stage: 'live',
-  },
-  {
-    slug: 'openclaw', href: '/ventures/openclaw/',
-    cover: '/section-rooms/ventures-openclaw.png',
-    eyebrow: 'Stack · Live',
-    titleHtml: 'OpenClaw Self-Host',
-    lede: 'The Helsinki rig that runs everything quietly.',
-    stage: 'live',
-  },
-  {
-    slug: 'polymarket-bots', href: '/ventures/polymarket-bots/',
-    cover: '/section-rooms/ventures-polymarket.png',
-    eyebrow: 'Stack · Live',
-    titleHtml: 'Polymarket Bots',
-    lede: 'Three Rust bots trading 30+ markets unattended.',
-    stage: 'live',
-  },
-];
-
-const STAGE_RANK: Record<Stage, number> = { live: 0, building: 1, research: 2 };
-const STAGE_PILL: Record<Stage, { label: string; cls: string }> = {
-  live:     { label: 'Live',     cls: 'is-signal' },
-  building: { label: 'Building', cls: 'is-orange' },
-  research: { label: 'Research', cls: 'is-research' },
+const TONE_RANK: Record<string, number> = {
+  'is-signal': 0, 'is-orange': 1, 'is-research': 2, 'is-muted': 3,
 };
 
 function plainTitle(html: string): string {
   return html.replace(/<[^>]+>/g, '').toLowerCase();
 }
 
-const cards: Card[] = [...collectionCards, ...inlineCards].sort((a, b) => {
-  const rank = STAGE_RANK[a.stage] - STAGE_RANK[b.stage];
-  if (rank !== 0) return rank;
+const cards: Card[] = ventures.map((v) => {
+  const detail = VENTURES_DETAIL[v.slug];
+  const pill = detail?.pill ?? { label: 'In flight', cls: 'is-orange' };
+  return {
+    slug: v.slug,
+    href: `/ventures/${v.slug}/`,
+    cover: coverFor(v.slug),
+    eyebrow: (detail?.eyebrow ?? v.data.eyebrow ?? 'The Lab').split('·')[0].trim(),
+    titleHtml: detail?.title || v.data.titleHtml || v.data.title,
+    lede: detail?.lede || v.data.lede || '',
+    pillLabel: pill.label,
+    pillCls: pill.cls,
+    rank: TONE_RANK[pill.cls] ?? 1,
+  };
+}).sort((a, b) => {
+  if (a.rank !== b.rank) return a.rank - b.rank;
   return plainTitle(a.titleHtml).localeCompare(plainTitle(b.titleHtml));
 });
 ---
@@ -114,43 +87,19 @@ const cards: Card[] = [...collectionCards, ...inlineCards].sort((a, b) => {
       <p class="body-lead">Sub-brands and ventures that started as side projects and grew into something worth shipping. Status is honest: live, in flight, or parked.</p>
     </div>
     <div class="room-grid">
-      {cards.map((c) => {
-        const pill = STAGE_PILL[c.stage];
-        return (
-          <a class="room-card" href={c.href}>
-            <div class="room-card-img" style={`background-image: url('${c.cover}');`}></div>
-            <div class="room-card-veil"></div>
-            <div class={`room-card-group-pill ${pill.cls}`}>{pill.label}</div>
-            <div class="room-card-arrow">↗</div>
-            <div class="room-card-meta">
-              <div class="room-card-eyebrow">{c.eyebrow}</div>
-              <div class="room-card-title" set:html={c.titleHtml}></div>
-              <div class="room-card-line">{c.lede}</div>
-            </div>
-          </a>
-        );
-      })}
-    </div>
-
-    <hr class="rule" />
-
-    {/* Mockup-canonical closing section: 10-item "Other things" list. */}
-    <div class="landing-closing">
-      <div class="section-eyebrow-small">Ten more projects · research, paused, ongoing</div>
-      <h2 class="h2">Other things <em>in the studio</em>.</h2>
-      <p class="body-lead">Sub-brand status is earned, not assumed. These are projects in research, paused, or running quietly that haven't earned their own brand yet — but they're part of the work.</p>
-      <div class="item-list">
-        <a class="item-row" href="/ventures/polymarket-bots/"><div class="num">01</div><div class="col-main"><h4>Polymarket trading bots</h4></div><div class="col-meta">In the lab</div></a>
-        <a class="item-row" href="/ventures/openclaw/"><div class="num">02</div><div class="col-main"><h4>OpenClaw multi-agent system</h4></div><div class="col-meta">In the lab</div></a>
-        <a class="item-row" href="/ventures/nexusos/"><div class="num">03</div><div class="col-main"><h4>NexusOS dashboard</h4></div><div class="col-meta">In the lab</div></a>
-        <a class="item-row" href="/ventures/melissai-pantheon/"><div class="num">04</div><div class="col-main"><h4>Persona Pantheon (12 sites)</h4></div><div class="col-meta">In the lab</div></a>
-        <a class="item-row" href="/ventures/ai-sdr/"><div class="num">05</div><div class="col-main"><h4>AI SDR pipeline</h4></div><div class="col-meta">In the lab</div></a>
-        <a class="item-row" href="/ventures/spell-stories/"><div class="num">06</div><div class="col-main"><h4>Spell Stories (interactive fiction)</h4></div><div class="col-meta">In the lab</div></a>
-        <a class="item-row" href="/ventures/pantheon/"><div class="num">07</div><div class="col-main"><h4>Pantheon Market (agent marketplace)</h4></div><div class="col-meta">In the lab</div></a>
-        <a class="item-row" href="/ventures/unicorn-factory/"><div class="num">08</div><div class="col-main"><h4>Saas Factory (project scaffold)</h4></div><div class="col-meta">In the lab</div></a>
-        <a class="item-row" href="/ventures/consultantos/"><div class="num">09</div><div class="col-main"><h4>Consultant OS</h4></div><div class="col-meta">In the lab</div></a>
-        <a class="item-row" href="/ventures/altar/"><div class="num">10</div><div class="col-main"><h4>Altar App</h4></div><div class="col-meta">In the lab</div></a>
-      </div>
+      {cards.map((c) => (
+        <a class="room-card" href={c.href}>
+          <div class="room-card-img" style={`background-image: url('${c.cover}');`}></div>
+          <div class="room-card-veil"></div>
+          <div class={`room-card-group-pill ${c.pillCls}`}>{c.pillLabel}</div>
+          <div class="room-card-arrow">↗</div>
+          <div class="room-card-meta">
+            <div class="room-card-eyebrow">{c.eyebrow}</div>
+            <div class="room-card-title" set:html={c.titleHtml}></div>
+            <div class="room-card-line">{c.lede}</div>
+          </div>
+        </a>
+      ))}
     </div>
   </section>
 

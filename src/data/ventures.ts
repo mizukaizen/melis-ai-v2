@@ -987,4 +987,189 @@ export const VENTURES_DETAIL: Record<string, VentureDetail> = {
       { audience: 'Build it', body: 'Designer or brand strategist with deep aesthetic vocabulary who wants to co-author the style catalogue and own a piece of the naming standard?', cta: 'Build with me →', href: 'mailto:sean@melis.ai?subject=Motif%20—%20building%20together' },
     ],
   },
+  'agent-fleet': {
+    eyebrow: 'The Lab · Live',
+    pill: { label: 'Live', cls: 'is-signal' },
+    title: 'Agent <em>Fleet</em>',
+    lede: 'A production fleet of 22 pay-per-call AI services that agents buy with USDC on Base — no accounts, no subscriptions, charge-on-success-only. Failed requests cost nothing.',
+    strip: [
+      { lbl: 'Stage',   val: 'Live · 22 services' },
+      { lbl: 'Type',    val: 'Agent infra · x402' },
+      { lbl: 'Status',  val: 'In production' },
+      { lbl: 'Pricing', val: 'Per-call USDC' },
+    ],
+    sections: [
+      { h: 'What it <em>is</em>', body: 'melis.ai\'s x402-powered infrastructure suite: a live MCP server exposing 22 utility tools (scrape, embed, validate, store, moderate, route, convert), a 30-minute template for launching your own monetised agent service, and an on-chain settlement ledger that makes every micro-payment auditable. Every call settles only on HTTP 2xx — a failed request is free.' },
+    ],
+    cta: { title: 'Install the fleet', line: 'One npx install gives any agent 22 pay-per-call tools. No signup.', btn: 'See agents.melis.ai →' },
+    siteUrl: 'https://agents.melis.ai',
+    problem: {
+      h: 'The problem',
+      body: 'AI agents need to call external services — scrape a URL, embed text, validate a schema, send a notification — but existing APIs require accounts, API keys, and subscription tiers an agent cannot self-provision. The x402 protocol closes that gap, but almost no production services use it yet, so builders who want pay-per-call monetisation have nothing to point to.',
+    },
+    capabilities: {
+      intro: '22 live tools, the payment rail underneath them, and a template to launch your own.',
+      groups: [
+        { label: 'The 22-tool fleet', tone: 'accent', items: ['scrapepay ($0.01), markdownopt ($0.005)', 'embedpay ($0.00005/1k tokens)', 'memoryserve, promptguard, linksafe, xaudit…', 'pdf_render ($0.49) + 12 more', 'One `npx @melis-ai/x402-tools-mcp` install'] },
+        { label: 'Payment infra', tone: 'amber', items: ['x402 USDC settlement on Base', 'Charge-on-success-only (auto-refund on 5xx)', 'Idempotency layer (SHA-256, 24h TTL)', 'Signed ledger at ledger.melis.ai — every tx traced'] },
+        { label: 'Developer template', tone: 'signal', items: ['x402-mcp-starter — deploy to Vercel', 'Three pricing tiers built in', 'ERC-8004 agent-card identity + ToS layer', '30-minute time-to-monetised-service'] },
+      ],
+    },
+    whyNow: {
+      h: 'Why now',
+      body: 'x402 became a Linux Foundation protocol in April 2026, co-signed by Google, AWS, Stripe, Visa and Mastercard — the standard is settling. Agent-to-agent commerce isn\'t a category yet, but the payment primitive is live and the window for early catalogue ownership is narrow.',
+    },
+    proofPoints: [
+      'First full-stack x402 fleet with a signed settlement ledger closing the payment-attribution gap.',
+      '22 services live, audited (16/18 grade B+, 0 critical violations), accessible via one npx install.',
+      'Charge-on-success-only is verified in the SDK — failed calls auto-refund.',
+      'Listed on x402scan.com and agents.melis.ai as a reference x402 deployment.',
+    ],
+    asks: [
+      { audience: 'Use it', body: 'Building with Claude Desktop, Cursor, or Cline and want scraping, embedding, or moderation without signing up for five separate APIs? Install the MCP server and run a real pipeline.', cta: 'Install it →', href: 'https://agents.melis.ai' },
+      { audience: 'Invest', body: 'Back the team operating the most complete x402 service catalogue before the agentic-commerce layer gets crowded.', cta: 'Talk to Sean →', href: 'mailto:sean@melis.ai?subject=Agent%20Fleet%20—%20investment' },
+      { audience: 'Build it', body: 'Want to ship your own monetised AI service? Fork x402-mcp-starter, point it at your prompt and wallet, and tell me what the template gets wrong.', cta: 'Build with me →', href: 'mailto:sean@melis.ai?subject=Agent%20Fleet%20—%20building%20together' },
+    ],
+  },
+  'miru': {
+    eyebrow: 'The Lab · Building',
+    pill: { label: 'Building', cls: 'is-orange' },
+    title: '<em>Miru</em>',
+    lede: 'A local-only macOS menu-bar app that watches your screen for explicit content using on-device AI and intervenes before a habit forms. Zero accounts, zero API calls, zero cost — nothing ever leaves the device.',
+    strip: [
+      { lbl: 'Stage',   val: 'Built · functional' },
+      { lbl: 'Type',    val: 'macOS · on-device AI' },
+      { lbl: 'Status',  val: 'Personal use' },
+      { lbl: 'Pricing', val: 'Free' },
+    ],
+    sections: [
+      { h: 'What it <em>is</em>', body: 'Miru runs two AI models entirely on your Mac — NudeNet ONNX and OpenCLIP ViT-B-32 — to detect explicit and suggestive content in real time, without a single image leaving the device. When flagged content dwells for 10 seconds it fires a soft nudge; at 20 seconds, a firm intervention. A local dashboard scores your day; everything logs to a local SQLite file.' },
+    ],
+    cta: { title: 'Want a build?', line: 'Functional today, personal-use only. Want to test it or help notarise it for distribution?', btn: 'Get in touch →' },
+    siteUrl: 'mailto:sean@melis.ai?subject=Miru',
+    problem: {
+      h: 'The problem',
+      body: 'Existing accountability tools are either cloud-based (a privacy risk), require a third-party "accountability partner" (social friction), or rely on content filters that get bypassed. None watch the actual screen at the session layer, run purely on-device, and act in the moment — not in a weekly report.',
+    },
+    capabilities: {
+      intro: 'Two on-device vision models, dwell-based intervention, a fully local dashboard.',
+      groups: [
+        { label: 'On-device detection', tone: 'accent', items: ['NudeNet ONNX (~7MB) — explicit nudity', 'OpenCLIP ViT-B-32 (LAION-2B) — suggestive content', 'Runs entirely offline', '2-second capture interval'] },
+        { label: 'Intervention', tone: 'amber', items: ['Soft notification at 10s dwell', 'Firm intervention at 20s', '5-minute cooldown between alerts', 'Incognito-window detection'] },
+        { label: 'Local dashboard', tone: 'signal', items: ['Daily score (0–100) in the menu bar', 'Week view at localhost:7337', 'Events logged to ~/.miru/miru.db', 'Tunable threshold + dwell timers'] },
+      ],
+    },
+    whyNow: {
+      h: 'Why now',
+      body: 'Apple Silicon makes on-device vision models fast enough to run at 2-second intervals without perceptible CPU overhead. Every cloud-based alternative has a privacy ceiling that blocks the enterprise and high-trust personal use cases Miru is built for.',
+    },
+    proofPoints: [
+      'Fully air-gapped — no image, score, or detection ever leaves the device.',
+      'Two-tier vision pipeline catches both explicit and subtle suggestive content that single-model tools miss.',
+      'Tunable sensitivity via a curated CLIP prompt library.',
+      'Clean rewrite from an earlier version that required Telegram + LLM API calls — now zero external dependencies.',
+    ],
+    asks: [
+      { audience: 'Use it', body: 'Want private, non-judgmental, on-device screen accountability? Install Miru and tell me whether the false-positive rate is tolerable in real use.', cta: 'Request a build →', href: 'mailto:sean@melis.ai?subject=Miru%20—%20build' },
+      { audience: 'Invest', body: 'A privacy-first personal-AI tool with a classic distribution wedge: free open-source utility, premium managed-distribution tier.', cta: 'Talk to Sean →', href: 'mailto:sean@melis.ai?subject=Miru%20—%20investment' },
+      { audience: 'Build it', body: 'macOS / Swift developer who could Tauri-wrap or notarise the app so it clears Gatekeeper without the right-click-open workaround?', cta: 'Build with me →', href: 'mailto:sean@melis.ai?subject=Miru%20—%20building%20together' },
+    ],
+  },
+  'screencast-studio': {
+    eyebrow: 'The Lab · Building',
+    pill: { label: 'Building', cls: 'is-orange' },
+    title: 'Screencast <em>Studio</em>',
+    lede: 'A local AI editor that turns raw Cap recordings into YouTube-ready videos by making the composition, cut, and b-roll decisions a human editor would — then lets you refine it all by typing chat commands.',
+    strip: [
+      { lbl: 'Stage',   val: 'Building · phases 1–2 done' },
+      { lbl: 'Type',    val: 'Creator tool' },
+      { lbl: 'Status',  val: 'Editorial pass next' },
+      { lbl: 'Pricing', val: 'Free → ~$29/mo*' },
+    ],
+    sections: [
+      { h: 'What it <em>is</em>', body: 'Screencast Studio watches a folder for new Cap recordings, transcribes them locally with Parakeet-MLX at 30–60× realtime, then runs a Claude editorial pass that decides which silences to cut, when to switch between camera-full / PIP / screen-only, and where to insert paper-craft b-roll. The result is a conversational review interface: type a command, the edit decision list updates, the preview refreshes — no timeline scrubbing.' },
+    ],
+    cta: { title: 'Beta-test it', line: 'Phases 1–2 ship; the editorial pass is next. Want in when it lands?', btn: 'Get in touch →' },
+    siteUrl: 'mailto:sean@melis.ai?subject=Screencast%20Studio',
+    problem: {
+      h: 'The problem',
+      body: 'Solo technical creators shooting 20+ minute screen recordings face 2–4 hours of post-production per video — scanning transcripts for cut points, deciding PIP vs full-screen on every section, combing through b-roll. That bottleneck kills publishing cadence, and no existing tool (Submagic, Descript, AutoPod) makes composition decisions or respects a creator\'s visual brand.',
+    },
+    capabilities: {
+      intro: 'Local transcription, an opinionated AI editor, and a chat-driven review UI.',
+      groups: [
+        { label: 'Transcription', tone: 'accent', items: ['Parakeet-MLX (Apple Silicon, 30–60× realtime)', 'WhisperX local fallback + OpenAI cloud fallback', 'Word-level timestamps', 'Filler words + thinking pauses tagged separately'] },
+        { label: 'AI editorial pass', tone: 'amber', items: ['Claude emits an edit decision list (EDL) JSON', 'Cut points, composition lane, b-roll, highlights', 'Conservative bias — keeps more than it cuts', '8-second minimum lock, 0.4s cross-fades'] },
+        { label: 'Review + render', tone: 'signal', items: ['Multi-lane timeline (transcript, composition, waveform)', 'Chat panel updates the EDL in natural language', 'ffmpeg render < 30s per minute of output', 'Remotion paper-craft overlays + auto chapters'] },
+      ],
+    },
+    whyNow: {
+      h: 'Why now',
+      body: 'Apple Silicon made local transcription fast enough to run in the background without blocking review, and Claude can reason over a structured timeline — so the "opinionated editor" is finally tractable as an LLM feature rather than a brittle rules engine.',
+    },
+    proofPoints: [
+      'Two transcription phases already shipped and working (Parakeet-MLX confirmed primary).',
+      'Editorial bias is deliberately conservative — counter to Submagic\'s over-cut tendency.',
+      'Composition-scoring formula is tunable with documented default weights.',
+      'On-brand paper-craft b-roll integration designed in from day one, not bolted on.',
+    ],
+    asks: [
+      { audience: 'Use it', body: 'Publish screen-driven YouTube content and want post-production under 30 minutes per video? Beta-test when the editorial pass ships.', cta: 'Join the beta →', href: 'mailto:sean@melis.ai?subject=Screencast%20Studio%20—%20beta' },
+      { audience: 'Invest', body: 'The gap between recording tools (Cap, Screen Studio) and the missing AI editorial layer solo creators actually need. Angel.', cta: 'Talk to Sean →', href: 'mailto:sean@melis.ai?subject=Screencast%20Studio%20—%20investment' },
+      { audience: 'Build it', body: 'Developer with ffmpeg / Remotion experience who can help ship the render pipeline? The composition + transcription layers are ready and waiting.', cta: 'Build with me →', href: 'mailto:sean@melis.ai?subject=Screencast%20Studio%20—%20building%20together' },
+    ],
+  },
+  'sentinel': {
+    eyebrow: 'The Lab · Building',
+    pill: { label: 'Building', cls: 'is-orange' },
+    title: '<em>Sentinel</em>',
+    lede: 'A self-hosted, MCP-accessible web scraper that charges only for successful fetches — built to escape Firecrawl\'s credit anxiety permanently. ~53× cheaper per 1,000 fetches.',
+    strip: [
+      { lbl: 'Stage',   val: 'Live · internal' },
+      { lbl: 'Type',    val: 'Scraper · MCP' },
+      { lbl: 'Status',  val: 'Stages 1–2 deployed' },
+      { lbl: 'Pricing', val: 'Self-host / TBD' },
+    ],
+    sections: [
+      { h: 'What it <em>is</em>', body: 'A two-service stack — FastAPI fetch + Crawl4AI scrape — running behind Caddy, exposing fetch and scrape tools to any AI agent or Cowork artefact via MCP. Static pages go through Trafilatura; JS-rendered pages through Playwright/Chromium; Jina Reader is a fallback. The whole stack is Apache 2.0 / MIT with no per-request billing.' },
+    ],
+    cta: { title: 'Try the self-host', line: 'Stages 1–2 live. Want the deploy script, or to help ship v2 features?', btn: 'Get in touch →' },
+    siteUrl: 'mailto:sean@melis.ai?subject=Sentinel',
+    problem: {
+      h: 'The problem',
+      body: 'Firecrawl Hobby costs ~$5.30 per 1,000 fetches and charges for failed requests — 20–30% of credits evaporate on flaky targets. For an agent operator running daily briefs, monitor polling, and deep-research streams, credits exhaust unpredictably and break production workflows mid-session with no graceful fallback.',
+    },
+    capabilities: {
+      intro: 'A fetch service, a scrape service, and one MCP endpoint that aggregates both.',
+      groups: [
+        { label: 'Fetch (live)', tone: 'accent', items: ['FastAPI GET /fetch — raw HTTP proxy', 'JSON APIs + static pages', 'SSRF guards (blocks private IPs, file://)', 'X-Sentinel-Key auth · sentinel.melis.ai'] },
+        { label: 'Scrape (live)', tone: 'amber', items: ['Static-first Trafilatura → Chromium for JS', 'Jina Reader last resort', 'render_js: auto/true/false', 'markdown / html / text / all extraction'] },
+        { label: 'MCP interface', tone: 'signal', items: ['FastMCP server: fetch + scrape + ledger_query', 'Single stdio / HTTP+SSE endpoint', 'Drop-in for Cowork artefacts that used Firecrawl', '6-hour worker recycling for memory safety'] },
+      ],
+    },
+    pricing: {
+      intro: 'SaaS tiers are speculative — deferred until 30+ days clean operation AND an external operator asks. Self-host is the first revenue path.',
+      tiers: [
+        { name: 'Free', price: '$0', detail: '1k successful requests/month' },
+        { name: 'Hobby / Studio', price: '$9 / $39', detail: '25k / 250k successful requests', featured: true },
+        { name: 'Operator', price: '$99/mo', detail: '1M requests · custom domain · audit logs' },
+        { name: 'Self-host', price: '$499', detail: 'One-time · run it on your own box' },
+      ],
+    },
+    whyNow: {
+      h: 'Why now',
+      body: 'MCP registry discoverability is new — a self-hosted scraping MCP listed alongside Firecrawl reaches agent builders already hunting for a drop-in alternative. "Charge-on-success-only" is a genuine differentiator Firecrawl can\'t match without restructuring its credit model.',
+    },
+    proofPoints: [
+      'Target cost < $0.10 per 1k fetches (Helsinki amortised) vs ~$5.30 on Firecrawl Hobby — a ~53× cost advantage.',
+      'Stages 1 and 2 confirmed live with health endpoints and passing acceptance tests.',
+      'No dependency on third-party credits or a closed-source anti-bot layer.',
+      'Apache 2.0 / MIT — self-host SKU ($499 one-time) is the lowest-risk first revenue path.',
+    ],
+    asks: [
+      { audience: 'Use it', body: 'Paying Firecrawl credits for simple JSON polling on agent workflows? Try the self-hosted deploy script and tell me what breaks.', cta: 'Get the deploy →', href: 'mailto:sean@melis.ai?subject=Sentinel%20—%20self-host' },
+      { audience: 'Invest', body: '"Firecrawl alternative for operators, billed on success" — a defensible wedge in the MCP tooling market that\'s currently winner-take-most.', cta: 'Talk to Sean →', href: 'mailto:sean@melis.ai?subject=Sentinel%20—%20investment' },
+      { audience: 'Build it', body: 'Python / FastAPI developer who wants to add residential-proxy support or structured extraction (the two most-requested v2 features) to an Apache 2.0 project with a live production user?', cta: 'Build with me →', href: 'mailto:sean@melis.ai?subject=Sentinel%20—%20building%20together' },
+    ],
+  },
 };
