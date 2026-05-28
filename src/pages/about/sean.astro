@@ -9,4 +9,35 @@ import html from '../../_html/pane-about.html?raw';
   description="An operator's biography — a decade of building with AI before it was the work."
 >
   <Fragment set:html={html} />
+
+  <div id="story-lightbox" class="story-lightbox" hidden>
+    <img alt="" />
+  </div>
+
+  <script is:inline>
+    (function () {
+      function init() {
+        var lb = document.getElementById('story-lightbox');
+        if (!lb) return;
+        var img = lb.querySelector('img');
+        // Portal to <body> so no ancestor transform/filter traps position:fixed.
+        if (lb.parentElement !== document.body) document.body.appendChild(lb);
+        function close() { lb.hidden = true; document.body.style.overflow = ''; }
+        if (!window.__storyLightbox) {
+          window.__storyLightbox = true;
+          document.addEventListener('click', function (e) {
+            var z = e.target.closest('.chapter-image.zoomable img');
+            if (z) { img.src = z.currentSrc || z.src; lb.hidden = false; document.body.style.overflow = 'hidden'; return; }
+            if (!lb.hidden) close();
+          });
+          document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && !lb.hidden) close();
+          });
+        }
+      }
+      if (document.readyState !== 'loading') init();
+      else document.addEventListener('DOMContentLoaded', init);
+      document.addEventListener('astro:after-swap', init);
+    })();
+  </script>
 </AppLayout>

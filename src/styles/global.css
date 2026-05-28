@@ -628,6 +628,18 @@ main.content .pane.in-room .section-header {
   object-fit: cover;
   display: block;
 }
+/* Per-chapter grid overrides — force a fixed column count + portrait tiles */
+.section-body .chapter-images.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.section-body .chapter-images.cols-4 { grid-template-columns: repeat(4, 1fr); }
+.section-body .chapter-images.tall .chapter-image { aspect-ratio: 3 / 4; }
+@media (max-width: 720px) {
+  .section-body .chapter-images.cols-3,
+  .section-body .chapter-images.cols-4 { grid-template-columns: repeat(2, 1fr); }
+}
+/* Click-to-enlarge */
+.section-body .chapter-image.zoomable { cursor: zoom-in; }
+.section-body .chapter-image.zoomable img { transition: opacity 160ms ease; }
+.section-body .chapter-image.zoomable:hover img { opacity: 0.86; }
 .section-body .chapter-caption {
   font-family: var(--font-mono);
   font-size: 10px;
@@ -635,6 +647,27 @@ main.content .pane.in-room .section-header {
   text-transform: uppercase;
   color: var(--text-3);
   margin-top: 10px;
+}
+
+/* Image lightbox — appended to <body> so no ancestor stacking context traps it */
+.story-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5vh 5vw;
+  background: rgba(10, 9, 8, 0.92);
+  backdrop-filter: blur(4px);
+  cursor: zoom-out;
+}
+.story-lightbox[hidden] { display: none; }
+.story-lightbox img {
+  max-width: 100%;
+  max-height: 90vh;
+  border-radius: 6px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
 }
 
 /* Career timeline */
