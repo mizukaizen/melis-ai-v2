@@ -3,6 +3,12 @@ import AppLayout from '../../../layouts/AppLayout.astro';
 import SectionHero from '../../../components/SectionHero.astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { itemHero, landingHero } from '../../../lib/hero-image';
+import {
+  EXHIBIT_DETAILS,
+  EXHIBIT_ARTIST,
+  EXHIBIT_MEDIUM,
+  EXHIBIT_TOOLS,
+} from '../../../data/exhibits-detail';
 
 export const prerender = true;
 
@@ -21,21 +27,19 @@ const cover = (data.cover && data.cover.startsWith('/'))
   ? data.cover
   : itemHero('exhibits', data.title, item.slug) || landingHero('exhibits');
 
-// Local vendored experience path. The exhibit scroll-stories live at
-// /public/exhibits/<series>/index.html (grabbed from Mythos of the
-// Hive). Derive the series slug from the liveUrl host
-// (https://keeper-series.vercel.app/ → keeper-series). Fall back to
-// the external liveUrl if no local copy exists.
+const detail = EXHIBIT_DETAILS[item.slug];
+
+// Local vendored experience path: derive the series slug from the
+// liveUrl host (https://keeper-series.vercel.app/ → keeper-series).
 const seriesSlug = data.liveUrl
   ? (data.liveUrl.match(/https?:\/\/([a-z0-9-]+)\.vercel\.app/)?.[1] ?? null)
   : null;
 const localExhibit = seriesSlug ? `/exhibits/${seriesSlug}/index.html` : null;
 const exhibitHref = localExhibit ?? data.liveUrl;
 
-// Meta strip lifted from mockup EXHIBITS_DETAIL (line 12989).
-const META = data.title === 'Lessons'
-  ? { works: '33 lessons', format: 'Paper-craft, immersive scroll', year: '2026', status: 'Live' }
-  : { works: '9 works',    format: 'Paper-craft, immersive scroll', year: '2026', status: 'Live' };
+const works = detail?.works ?? '9 works';
+const year = detail?.year ?? '2026';
+const statusLabel = data.status === 'live' ? 'Live' : data.status === 'archived' ? 'Archived' : 'Concept';
 ---
 
 <AppLayout title={data.title} pane="exhibits" inRoom description={data.lede}>
@@ -46,29 +50,75 @@ const META = data.title === 'Lessons'
   />
 
   <section class="section-body">
-    <div class="v6-detail">
-      <div class="vd-strip">
-        <div class="vd-strip-item"><div class="lbl">Works</div><div class="val">{META.works}</div></div>
-        <div class="vd-strip-item"><div class="lbl">Format</div><div class="val">{META.format}</div></div>
-        <div class="vd-strip-item"><div class="lbl">Year</div><div class="val">{META.year}</div></div>
-        <div class="vd-strip-item"><div class="lbl">Status</div><div class="val">{META.status}</div></div>
+    <div class="exhibit-detail">
+      <!-- Plaque -->
+      <div class="exb-plaque">
+        <div class="exb-plaque-eyebrow">The plaque</div>
+        {detail?.plaque?.length
+          ? detail.plaque.map((p) => <p class="exb-plaque-para">{p}</p>)
+          : <p class="exb-plaque-para">{data.lede}</p>}
       </div>
 
-      <section class="vd-section">
-        <h3 class="vd-h3">A scroll-experience, paper-craft front to back.</h3>
-        <div class="vd-prose"><p>{data.lede}</p></div>
-      </section>
+      <!-- Meta credits panel -->
+      <aside class="exb-credits">
+        <div class="exb-credits-grid">
+          <div class="exb-cred">
+            <div class="exb-cred-lbl">Artist</div>
+            <div class="exb-cred-val">{EXHIBIT_ARTIST}</div>
+          </div>
+          <div class="exb-cred">
+            <div class="exb-cred-lbl">Works</div>
+            <div class="exb-cred-val">{works}</div>
+          </div>
+          <div class="exb-cred">
+            <div class="exb-cred-lbl">Year</div>
+            <div class="exb-cred-val">{year}</div>
+          </div>
+          <div class="exb-cred">
+            <div class="exb-cred-lbl">Status</div>
+            <div class="exb-cred-val"><span class="exb-status-dot"></span>{statusLabel}</div>
+          </div>
+          <div class="exb-cred exb-cred-wide">
+            <div class="exb-cred-lbl">Medium</div>
+            <div class="exb-cred-val">{EXHIBIT_MEDIUM}</div>
+          </div>
+          <div class="exb-cred exb-cred-wide">
+            <div class="exb-cred-lbl">Made with</div>
+            <div class="exb-tools">
+              {EXHIBIT_TOOLS.map((t) => <span class="exb-tool">{t}</span>)}
+            </div>
+          </div>
+        </div>
 
-      {exhibitHref && (
-        <div class="vd-cta">
-          <div class="vd-cta-title">View the exhibit</div>
+        {exhibitHref && (
           <button
-            class="vd-cta-btn"
+            class="exb-view-btn"
             type="button"
             data-exhibit-open
             data-exhibit-src={exhibitHref}
             data-exhibit-title={data.title}
-          >Open full screen ↗</button>
+          >
+            <span class="exb-view-btn-label">View the exhibit</span>
+            <span class="exb-view-btn-sub">Open full screen ↗</span>
+          </button>
+        )}
+      </aside>
+
+      <!-- Movements / contents -->
+      {detail?.movements?.length && (
+        <div class="exb-movements">
+          <div class="exb-movements-head">
+            <span class="exb-movements-eyebrow">The movements</span>
+            <span class="exb-movements-count">{detail.movements.length} scenes</span>
+          </div>
+          <ol class="exb-movements-list">
+            {detail.movements.map((m, i) => (
+              <li class="exb-movement">
+                <span class="exb-movement-num">{String(i + 1).padStart(2, '0')}</span>
+                <span class="exb-movement-name">{m}</span>
+              </li>
+            ))}
+          </ol>
         </div>
       )}
     </div>
@@ -79,9 +129,7 @@ const META = data.title === 'Lessons'
     <div>Operator-built · Australia</div>
   </div>
 
-  {/* Full-screen exhibit viewer — loads the vendored scroll-experience
-      in an iframe over the whole viewport. Portalled to <body> on init
-      so it escapes any sidebar/pane stacking context. */}
+  {/* Full-screen exhibit viewer */}
   <div class="exhibit-viewer" id="exhibit-viewer" hidden role="dialog" aria-modal="true" aria-label="Exhibit viewer">
     <div class="exhibit-viewer-bar">
       <span class="exhibit-viewer-title" id="exhibit-viewer-title"></span>
@@ -92,53 +140,215 @@ const META = data.title === 'Lessons'
 </AppLayout>
 
 <style is:global>
+  /* ════════════════════════════════════════════════════════════
+   * Exhibit detail — gallery-plaque layout. Plaque prose on the left,
+   * a credits panel + view CTA on the right, movements list beneath.
+   * ════════════════════════════════════════════════════════════ */
+  .pane[data-pane="exhibits"] .exhibit-detail {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 48px 56px;
+    align-items: start;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* Plaque */
+  .pane[data-pane="exhibits"] .exb-plaque {
+    grid-column: 1;
+  }
+  .pane[data-pane="exhibits"] .exb-plaque-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(232, 227, 216, 0.10);
+  }
+  .pane[data-pane="exhibits"] .exb-plaque-para {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.6;
+    color: var(--text-1, var(--text));
+    margin: 0 0 22px;
+  }
+  .pane[data-pane="exhibits"] .exb-plaque-para:first-of-type {
+    font-size: 23px;
+    line-height: 1.55;
+  }
+  .pane[data-pane="exhibits"] .exb-plaque-para:last-child { margin-bottom: 0; }
+
+  /* Credits panel */
+  .pane[data-pane="exhibits"] .exb-credits {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    position: sticky;
+    top: 24px;
+    padding: 28px 28px 24px;
+    border: 1px solid rgba(168, 85, 247, 0.22);
+    background: rgba(168, 85, 247, 0.04);
+    border-radius: 10px;
+  }
+  .pane[data-pane="exhibits"] .exb-credits-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px 20px;
+    margin-bottom: 28px;
+  }
+  .pane[data-pane="exhibits"] .exb-cred-wide { grid-column: 1 / -1; }
+  .pane[data-pane="exhibits"] .exb-cred-lbl {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 7px;
+  }
+  .pane[data-pane="exhibits"] .exb-cred-val {
+    font-family: var(--font-display);
+    font-size: 17px;
+    line-height: 1.35;
+    color: var(--text-1, var(--text));
+    display: flex; align-items: center; gap: 8px;
+  }
+  .pane[data-pane="exhibits"] .exb-status-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #5eead4; box-shadow: 0 0 8px #5eead4;
+    flex-shrink: 0;
+  }
+  .pane[data-pane="exhibits"] .exb-tools {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 2px;
+  }
+  .pane[data-pane="exhibits"] .exb-tool {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+    color: var(--text-2);
+    padding: 4px 9px;
+    border: 1px solid rgba(232, 227, 216, 0.14);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  /* View CTA */
+  .pane[data-pane="exhibits"] .exb-view-btn {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+    width: 100%;
+    padding: 18px 22px;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    transition: filter 160ms ease, transform 120ms ease;
+  }
+  .pane[data-pane="exhibits"] .exb-view-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  .pane[data-pane="exhibits"] .exb-view-btn-label {
+    font-family: var(--font-display);
+    font-size: 19px;
+    color: #fff;
+    letter-spacing: -0.01em;
+  }
+  .pane[data-pane="exhibits"] .exb-view-btn-sub {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  /* Movements */
+  .pane[data-pane="exhibits"] .exb-movements {
+    grid-column: 1;
+    margin-top: 8px;
+  }
+  .pane[data-pane="exhibits"] .exb-movements-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding-bottom: 14px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid rgba(232, 227, 216, 0.10);
+  }
+  .pane[data-pane="exhibits"] .exb-movements-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .pane[data-pane="exhibits"] .exb-movements-count {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .pane[data-pane="exhibits"] .exb-movements-list {
+    list-style: none;
+    margin: 0; padding: 0;
+    columns: 2;
+    column-gap: 40px;
+  }
+  .pane[data-pane="exhibits"] .exb-movement {
+    display: flex; align-items: baseline; gap: 14px;
+    padding: 11px 0;
+    border-bottom: 1px solid rgba(232, 227, 216, 0.06);
+    break-inside: avoid;
+  }
+  .pane[data-pane="exhibits"] .exb-movement-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.10em;
+    color: var(--accent);
+    min-width: 18px;
+  }
+  .pane[data-pane="exhibits"] .exb-movement-name {
+    font-family: var(--font-display);
+    font-size: 17px;
+    color: var(--text-1, var(--text));
+    line-height: 1.3;
+  }
+
+  @media (max-width: 1000px) {
+    .pane[data-pane="exhibits"] .exhibit-detail { grid-template-columns: 1fr; }
+    .pane[data-pane="exhibits"] .exb-credits { grid-column: 1; grid-row: auto; position: static; }
+    .pane[data-pane="exhibits"] .exb-movements { grid-column: 1; }
+    .pane[data-pane="exhibits"] .exb-movements-list { columns: 1; }
+  }
+
+  /* ── Full-screen exhibit viewer ── */
   .exhibit-viewer {
-    position: fixed;
-    inset: 0;
-    z-index: 9600;
-    display: flex;
-    flex-direction: column;
+    position: fixed; inset: 0; z-index: 9600;
+    display: flex; flex-direction: column;
     background: var(--bg, #0f0f0f);
   }
   .exhibit-viewer[hidden] { display: none; }
   .exhibit-viewer-bar {
     flex-shrink: 0;
     display: flex; align-items: center; justify-content: space-between;
-    gap: 16px;
-    height: 48px;
-    padding: 0 16px 0 20px;
+    gap: 16px; height: 48px; padding: 0 16px 0 20px;
     background: rgba(10, 10, 10, 0.92);
     border-bottom: 1px solid rgba(232, 227, 216, 0.10);
   }
   .exhibit-viewer-title {
     font-family: var(--font-display, serif);
-    font-size: 16px;
-    letter-spacing: -0.01em;
+    font-size: 16px; letter-spacing: -0.01em;
     color: var(--text-1, #e5e7eb);
   }
   .exhibit-viewer-close {
     font-family: var(--font-mono, monospace);
-    font-size: 10.5px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
+    font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase;
     color: var(--text-2, #a1a5b0);
     background: transparent;
     border: 1px solid rgba(232, 227, 216, 0.16);
-    border-radius: 4px;
-    padding: 8px 14px;
-    cursor: pointer;
+    border-radius: 4px; padding: 8px 14px; cursor: pointer;
     transition: border-color 160ms ease, color 160ms ease;
   }
-  .exhibit-viewer-close:hover {
-    border-color: var(--accent, #7c3aed);
-    color: var(--text-1, #e5e7eb);
-  }
-  .exhibit-viewer-frame {
-    flex: 1;
-    width: 100%;
-    border: 0;
-    background: var(--bg, #0f0f0f);
-  }
+  .exhibit-viewer-close:hover { border-color: var(--accent, #7c3aed); color: var(--text-1, #e5e7eb); }
+  .exhibit-viewer-frame { flex: 1; width: 100%; border: 0; background: var(--bg, #0f0f0f); }
 </style>
 
 <script>
@@ -166,8 +376,6 @@ const META = data.title === 'Lessons'
       if (frame) frame.src = 'about:blank';
       document.documentElement.style.overflow = '';
     }
-    function init() { portal(); }
-
     document.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
       const opener = target.closest<HTMLElement>('[data-exhibit-open]');
@@ -183,8 +391,8 @@ const META = data.title === 'Lessons'
       const v = document.getElementById('exhibit-viewer');
       if (v && !v.hidden) close();
     });
-    document.addEventListener('DOMContentLoaded', init);
-    document.addEventListener('astro:page-load', init);
-    if (document.readyState !== 'loading') init();
+    document.addEventListener('DOMContentLoaded', portal);
+    document.addEventListener('astro:page-load', portal);
+    if (document.readyState !== 'loading') portal();
   })();
 </script>
