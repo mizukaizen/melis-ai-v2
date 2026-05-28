@@ -18,36 +18,36 @@ const liveSlugs = new Set(allVentures.filter((v) => v.data.status !== 'coming-so
 const knownSlugs = new Set([...stubSlugs, ...liveSlugs]);
 
 type Status = 'Live' | 'Building' | 'Research' | 'Paused' | 'Archived' | 'Past';
-type Venture = { slug: string; name: string; meta: string; status: Status };
+type Venture = { slug: string; name: string; meta: string; status: Status; icon: string };
 
 // v1 panel verbatim, with slugs lifted from the page filenames already
 // present in v1 src/pages/lab/. Missing-from-v2 ventures still render but
 // non-clickable until /content/ventures/<slug>.mdx is added.
 const VENTURES: Venture[] = [
   // Live
-  { slug: 'hive-doctrine',       name: 'Hive Doctrine',          meta: 'marketplace · live + MCP',    status: 'Live' },
-  { slug: 'agent-fleet',         name: 'Agent Fleet',            meta: 'infra · 22 x402 services',    status: 'Live' },
-  { slug: 'lila-park',           name: 'Lila Park',              meta: 'app · circadian wellness',    status: 'Live' },
+  { slug: 'hive-doctrine',       name: 'Hive Doctrine',          meta: 'marketplace · live + MCP',    status: 'Live',     icon: 'ph-hexagon' },
+  { slug: 'agent-fleet',         name: 'Agent Fleet',            meta: 'infra · 22 x402 services',    status: 'Live',     icon: 'ph-share-network' },
+  { slug: 'lila-park',           name: 'Lila Park',              meta: 'app · circadian wellness',    status: 'Live',     icon: 'ph-leaf' },
   // Building
-  { slug: 'holy-signal',         name: 'Holy Signal',            meta: 'saas · launch-ready',         status: 'Building' },
-  { slug: 'dossier',             name: 'Dossier',                meta: 'saas · trading intel',        status: 'Building' },
-  { slug: 'prompt-bakery',       name: 'Prompt Bakery',          meta: 'saas · 360 prompts',          status: 'Building' },
-  { slug: 'lighthouse',          name: 'Lighthouse',             meta: 'saas · competitive intel',    status: 'Building' },
-  { slug: 'miru',                name: 'Miru',                   meta: 'tool · on-device AI',         status: 'Building' },
-  { slug: 'ai-usage-tracker',    name: 'AI Usage Tracker',       meta: 'tool · mac app',              status: 'Building' },
-  { slug: 'aetherboard',         name: 'Aetherboard',            meta: 'saas · agent canvas',         status: 'Building' },
-  { slug: 'nightglass',          name: 'Nightglass',             meta: 'api · web capture',           status: 'Building' },
-  { slug: 'phantom-ink',         name: 'Phantom Ink',            meta: 'api · PDF generation',        status: 'Building' },
-  { slug: 'screencast-studio',   name: 'Screencast Studio',      meta: 'tool · screencasts',          status: 'Building' },
-  { slug: 'sentinel',            name: 'Sentinel',               meta: 'tool · monitoring',           status: 'Building' },
-  { slug: 'motif',               name: 'Motif',                  meta: 'api · aesthetic OS',          status: 'Building' },
-  { slug: 'nexusos',             name: 'NexusOS Dashboard',      meta: 'infra · ops command centre',  status: 'Building' },
+  { slug: 'holy-signal',         name: 'Holy Signal',            meta: 'saas · launch-ready',         status: 'Building', icon: 'ph-broadcast' },
+  { slug: 'dossier',             name: 'Dossier',                meta: 'saas · trading intel',        status: 'Building', icon: 'ph-chart-line-up' },
+  { slug: 'prompt-bakery',       name: 'Prompt Bakery',          meta: 'saas · 360 prompts',          status: 'Building', icon: 'ph-cookie' },
+  { slug: 'lighthouse',          name: 'Lighthouse',             meta: 'saas · competitive intel',    status: 'Building', icon: 'ph-lighthouse' },
+  { slug: 'miru',                name: 'Miru',                   meta: 'tool · on-device AI',         status: 'Building', icon: 'ph-eye' },
+  { slug: 'ai-usage-tracker',    name: 'AI Usage Tracker',       meta: 'tool · mac app',              status: 'Building', icon: 'ph-gauge' },
+  { slug: 'aetherboard',         name: 'Aetherboard',            meta: 'saas · agent canvas',         status: 'Building', icon: 'ph-infinity' },
+  { slug: 'nightglass',          name: 'Nightglass',             meta: 'api · web capture',           status: 'Building', icon: 'ph-camera' },
+  { slug: 'phantom-ink',         name: 'Phantom Ink',            meta: 'api · PDF generation',        status: 'Building', icon: 'ph-file-pdf' },
+  { slug: 'screencast-studio',   name: 'Screencast Studio',      meta: 'tool · screencasts',          status: 'Building', icon: 'ph-monitor-play' },
+  { slug: 'sentinel',            name: 'Sentinel',               meta: 'tool · monitoring',           status: 'Building', icon: 'ph-binoculars' },
+  { slug: 'motif',               name: 'Motif',                  meta: 'api · aesthetic OS',          status: 'Building', icon: 'ph-palette' },
+  { slug: 'nexusos',             name: 'NexusOS Dashboard',      meta: 'infra · ops command centre',  status: 'Building', icon: 'ph-squares-four' },
   // Research
-  { slug: 'ai-sdr',              name: 'AI SDR',                 meta: 'saas · 39 channels',          status: 'Research' },
-  { slug: 'consultantos',        name: 'ConsultantOS',           meta: 'saas · AI strategy',          status: 'Research' },
-  { slug: 'pantheon',            name: 'Pantheon Market',        meta: 'marketplace + tokens',        status: 'Research' },
-  { slug: 'spell-stories',       name: 'Spell Stories',          meta: 'app · mystical mindfulness',  status: 'Research' },
-  { slug: 'altar',               name: 'Altar App',              meta: 'app · intentional living',    status: 'Research' },
+  { slug: 'ai-sdr',              name: 'AI SDR',                 meta: 'saas · 39 channels',          status: 'Research', icon: 'ph-paper-plane-tilt' },
+  { slug: 'consultantos',        name: 'ConsultantOS',           meta: 'saas · AI strategy',          status: 'Research', icon: 'ph-briefcase' },
+  { slug: 'pantheon',            name: 'Pantheon Market',        meta: 'marketplace + tokens',        status: 'Research', icon: 'ph-bank' },
+  { slug: 'spell-stories',       name: 'Spell Stories',          meta: 'app · mystical mindfulness',  status: 'Research', icon: 'ph-magic-wand' },
+  { slug: 'altar',               name: 'Altar App',              meta: 'app · intentional living',    status: 'Research', icon: 'ph-flame' },
 ];
 
 const ORDER: Status[] = ['Live', 'Building', 'Research', 'Paused', 'Archived', 'Past'];
@@ -109,7 +109,7 @@ function statusColor(s: Status): string {
                   // No MDX exists at all — leave non-clickable
                   return (
                     <div class="panel-item is-soon">
-                      <i class="ph ph-circle pi-icon" style={`color:${statusColor(status)};opacity:0.45;font-size:8px`}></i>
+                      <i class={`ph ${v.icon} pi-icon`} style={`color:${statusColor(status)};opacity:0.45;font-size:14px`}></i>
                       <div class="pi-body">
                         <div class="pi-title">{v.name}</div>
                         <div class="pi-meta">{v.meta}</div>
@@ -120,7 +120,7 @@ function statusColor(s: Status): string {
                 const isStub = stubSlugs.has(v.slug);
                 return (
                   <a class:list={['panel-item', { 'is-stub': isStub }]} href={`/ventures/${v.slug}/`}>
-                    <i class={`${isStub ? 'ph' : 'ph-fill'} ph-circle pi-icon`} style={`color:${statusColor(status)};opacity:${isStub ? '0.55' : '0.85'};font-size:8px`}></i>
+                    <i class={`ph ${v.icon} pi-icon`} style={`color:${statusColor(status)};opacity:0.9;font-size:14px`}></i>
                     <div class="pi-body">
                       <div class="pi-title">{v.name}</div>
                       <div class="pi-meta">{v.meta}</div>
