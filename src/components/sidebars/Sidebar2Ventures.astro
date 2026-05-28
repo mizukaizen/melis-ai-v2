@@ -26,30 +26,28 @@ type Venture = { slug: string; name: string; meta: string; status: Status };
 const VENTURES: Venture[] = [
   // Live
   { slug: 'hive-doctrine',       name: 'Hive Doctrine',          meta: 'marketplace · live + MCP',    status: 'Live' },
-  { slug: 'nexusos',             name: 'NexusOS Dashboard',      meta: 'infra · ops command centre',  status: 'Live' },
   { slug: 'agent-fleet',         name: 'Agent Fleet',            meta: 'infra · 22 x402 services',    status: 'Live' },
+  { slug: 'lila-park',           name: 'Lila Park',              meta: 'app · circadian wellness',    status: 'Live' },
   // Building
   { slug: 'holy-signal',         name: 'Holy Signal',            meta: 'saas · launch-ready',         status: 'Building' },
-  { slug: 'miru',                name: 'Miru',                   meta: 'tool · on-device AI',         status: 'Building' },
   { slug: 'dossier',             name: 'Dossier',                meta: 'saas · trading intel',        status: 'Building' },
   { slug: 'prompt-bakery',       name: 'Prompt Bakery',          meta: 'saas · 360 prompts',          status: 'Building' },
   { slug: 'lighthouse',          name: 'Lighthouse',             meta: 'saas · competitive intel',    status: 'Building' },
+  { slug: 'miru',                name: 'Miru',                   meta: 'tool · on-device AI',         status: 'Building' },
   { slug: 'ai-usage-tracker',    name: 'AI Usage Tracker',       meta: 'tool · mac app',              status: 'Building' },
   { slug: 'aetherboard',         name: 'Aetherboard',            meta: 'saas · agent canvas',         status: 'Building' },
   { slug: 'nightglass',          name: 'Nightglass',             meta: 'api · web capture',           status: 'Building' },
   { slug: 'phantom-ink',         name: 'Phantom Ink',            meta: 'api · PDF generation',        status: 'Building' },
   { slug: 'screencast-studio',   name: 'Screencast Studio',      meta: 'tool · screencasts',          status: 'Building' },
   { slug: 'sentinel',            name: 'Sentinel',               meta: 'tool · monitoring',           status: 'Building' },
+  { slug: 'motif',               name: 'Motif',                  meta: 'api · aesthetic OS',          status: 'Building' },
+  { slug: 'nexusos',             name: 'NexusOS Dashboard',      meta: 'infra · ops command centre',  status: 'Building' },
   // Research
   { slug: 'ai-sdr',              name: 'AI SDR',                 meta: 'saas · 39 channels',          status: 'Research' },
   { slug: 'consultantos',        name: 'ConsultantOS',           meta: 'saas · AI strategy',          status: 'Research' },
-  { slug: 'swarm',               name: 'Project SWARM',          meta: 'commerce · 8 personas',       status: 'Research' },
   { slug: 'pantheon',            name: 'Pantheon Market',        meta: 'marketplace + tokens',        status: 'Research' },
-  { slug: 'lila-park',           name: 'Lila Park',              meta: 'app · circadian wellness',    status: 'Research' },
   { slug: 'spell-stories',       name: 'Spell Stories',          meta: 'app · mystical mindfulness',  status: 'Research' },
   { slug: 'altar',               name: 'Altar App',              meta: 'app · intentional living',    status: 'Research' },
-  // Paused
-  { slug: 'motif',               name: 'Motif',                  meta: 'api · aesthetic OS · parked', status: 'Paused' },
 ];
 
 const ORDER: Status[] = ['Live', 'Building', 'Research', 'Paused', 'Archived', 'Past'];

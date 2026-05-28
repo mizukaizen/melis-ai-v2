@@ -421,14 +421,14 @@ export const VENTURES_DETAIL: Record<string, VentureDetail> = {
     ],
   },
   'lila-park': {
-    eyebrow: 'The Lab · Concept',
-    pill: { label: 'Concept', cls: 'is-research' },
+    eyebrow: 'The Lab · Live',
+    pill: { label: 'Live', cls: 'is-signal' },
     title: 'Lila <em>Park</em>',
     lede: 'A circadian wellness app where Lila — a warm, voice-first AI coach with a Korean-wellness framework — guides you through the whole day, from morning light to evening wind-down. Personality, not just data.',
     strip: [
-      { lbl: 'Stage',   val: 'Concept · brand live' },
+      { lbl: 'Stage',   val: 'Live · lilapark.xyz' },
       { lbl: 'Type',    val: 'Wellness app' },
-      { lbl: 'Status',  val: 'lilapark.xyz' },
+      { lbl: 'Status',  val: 'Live' },
       { lbl: 'Pricing', val: 'Free → ~$15/mo' },
     ],
     sections: [
@@ -513,57 +513,6 @@ export const VENTURES_DETAIL: Record<string, VentureDetail> = {
     asks: [
       { audience: 'Use it', body: 'Run Claude Code daily and want live spend visibility without checking the Anthropic console? Grab a build.', cta: 'Get the build →', href: 'mailto:sean@melis.ai?subject=AI%20Usage%20Tracker%20—%20build' },
       { audience: 'Build it', body: 'macOS Electron developer who could package this as a signed, notarised app on GitHub or the Mac App Store? Let\'s ship it.', cta: 'Build with me →', href: 'mailto:sean@melis.ai?subject=AI%20Usage%20Tracker%20—%20building%20together' },
-    ],
-  },
-  'swarm': {
-    eyebrow: 'The Lab · Research',
-    pill: { label: 'Research', cls: 'is-research' },
-    title: 'Project <em>SWARM</em>',
-    lede: 'A programmatic launch of 8 persona-branded storefronts across Whop and Claw Mart — built once as a factory, then stamped out per brand by OpenClaw automation.',
-    strip: [
-      { lbl: 'Stage',   val: 'Research complete' },
-      { lbl: 'Type',    val: 'Commerce play' },
-      { lbl: 'Status',  val: 'Pre-execution' },
-      { lbl: 'Target',  val: '$5K AUD/mo' },
-    ],
-    sections: [
-      { h: 'What it <em>is</em>', body: 'Eight distinct AI personas, each targeting a different Whop category with persona-branded PDFs, prompt packs, templates, and community memberships — published programmatically via the Whop API, with Polar.sh as Merchant of Record for clean, Australian-entity-compatible revenue. The factory is built once; OpenClaw produces and publishes per brand.' },
-    ],
-    cta: { title: 'Follow the launch', line: 'Research is done; execution is queued. Want to advise on the first 30 days?', btn: 'Get in touch →' },
-    siteUrl: 'mailto:sean@melis.ai?subject=Project%20SWARM',
-    problem: {
-      h: 'The problem',
-      body: 'Whop\'s AI category is full of low-quality, unbranded, generic products. A coordinated multi-persona launch that uses the platform\'s own mechanics — transaction velocity, review count, affiliate commission rates — creates discovery momentum a single-brand operator can\'t replicate.',
-    },
-    capabilities: {
-      intro: 'A product factory plus the platform mechanics to get it ranked.',
-      groups: [
-        { label: 'Product factory', tone: 'accent', items: ['8 persona brands w/ defined SOUL, voice, niche', 'OpenClaw pipeline: route → write → review → publish', '50+ Hive Doctrine products ready for batch publish'] },
-        { label: 'Distribution', tone: 'amber', items: ['Whop — programmatic CRUD, 19.8M users', 'Claw Mart / ClawHub — operator audience', 'Polar.sh MoR — VAT/GST, anonymous-friendly'] },
-        { label: 'Algorithm mechanics', tone: 'signal', items: ['Free products to seed transactions + reviews', '70% affiliate commission for first 30 days', 'Ghost-Gap method: find thin categories, fill in 24–48h'] },
-      ],
-    },
-    pricing: {
-      intro: 'One-time products and recurring communities; sub-$500 total infrastructure cost.',
-      tiers: [
-        { name: 'Products', price: '$9–$99', detail: 'Persona-branded PDFs, prompt packs, templates' },
-        { name: 'Communities', price: '$19–$49/mo', detail: 'Per-persona membership tiers', featured: true },
-      ],
-    },
-    whyNow: {
-      h: 'Why now',
-      body: 'OpenClaw has 302,000+ GitHub stars and a growing Claw Mart ecosystem. Whop\'s AI category is documented as among the most profitable offer types right now — and confirmed to be low-quality on the supply side.',
-    },
-    proofPoints: [
-      'x402 MCP server with 29 live intelligence services — agent-to-agent infrastructure already operational.',
-      'All 8 personas have deep SOUL files — voice, backstory, methodology, product concepts pre-defined.',
-      'Whop API full CRUD confirmed — programmatic product creation is feasible.',
-      'One product (astro-transits) already published to Claw Mart as a quality baseline.',
-    ],
-    asks: [
-      { audience: 'Use it', body: 'AI-curious creator or knowledge worker on Whop after well-crafted, persona-specific guides across finance, wellness, career, or operations? They\'re coming.', cta: 'Follow along →', href: 'mailto:sean@melis.ai?subject=Project%20SWARM%20—%20updates' },
-      { audience: 'Advise', body: 'Not raising — it\'s a bootstrapped revenue operation. But a Whop-experienced seller who can advise on launch sequencing and affiliate warm-up would accelerate the first 30 days.', cta: 'Advise me →', href: 'mailto:sean@melis.ai?subject=Project%20SWARM%20—%20advice' },
-      { audience: 'Build it', body: 'Community builder who\'s scaled a Whop storefront and wants to co-run a persona? Let\'s talk.', cta: 'Build with me →', href: 'mailto:sean@melis.ai?subject=Project%20SWARM%20—%20building%20together' },
     ],
   },
   'pantheon': {
@@ -936,12 +885,12 @@ export const VENTURES_DETAIL: Record<string, VentureDetail> = {
     ],
   },
   'motif': {
-    eyebrow: 'The Lab · Parked',
-    pill: { label: 'Parked', cls: 'is-muted' },
+    eyebrow: 'The Lab · Building',
+    pill: { label: 'Building', cls: 'is-orange' },
     title: '<em>Motif</em>',
     lede: 'The Pantone for AI image generation — a numbered aesthetic vocabulary where any builder picks a style, describes what they want, and gets consistent, commercially-safe images with no model decisions required.',
     strip: [
-      { lbl: 'Stage',   val: 'Parked · ~25%' },
+      { lbl: 'Stage',   val: 'Building · ~25%' },
       { lbl: 'Type',    val: 'Agent-first API' },
       { lbl: 'Status',  val: 'Build prompt ready' },
       { lbl: 'Pricing', val: 'From $0.05/image' },
