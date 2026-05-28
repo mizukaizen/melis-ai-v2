@@ -2000,6 +2000,18 @@ function firstGesture() {
 });
 // Click on intro slide also counts (in case user clicks "scroll to enter" cue)
 document.querySelector('.slide-intro').addEventListener('click', firstGesture, { once: true });
+// First Space / ↓ keypress also STARTS the bee tone (not just primes the
+// context) — gives an immediate audio "on" + the toggle's playing animation.
+// Guarded so it only auto-starts once, and never fights a manual stop.
+var _autoToneArmed = true;
+window.addEventListener('keydown', function(e){
+  if (!_autoToneArmed) return;
+  if (e.key === ' ' || e.code === 'Space' || e.key === 'ArrowDown' || e.key === 'PageDown') {
+    _autoToneArmed = false;
+    userActivated = true;
+    if (!isPlaying) startTone();
+  }
+});
 
 // Respect reduced-motion preference for the breathing animation in the toggle UI
 // (the audio still plays — only the visual breath of the bars is calmed)
