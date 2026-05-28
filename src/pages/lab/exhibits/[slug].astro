@@ -8,6 +8,7 @@ import {
   EXHIBIT_ARTIST,
   EXHIBIT_MEDIUM,
   EXHIBIT_CREDITS,
+  EXHIBIT_BUY_URL,
 } from '../../../data/exhibits-detail';
 
 export const prerender = true;
@@ -96,18 +97,23 @@ const statusLabel = data.status === 'live' ? 'Live' : data.status === 'archived'
           </dl>
         </div>
 
-        {exhibitHref && (
-          <button
-            class="exb-view-btn"
-            type="button"
-            data-exhibit-open
-            data-exhibit-src={exhibitHref}
-            data-exhibit-title={data.title}
-          >
-            <span class="exb-view-btn-label">View the exhibit</span>
-            <span class="exb-view-btn-sub">Open full screen ↗</span>
-          </button>
-        )}
+        <div class="exb-actions">
+          {exhibitHref && (
+            <button
+              class="exb-action exb-action-primary"
+              type="button"
+              data-exhibit-open
+              data-exhibit-src={exhibitHref}
+              data-exhibit-title={data.title}
+            >View the exhibit ↗</button>
+          )}
+          <a
+            class="exb-action exb-action-secondary"
+            href={EXHIBIT_BUY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >Buy the artwork ↗</a>
+        </div>
       </aside>
 
       <!-- Movements / contents -->
@@ -263,31 +269,42 @@ const statusLabel = data.status === 'live' ? 'Live' : data.status === 'archived'
     text-align: right;
   }
 
-  /* View CTA */
-  .pane[data-pane="exhibits"] .exb-view-btn {
-    display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+  /* Action buttons — single-line primary (view) + secondary (buy) */
+  .pane[data-pane="exhibits"] .exb-actions {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .pane[data-pane="exhibits"] .exb-action {
+    display: flex; align-items: center; justify-content: center;
     width: 100%;
-    padding: 18px 22px;
-    background: var(--accent);
-    border: none;
+    padding: 14px 18px;
     border-radius: 8px;
-    cursor: pointer;
-    text-align: left;
-    transition: filter 160ms ease, transform 120ms ease;
-  }
-  .pane[data-pane="exhibits"] .exb-view-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
-  .pane[data-pane="exhibits"] .exb-view-btn-label {
-    font-family: var(--font-display);
-    font-size: 19px;
-    color: #fff;
-    letter-spacing: -0.01em;
-  }
-  .pane[data-pane="exhibits"] .exb-view-btn-sub {
     font-family: var(--font-mono);
-    font-size: 9.5px;
-    letter-spacing: 0.18em;
+    font-size: 11px;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.78);
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: filter 160ms ease, transform 120ms ease, background 160ms ease, border-color 160ms ease, color 160ms ease;
+  }
+  .pane[data-pane="exhibits"] .exb-action-primary {
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    color: #fff;
+  }
+  .pane[data-pane="exhibits"] .exb-action-primary:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+  }
+  .pane[data-pane="exhibits"] .exb-action-secondary {
+    background: transparent;
+    border: 1px solid rgba(168, 85, 247, 0.32);
+    color: var(--text-1, var(--text));
+  }
+  .pane[data-pane="exhibits"] .exb-action-secondary:hover {
+    border-color: rgba(168, 85, 247, 0.6);
+    background: rgba(168, 85, 247, 0.06);
+    transform: translateY(-1px);
   }
 
   /* Movements */

@@ -22,6 +22,10 @@ export const EXHIBIT_CREDITS: { role: string; name: string }[] = [
   { role: 'Orchestration', name: 'Claude Cowork & Claude Code' },
 ];
 
+// Where the original works are sold. Placeholder → OpenSea collection.
+// TODO: swap for the final marketplace / collection URL once chosen.
+export const EXHIBIT_BUY_URL = 'https://opensea.io/';
+
 export const EXHIBIT_DETAILS: Record<string, ExhibitDetail> = {
   phainesis: {
     works: '9 works',
