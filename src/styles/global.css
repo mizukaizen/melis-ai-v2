@@ -621,6 +621,13 @@ main.content .pane.in-room .section-header {
   text-align: center;
   padding: 14px;
 }
+.section-body .chapter-image:has(img) { padding: 0; }
+.section-body .chapter-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 .section-body .chapter-caption {
   font-family: var(--font-mono);
   font-size: 10px;
