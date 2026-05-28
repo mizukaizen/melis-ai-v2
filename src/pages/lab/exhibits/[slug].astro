@@ -7,7 +7,7 @@ import {
   EXHIBIT_DETAILS,
   EXHIBIT_ARTIST,
   EXHIBIT_MEDIUM,
-  EXHIBIT_TOOLS,
+  EXHIBIT_CREDITS,
 } from '../../../data/exhibits-detail';
 
 export const prerender = true;
@@ -82,12 +82,18 @@ const statusLabel = data.status === 'live' ? 'Live' : data.status === 'archived'
             <div class="exb-cred-lbl">Medium</div>
             <div class="exb-cred-val">{EXHIBIT_MEDIUM}</div>
           </div>
-          <div class="exb-cred exb-cred-wide">
-            <div class="exb-cred-lbl">Made with</div>
-            <div class="exb-tools">
-              {EXHIBIT_TOOLS.map((t) => <span class="exb-tool">{t}</span>)}
-            </div>
-          </div>
+        </div>
+
+        <div class="exb-prod">
+          <div class="exb-prod-eyebrow">Production</div>
+          <dl class="exb-prod-list">
+            {EXHIBIT_CREDITS.map((c) => (
+              <div class="exb-prod-row">
+                <dt class="exb-prod-role">{c.role}</dt>
+                <dd class="exb-prod-name">{c.name}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
 
         {exhibitHref && (
@@ -219,19 +225,44 @@ const statusLabel = data.status === 'live' ? 'Live' : data.status === 'archived'
     background: #5eead4; box-shadow: 0 0 8px #5eead4;
     flex-shrink: 0;
   }
-  .pane[data-pane="exhibits"] .exb-tools {
-    display: flex; flex-wrap: wrap; gap: 6px;
-    margin-top: 2px;
+  /* Production credits — role-attributed, plaque/film-credit style */
+  .pane[data-pane="exhibits"] .exb-prod {
+    margin: 24px 0 28px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(232, 227, 216, 0.10);
   }
-  .pane[data-pane="exhibits"] .exb-tool {
+  .pane[data-pane="exhibits"] .exb-prod-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 14px;
+  }
+  .pane[data-pane="exhibits"] .exb-prod-list { margin: 0; }
+  .pane[data-pane="exhibits"] .exb-prod-row {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 16px;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(232, 227, 216, 0.05);
+  }
+  .pane[data-pane="exhibits"] .exb-prod-row:last-child { border-bottom: none; }
+  .pane[data-pane="exhibits"] .exb-prod-role {
     font-family: var(--font-mono);
     font-size: 9.5px;
-    letter-spacing: 0.08em;
-    color: var(--text-2);
-    padding: 4px 9px;
-    border: 1px solid rgba(232, 227, 216, 0.14);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.02);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0;
+    flex-shrink: 0;
+  }
+  .pane[data-pane="exhibits"] .exb-prod-name {
+    font-family: var(--font-display);
+    font-size: 15px;
+    line-height: 1.3;
+    color: var(--text-1, var(--text));
+    margin: 0;
+    text-align: right;
   }
 
   /* View CTA */

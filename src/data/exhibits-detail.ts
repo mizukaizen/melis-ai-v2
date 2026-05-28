@@ -13,13 +13,13 @@ export type ExhibitDetail = {
 };
 
 // Shared production credits — same toolchain across the series.
+// Role-attributed, the way a gallery plaque or film credit reads.
 export const EXHIBIT_ARTIST = 'Sean Melis';
 export const EXHIBIT_MEDIUM = 'Paper-craft · tilt-shift · immersive scroll';
-export const EXHIBIT_TOOLS = [
-  'Claude',
-  'Opus 4.7',
-  'OpenAI image generation',
-  'Claude Code',
+export const EXHIBIT_CREDITS: { role: string; name: string }[] = [
+  { role: 'Script', name: 'Claude Opus 4.7' },
+  { role: 'Artwork', name: 'OpenAI GPT-2' },
+  { role: 'Orchestration', name: 'Claude Cowork & Claude Code' },
 ];
 
 export const EXHIBIT_DETAILS: Record<string, ExhibitDetail> = {
