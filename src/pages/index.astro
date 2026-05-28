@@ -10,36 +10,3 @@ import homeHtml from '../_html/pane-home.html?raw';
 >
   <Fragment set:html={homeHtml} />
 </AppLayout>
-
-<script>
-  // Hero loop trim — the source video (hero-evolution-v3.mp4) is 5.0s
-  // long but the waterfall motion stalls at ~4.0s and transitions to
-  // a static frame for the last 0.5s. The `loop` attribute makes that
-  // pause-and-jump visible. Reset to t=0 just before the stall so the
-  // visible portion is continuous motion only.
-  //
-  // Tunable: BUMP_AT (when to wrap) and LOOP_END (the visible cap).
-  // Sub-second margin keeps the wrap below the stall.
-  (function wireHeroLoop() {
-    const LOOP_END = 1.7;
-    function attach() {
-      const v = document.querySelector<HTMLVideoElement>('video.hero-bg');
-      if (!v || (v as HTMLVideoElement & { _heroLoopWired?: boolean })._heroLoopWired) return;
-      (v as HTMLVideoElement & { _heroLoopWired?: boolean })._heroLoopWired = true;
-      // The `loop` attribute is still useful as a fallback if JS doesn't
-      // run; leave it in the HTML. Native loop fires at duration end —
-      // we always pre-empt it.
-      v.addEventListener('timeupdate', () => {
-        if (v.currentTime >= LOOP_END) {
-          v.currentTime = 0;
-          // Best-effort play in case the browser paused on seek
-          const p = v.play();
-          if (p && typeof p.catch === 'function') p.catch(() => {});
-        }
-      });
-    }
-    document.addEventListener('DOMContentLoaded', attach);
-    document.addEventListener('astro:page-load', attach);
-    if (document.readyState !== 'loading') attach();
-  })();
-</script>
