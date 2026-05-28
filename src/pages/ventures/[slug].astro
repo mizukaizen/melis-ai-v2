@@ -53,7 +53,7 @@ const cover = (data.cover && data.cover.startsWith('/'))
 
   <section class="section-body">
     <div class="v6-detail">
-      {data.status === 'coming-soon' ? (
+      {(!detail && data.status === 'coming-soon') ? (
         <div class="venture-stub">
           {data.groupV1 && (
             <span class="venture-stub-status">{data.groupV1}</span>
