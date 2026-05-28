@@ -21,6 +21,17 @@ const cover = (data.cover && data.cover.startsWith('/'))
   ? data.cover
   : itemHero('exhibits', data.title, item.slug) || landingHero('exhibits');
 
+// Local vendored experience path. The exhibit scroll-stories live at
+// /public/exhibits/<series>/index.html (grabbed from Mythos of the
+// Hive). Derive the series slug from the liveUrl host
+// (https://keeper-series.vercel.app/ → keeper-series). Fall back to
+// the external liveUrl if no local copy exists.
+const seriesSlug = data.liveUrl
+  ? (data.liveUrl.match(/https?:\/\/([a-z0-9-]+)\.vercel\.app/)?.[1] ?? null)
+  : null;
+const localExhibit = seriesSlug ? `/exhibits/${seriesSlug}/index.html` : null;
+const exhibitHref = localExhibit ?? data.liveUrl;
+
 // Meta strip lifted from mockup EXHIBITS_DETAIL (line 12989).
 const META = data.title === 'Lessons'
   ? { works: '33 lessons', format: 'Paper-craft, immersive scroll', year: '2026', status: 'Live' }
@@ -48,10 +59,16 @@ const META = data.title === 'Lessons'
         <div class="vd-prose"><p>{data.lede}</p></div>
       </section>
 
-      {data.liveUrl && (
+      {exhibitHref && (
         <div class="vd-cta">
           <div class="vd-cta-title">View the exhibit</div>
-          <a class="vd-cta-btn" href={data.liveUrl} target="_blank" rel="noopener">Open ↗</a>
+          <button
+            class="vd-cta-btn"
+            type="button"
+            data-exhibit-open
+            data-exhibit-src={exhibitHref}
+            data-exhibit-title={data.title}
+          >Open full screen ↗</button>
         </div>
       )}
     </div>
@@ -61,4 +78,113 @@ const META = data.title === 'Lessons'
     <div>melis.ai · 2026</div>
     <div>Operator-built · Australia</div>
   </div>
+
+  {/* Full-screen exhibit viewer — loads the vendored scroll-experience
+      in an iframe over the whole viewport. Portalled to <body> on init
+      so it escapes any sidebar/pane stacking context. */}
+  <div class="exhibit-viewer" id="exhibit-viewer" hidden role="dialog" aria-modal="true" aria-label="Exhibit viewer">
+    <div class="exhibit-viewer-bar">
+      <span class="exhibit-viewer-title" id="exhibit-viewer-title"></span>
+      <button class="exhibit-viewer-close" type="button" data-exhibit-close aria-label="Close exhibit">Close ✕</button>
+    </div>
+    <iframe class="exhibit-viewer-frame" id="exhibit-viewer-frame" title="Exhibit" src="about:blank"></iframe>
+  </div>
 </AppLayout>
+
+<style is:global>
+  .exhibit-viewer {
+    position: fixed;
+    inset: 0;
+    z-index: 9600;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg, #0f0f0f);
+  }
+  .exhibit-viewer[hidden] { display: none; }
+  .exhibit-viewer-bar {
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px;
+    height: 48px;
+    padding: 0 16px 0 20px;
+    background: rgba(10, 10, 10, 0.92);
+    border-bottom: 1px solid rgba(232, 227, 216, 0.10);
+  }
+  .exhibit-viewer-title {
+    font-family: var(--font-display, serif);
+    font-size: 16px;
+    letter-spacing: -0.01em;
+    color: var(--text-1, #e5e7eb);
+  }
+  .exhibit-viewer-close {
+    font-family: var(--font-mono, monospace);
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-2, #a1a5b0);
+    background: transparent;
+    border: 1px solid rgba(232, 227, 216, 0.16);
+    border-radius: 4px;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: border-color 160ms ease, color 160ms ease;
+  }
+  .exhibit-viewer-close:hover {
+    border-color: var(--accent, #7c3aed);
+    color: var(--text-1, #e5e7eb);
+  }
+  .exhibit-viewer-frame {
+    flex: 1;
+    width: 100%;
+    border: 0;
+    background: var(--bg, #0f0f0f);
+  }
+</style>
+
+<script>
+  (function wireExhibitViewer() {
+    function portal() {
+      const v = document.getElementById('exhibit-viewer');
+      if (v && v.parentElement !== document.body) document.body.appendChild(v);
+    }
+    function open(src: string, title: string) {
+      portal();
+      const v = document.getElementById('exhibit-viewer') as HTMLElement | null;
+      const frame = document.getElementById('exhibit-viewer-frame') as HTMLIFrameElement | null;
+      const t = document.getElementById('exhibit-viewer-title');
+      if (!v || !frame) return;
+      frame.src = src;
+      if (t) t.textContent = title || 'Exhibit';
+      v.hidden = false;
+      document.documentElement.style.overflow = 'hidden';
+    }
+    function close() {
+      const v = document.getElementById('exhibit-viewer') as HTMLElement | null;
+      const frame = document.getElementById('exhibit-viewer-frame') as HTMLIFrameElement | null;
+      if (!v) return;
+      v.hidden = true;
+      if (frame) frame.src = 'about:blank';
+      document.documentElement.style.overflow = '';
+    }
+    function init() { portal(); }
+
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const opener = target.closest<HTMLElement>('[data-exhibit-open]');
+      if (opener) {
+        e.preventDefault();
+        open(opener.getAttribute('data-exhibit-src') || '', opener.getAttribute('data-exhibit-title') || '');
+        return;
+      }
+      if (target.closest('[data-exhibit-close]')) close();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      const v = document.getElementById('exhibit-viewer');
+      if (v && !v.hidden) close();
+    });
+    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('astro:page-load', init);
+    if (document.readyState !== 'loading') init();
+  })();
+</script>
