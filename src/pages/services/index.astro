@@ -1,173 +1,317 @@
 ---
-import AppLayout from '../../layouts/AppLayout.astro';
-import SectionHero from '../../components/SectionHero.astro';
+import ConfessionalLayout from '../../layouts/ConfessionalLayout.astro';
 import LeadForm from '../../components/LeadForm.astro';
-import { landingHero } from '../../lib/hero-image';
 
 export const prerender = true;
 
 const steps = [
-  { num: '01', title: 'Confess.', line: "A short call, or just write it in. The real problem — not the tidy version. The business you can't scale, the idea you're scared to start, the bit you haven't told anyone." },
-  { num: '02', title: 'I build.', line: 'I map the exact path: where AI actually gives you leverage, what to build first, how it scales, how it makes money — plus a running head-start on the build itself.' },
-  { num: '03', title: 'You keep it.', line: 'It comes back as a beautiful paper-craft playbook — yours forever. Opt in and an anonymised, voice-only episode goes on the channel, so your problem quietly helps a thousand others too.' },
+  {
+    n: '01', title: 'Confess', img: '/section-rooms/confessional-confess.png',
+    line: "A call, or just write it in. The real problem — not the tidy version. The business you can't scale, the idea you're scared to start, the bit you haven't told anyone.",
+  },
+  {
+    n: '02', title: 'I build', img: '/section-rooms/confessional-build.png',
+    line: 'I map the exact path: where AI gives you real leverage, what to build first, how it scales, how it makes money — plus a running head-start on the build itself.',
+  },
+  {
+    n: '03', title: 'You keep it', img: '/section-rooms/confessional-keep.png',
+    line: 'It comes back as a beautiful paper-craft playbook — yours forever. Opt in and an anonymised, voice-only episode goes on the channel, so it pays forward.',
+  },
 ];
 
-const tiers = [
-  {
-    price: '$11',
-    name: 'The Report',
-    line: 'AI builds you the roadmap. A bespoke, no-fluff plan generated straight from your confession — in your inbox, no waiting on me.',
-    flagship: false,
-  },
-  {
-    price: '$111',
-    name: 'The Presentation',
-    line: 'I build and present it personally — the full paper-craft playbook, walked through end to end, with a head-start on the actual build. Eligible to be featured, anonymised, on the channel.',
-    flagship: true,
-  },
+const features = [
+  { icon: 'ph-map-trifold', title: 'A bespoke roadmap', line: 'Built around your exact situation — not a template, not generic advice.' },
+  { icon: 'ph-lightning', title: 'Where AI gives you leverage', line: 'The specific places it earns you time and money, mapped to your business.' },
+  { icon: 'ph-hammer', title: 'A head-start on the build', line: 'Not just the plan — working pieces to get you moving the same week.' },
+  { icon: 'ph-book-open-text', title: 'A playbook you keep', line: 'A beautiful paper-craft presentation, yours to re-read forever.' },
+  { icon: 'ph-shield-check', title: 'Anonymous by default', line: 'Voice only, name nowhere. Flag anything you want kept private.' },
+  { icon: 'ph-heart', title: 'It pays forward', line: 'Your problem quietly helps a thousand other people who are stuck too.' },
+];
+
+const faqs = [
+  { q: 'Is it really $11?', a: "Yes. $11 gets you the AI-built report — a bespoke roadmap generated from your confession, straight to your inbox. $111 is when I build and present it personally as the full paper-craft playbook." },
+  { q: "What's the difference between the two?", a: "The Report ($11) is automated and fast. The Presentation ($111) is me — I build it, walk you through it, hand you a head-start on the actual build, and it's eligible to be featured (anonymised) on the channel." },
+  { q: 'Will my problem be made public?', a: "Only if you opt in — and only anonymised, voice-only, with a paper-craft overlay. No name, no face. You can flag anything you'd rather I keep entirely private." },
+  { q: "I genuinely can't afford it.", a: "Apply and tell me why. I do a handful of these for free for people in real financial stress — that's the whole point." },
+  { q: 'Is this just AI, or do you actually help?', a: "Both. The $11 tier is AI-built. The $111 tier is me, personally — a decade of building AI businesses, applied to your exact problem." },
 ];
 ---
 
-<AppLayout
-  title="The Confessional"
-  pane="services"
-  description="Tell me one real business or life problem. I turn it into a bespoke AI roadmap and a head-start on the build — a paper-craft playbook you keep forever."
->
-  <SectionHero
-    cover={landingHero('services')}
-    eyebrow="Work With Me · the confessional"
-    title="The Confessional"
-    titleHtml="The <em>Confessional</em>"
-  />
+<ConfessionalLayout>
+  <div class="cf">
+    <!-- Nav -->
+    <header class="cf-nav">
+      <a class="cf-brand" href="/">melis<span>.</span>ai</a>
+      <a class="cf-nav-cta" href="#confess">Step into the booth →</a>
+    </header>
 
-  <section class="section-body">
-    <div class="landing-intro">
-      <h2 class="h2">Tell me what you're stuck on. <em>I'll build you the way out.</em></h2>
-      <p class="body-lead">Bring me one real problem — a business you can't scale, an idea you're scared to start, a life you'd change with AI if you knew where to begin. I turn it into a bespoke roadmap and a running head-start on the build, handed back as a paper-craft playbook you keep forever. With your blessing, some become anonymous episodes on the channel — voice only, name nowhere — so your problem quietly helps a thousand other people too.</p>
-    </div>
-
-    <div class="cf-steps">
-      {steps.map((s) => (
-        <div class="cf-step">
-          <div class="cf-step-num">{s.num}</div>
-          <h3 class="cf-step-title">{s.title}</h3>
-          <p class="cf-step-line">{s.line}</p>
+    <!-- Hero -->
+    <section class="cf-hero">
+      <div class="cf-hero-text">
+        <div class="cf-eyebrow">The Confessional · melis.ai</div>
+        <h1 class="cf-h1">Confess your hardest problem.<br /><em>Walk out with the plan.</em></h1>
+        <p class="cf-hero-sub">One honest conversation about the business you can't scale or the idea you're scared to start. I turn it into a bespoke AI roadmap — and a head-start on the build — as a paper-craft playbook you keep forever.</p>
+        <div class="cf-hero-cta">
+          <a class="cf-btn" href="#confess">Step into the booth →</a>
+          <span class="cf-hero-from">from <strong>$11</strong></span>
         </div>
-      ))}
+      </div>
+      <div class="cf-hero-img">
+        <img src="/section-rooms/confessional-hero.png" alt="A paper-craft confessional booth at twilight" loading="eager" />
+      </div>
+    </section>
+
+    <!-- Trust -->
+    <div class="cf-trust">
+      <span>20,000+ students</span><i>·</i>
+      <span>50+ AI projects shipped</span><i>·</i>
+      <span>Mercedes</span><i>·</i><span>Kiehl's</span><i>·</i><span>L'Oréal</span><i>·</i>
+      <span>Brisbane Lions</span><i>·</i><span>Maybelline</span>
     </div>
 
-    <div class="cf-tiers">
-      {tiers.map((t) => (
-        <div class:list={['cf-tier', { 'is-flagship': t.flagship }]}>
-          {t.flagship && <div class="cf-tier-flag">Flagship</div>}
-          <div class="cf-tier-price">{t.price}</div>
-          <div class="cf-tier-name">{t.name}</div>
-          <p class="cf-tier-line">{t.line}</p>
-          <a class="cf-tier-cta" href="#confess">{t.flagship ? 'Have it presented →' : 'Get the report →'}</a>
+    <!-- The shift -->
+    <section class="cf-section cf-shift">
+      <h2 class="cf-h2">Starting a business shouldn't cost <em>€50k and six months</em>.</h2>
+      <div class="cf-shift-grid">
+        <div class="cf-shift-col is-old">
+          <div class="cf-shift-label">The old way</div>
+          <ul>
+            <li>Expensive consultants who've never built anything</li>
+            <li>Generic decks you read once and forget</li>
+            <li>Months of meetings before a single thing ships</li>
+            <li>Advice that ages out the moment AI moves</li>
+          </ul>
         </div>
-      ))}
-    </div>
+        <div class="cf-shift-col is-new">
+          <div class="cf-shift-label">The Confessional</div>
+          <ul>
+            <li>One honest conversation with an operator who ships</li>
+            <li>A bespoke plan, built around <em>your</em> situation</li>
+            <li>A head-start on the build — moving the same week</li>
+            <li>A beautiful playbook you keep and re-read forever</li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
-    <p class="cf-hardship">Genuinely can't afford it but really need this? <a href="#confess">Apply and tell me why</a> — I do a handful of these for free.</p>
+    <!-- How it works -->
+    <section class="cf-section cf-how">
+      <div class="cf-section-eyebrow">How it works</div>
+      <h2 class="cf-h2">Three steps. <em>One way out.</em></h2>
+      <div class="cf-steps">
+        {steps.map((s) => (
+          <div class="cf-step">
+            <div class="cf-step-img" style={`background-image:url('${s.img}')`}></div>
+            <div class="cf-step-body">
+              <div class="cf-step-n">{s.n}</div>
+              <h3 class="cf-step-title">{s.title}</h3>
+              <p class="cf-step-line">{s.line}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
 
-    <div class="cf-confess" id="confess">
-      <h3 class="h2">Step into <em>the booth</em>.</h3>
-      <p class="body-lead">Confess the real thing. The more honest you are, the better the way out I can build. Voice-only and anonymised if it's ever featured — flag anything you'd rather I keep private right in your message.</p>
-      <LeadForm service="The Confessional" messageLabel="Your business or life problem — confess away." submitLabel="Confess →" />
-    </div>
-  </section>
+    <!-- Pricing -->
+    <section class="cf-section cf-pricing" id="pricing">
+      <div class="cf-section-eyebrow">Pricing</div>
+      <h2 class="cf-h2">Two ways in.</h2>
+      <div class="cf-price-grid">
+        <div class="cf-price">
+          <div class="cf-price-amt">$11</div>
+          <div class="cf-price-name">The Report</div>
+          <p class="cf-price-line">AI builds you the roadmap. A bespoke, no-fluff plan generated straight from your confession — in your inbox, no waiting on me.</p>
+          <ul class="cf-price-list">
+            <li>Bespoke AI-built roadmap</li>
+            <li>Where AI gives you leverage</li>
+            <li>Delivered to your inbox</li>
+          </ul>
+          <a class="cf-btn cf-btn-ghost" href="#confess">Get the report →</a>
+        </div>
+        <div class="cf-price is-flagship">
+          <div class="cf-price-flag">Flagship</div>
+          <div class="cf-price-amt">$111</div>
+          <div class="cf-price-name">The Presentation</div>
+          <p class="cf-price-line">I build and present it personally — the full paper-craft playbook, walked through end to end, with a head-start on the actual build.</p>
+          <ul class="cf-price-list">
+            <li>Everything in The Report</li>
+            <li>Built &amp; presented by Sean</li>
+            <li>A head-start on the build</li>
+            <li>Paper-craft playbook, kept forever</li>
+            <li>Eligible for an anonymised episode</li>
+          </ul>
+          <a class="cf-btn" href="#confess">Have it presented →</a>
+        </div>
+      </div>
+      <p class="cf-hardship">Genuinely can't afford it but really need this? <a href="#confess">Apply and tell me why</a> — I do a handful of these for free.</p>
+    </section>
 
-  <div class="footer">
-    <div>melis.ai · 2026</div>
-    <div>Operator-built · Australia</div>
+    <!-- What you get -->
+    <section class="cf-section cf-features">
+      <div class="cf-section-eyebrow">What you walk out with</div>
+      <h2 class="cf-h2">A plan, a head-start, and a resource <em>for life</em>.</h2>
+      <div class="cf-feature-grid">
+        {features.map((f) => (
+          <div class="cf-feature">
+            <i class={`ph ${f.icon}`} aria-hidden="true"></i>
+            <h3>{f.title}</h3>
+            <p>{f.line}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="cf-section cf-faq">
+      <div class="cf-section-eyebrow">Questions</div>
+      <h2 class="cf-h2">The honest answers.</h2>
+      <div class="cf-faq-list">
+        {faqs.map((f) => (
+          <details class="cf-faq-item">
+            <summary>{f.q}<span class="cf-faq-chev" aria-hidden="true">+</span></summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <!-- Closing CTA + form -->
+    <section class="cf-section cf-confess" id="confess">
+      <h2 class="cf-h2">Step into <em>the booth</em>.</h2>
+      <p class="cf-confess-sub">Confess the real thing. The more honest you are, the better the way out I can build. Voice-only and anonymised if it's ever featured — flag anything you'd rather I keep private right in your message.</p>
+      <div class="cf-confess-form">
+        <LeadForm service="The Confessional" messageLabel="Your business or life problem — confess away." submitLabel="Confess →" />
+      </div>
+    </section>
+
+    <footer class="cf-footer">
+      <a href="/">← back to melis.ai</a>
+      <span>melis.ai · 2026 · Operator-built · Australia</span>
+    </footer>
   </div>
 
   <style>
-    .cf-steps {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-      margin: 8px 0 40px;
+    .cf { --acc: #a855f7; --acc-deep: #7c3aed; }
+    .cf { max-width: 100%; overflow-x: hidden; }
+
+    /* Nav */
+    .cf-nav {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px clamp(20px, 5vw, 64px);
+      background: rgba(5,5,5,0.72); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-2);
     }
-    .cf-step {
-      padding: 24px 22px 26px;
-      border: 1px solid var(--border-2);
-      border-radius: 12px;
-      background: rgba(20, 20, 24, 0.4);
+    .cf-brand { font-family: var(--font-display); font-size: 22px; letter-spacing: -0.01em; }
+    .cf-brand span { color: var(--acc); }
+    .cf-nav-cta {
+      font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em;
+      padding: 9px 16px; border-radius: 999px;
+      background: var(--acc-deep); color: #fff;
     }
-    .cf-step-num {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      letter-spacing: 0.2em;
-      color: var(--accent);
-      margin-bottom: 12px;
+    .cf-nav-cta:hover { background: var(--acc); }
+
+    /* Hero */
+    .cf-hero {
+      display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center;
+      max-width: 1180px; margin: 0 auto; padding: clamp(48px, 8vh, 96px) clamp(20px, 5vw, 64px) 64px;
     }
-    .cf-step-title {
-      font-family: var(--font-display);
-      font-size: 22px;
-      font-weight: 400;
-      margin: 0 0 8px;
-      color: var(--text-1);
+    .cf-eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--acc); margin-bottom: 22px; }
+    .cf-h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(40px, 5.4vw, 72px); line-height: 1.04; letter-spacing: -0.02em; margin: 0 0 24px; }
+    .cf-h1 em { font-style: italic; color: var(--acc); }
+    .cf-hero-sub { font-size: 17px; line-height: 1.7; color: var(--text-2); max-width: 30em; margin: 0 0 32px; }
+    .cf-hero-cta { display: flex; align-items: center; gap: 20px; }
+    .cf-hero-from { font-family: var(--font-mono); font-size: 13px; color: var(--text-3); }
+    .cf-hero-from strong { color: var(--text-1); }
+    .cf-hero-img { border-radius: 16px; overflow: hidden; border: 1px solid var(--border-2); box-shadow: 0 30px 80px rgba(0,0,0,0.5); }
+    .cf-hero-img img { width: 100%; height: 100%; object-fit: cover; }
+
+    .cf-btn {
+      display: inline-block; font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.03em;
+      padding: 15px 26px; border-radius: 999px; background: var(--acc-deep); color: #fff;
+      transition: transform 0.15s ease, background 0.2s ease;
     }
+    .cf-btn:hover { background: var(--acc); transform: translateY(-1px); }
+    .cf-btn-ghost { background: transparent; border: 1px solid var(--border-2); color: var(--text-1); }
+    .cf-btn-ghost:hover { border-color: var(--acc); background: rgba(168,85,247,0.06); }
+
+    /* Trust */
+    .cf-trust {
+      display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px 4px;
+      padding: 22px clamp(20px, 5vw, 64px); border-block: 1px solid var(--border-2);
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3);
+    }
+    .cf-trust i { color: var(--acc); opacity: 0.5; margin: 0 8px; font-style: normal; }
+
+    /* Sections */
+    .cf-section { max-width: 1100px; margin: 0 auto; padding: clamp(56px, 9vh, 104px) clamp(20px, 5vw, 64px); }
+    .cf-section-eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--acc); margin-bottom: 14px; }
+    .cf-h2 { font-family: var(--font-display); font-weight: 400; font-size: clamp(30px, 4vw, 48px); line-height: 1.1; letter-spacing: -0.01em; margin: 0 0 36px; }
+    .cf-h2 em { font-style: italic; color: var(--acc); }
+
+    /* Shift */
+    .cf-shift-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .cf-shift-col { padding: 28px 28px 32px; border-radius: 14px; border: 1px solid var(--border-2); }
+    .cf-shift-col.is-new { border-color: rgba(168,85,247,0.4); background: rgba(168,85,247,0.05); }
+    .cf-shift-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-3); margin-bottom: 18px; }
+    .cf-shift-col.is-new .cf-shift-label { color: var(--acc); }
+    .cf-shift-col ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+    .cf-shift-col li { font-size: 15px; line-height: 1.5; color: var(--text-2); padding-left: 24px; position: relative; }
+    .cf-shift-col.is-old li::before { content: '✕'; position: absolute; left: 0; color: var(--text-3); }
+    .cf-shift-col.is-new li::before { content: '✓'; position: absolute; left: 0; color: var(--acc); }
+    .cf-shift-col.is-new li em { font-style: italic; color: var(--text-1); }
+
+    /* How it works */
+    .cf-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+    .cf-step { border: 1px solid var(--border-2); border-radius: 14px; overflow: hidden; background: rgba(20,20,24,0.4); }
+    .cf-step-img { aspect-ratio: 16/10; background-size: cover; background-position: center; }
+    .cf-step-body { padding: 22px 24px 26px; }
+    .cf-step-n { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.2em; color: var(--acc); margin-bottom: 8px; }
+    .cf-step-title { font-family: var(--font-display); font-size: 24px; font-weight: 400; margin: 0 0 8px; }
     .cf-step-line { font-size: 14px; line-height: 1.65; color: var(--text-2); margin: 0; }
 
-    .cf-tiers {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 18px;
-      margin: 0 0 28px;
-    }
-    .cf-tier {
-      position: relative;
-      padding: 28px 26px 30px;
-      border: 1px solid var(--border-2);
-      border-radius: 12px;
-      background: rgba(20, 20, 24, 0.4);
-      display: flex;
-      flex-direction: column;
-    }
-    .cf-tier.is-flagship { border-color: rgba(168, 85, 247, 0.45); background: rgba(168, 85, 247, 0.06); }
-    .cf-tier-flag {
-      position: absolute; top: 16px; right: 16px;
-      font-family: var(--font-mono); font-size: 9.5px;
-      letter-spacing: 0.16em; text-transform: uppercase;
-      color: var(--accent);
-      padding: 3px 9px; border-radius: 999px;
-      background: rgba(168, 85, 247, 0.14);
-      border: 1px solid rgba(168, 85, 247, 0.4);
-    }
-    .cf-tier-price {
-      font-family: var(--font-display);
-      font-size: 40px; font-weight: 300; letter-spacing: -0.02em;
-      color: var(--text-1); line-height: 1;
-    }
-    .cf-tier-name {
-      font-family: var(--font-display);
-      font-size: 19px; margin: 10px 0 8px; color: var(--text-1);
-    }
-    .cf-tier-line { font-size: 14px; line-height: 1.65; color: var(--text-2); margin: 0 0 20px; flex: 1; }
-    .cf-tier-cta {
-      align-self: flex-start;
-      font-family: var(--font-mono); font-size: 12px;
-      letter-spacing: 0.04em; color: var(--accent);
-      border-bottom: 1px solid rgba(124, 58, 237, 0.4);
-      padding-bottom: 2px;
-    }
-    .cf-tier-cta:hover { border-bottom-color: var(--accent); }
+    /* Pricing */
+    .cf-price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
+    .cf-price { position: relative; padding: 34px 30px 36px; border: 1px solid var(--border-2); border-radius: 18px; background: rgba(20,20,24,0.4); }
+    .cf-price.is-flagship { border-color: rgba(168,85,247,0.5); background: rgba(168,85,247,0.07); box-shadow: 0 24px 70px rgba(124,58,237,0.18); }
+    .cf-price-flag { position: absolute; top: 20px; right: 20px; font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--acc); padding: 4px 10px; border-radius: 999px; background: rgba(168,85,247,0.16); border: 1px solid rgba(168,85,247,0.4); }
+    .cf-price-amt { font-family: var(--font-display); font-size: 56px; font-weight: 300; line-height: 1; letter-spacing: -0.02em; }
+    .cf-price-name { font-family: var(--font-display); font-size: 22px; margin: 8px 0 12px; }
+    .cf-price-line { font-size: 14.5px; line-height: 1.6; color: var(--text-2); margin: 0 0 20px; }
+    .cf-price-list { list-style: none; padding: 0; margin: 0 0 26px; display: grid; gap: 10px; }
+    .cf-price-list li { font-size: 14px; color: var(--text-2); padding-left: 24px; position: relative; }
+    .cf-price-list li::before { content: '✓'; position: absolute; left: 0; color: var(--acc); }
+    .cf-hardship { text-align: center; font-size: 13.5px; color: var(--text-3); margin: 32px 0 0; }
+    .cf-hardship a { color: var(--acc); border-bottom: 1px solid rgba(168,85,247,0.4); }
 
-    .cf-hardship {
-      font-size: 13.5px; line-height: 1.6; color: var(--text-3);
-      margin: 0 0 48px; max-width: 60ch;
-    }
-    .cf-hardship a { color: var(--accent); border-bottom: 1px solid rgba(124, 58, 237, 0.4); }
+    /* Features */
+    .cf-feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .cf-feature { padding: 26px 24px; border: 1px solid var(--border-2); border-radius: 14px; background: rgba(20,20,24,0.35); }
+    .cf-feature i { font-size: 26px; color: var(--acc); display: block; margin-bottom: 14px; }
+    .cf-feature h3 { font-family: var(--font-display); font-size: 20px; font-weight: 400; margin: 0 0 6px; }
+    .cf-feature p { font-size: 14px; line-height: 1.6; color: var(--text-2); margin: 0; }
 
-    .cf-confess { max-width: 600px; scroll-margin-top: 80px; }
-    .cf-confess .h2 { margin-bottom: 10px; }
-    .cf-confess .body-lead { margin-bottom: 24px; }
+    /* FAQ */
+    .cf-faq-list { border-top: 1px solid var(--border-2); max-width: 760px; }
+    .cf-faq-item { border-bottom: 1px solid var(--border-2); }
+    .cf-faq-item summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 4px; font-family: var(--font-display); font-size: 20px; }
+    .cf-faq-item summary::-webkit-details-marker { display: none; }
+    .cf-faq-chev { font-family: var(--font-display); font-size: 24px; color: var(--acc); transition: transform 0.2s ease; }
+    .cf-faq-item[open] .cf-faq-chev { transform: rotate(45deg); }
+    .cf-faq-item p { margin: 0 4px 22px; font-size: 15px; line-height: 1.7; color: var(--text-2); max-width: 66ch; }
 
-    @media (max-width: 860px) {
-      .cf-steps { grid-template-columns: 1fr; }
-      .cf-tiers { grid-template-columns: 1fr; }
+    /* Confess */
+    .cf-confess { max-width: 640px; scroll-margin-top: 70px; }
+    .cf-confess-sub { font-size: 16px; line-height: 1.7; color: var(--text-2); margin: 0 0 28px; }
+
+    /* Footer */
+    .cf-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding: 36px clamp(20px,5vw,64px); border-top: 1px solid var(--border-2); font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em; color: var(--text-3); }
+    .cf-footer a:hover { color: var(--acc); }
+
+    @media (max-width: 900px) {
+      .cf-hero { grid-template-columns: 1fr; gap: 32px; }
+      .cf-hero-img { order: -1; }
+      .cf-shift-grid, .cf-steps, .cf-price-grid, .cf-feature-grid { grid-template-columns: 1fr; }
     }
   </style>
-</AppLayout>
+</ConfessionalLayout>
