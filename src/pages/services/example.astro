@@ -1,0 +1,206 @@
+---
+import ConfessionalLayout from '../../layouts/ConfessionalLayout.astro';
+
+export const prerender = true;
+
+const reports = [
+  {
+    id: 'founder', tab: 'The Founder', img: '/section-rooms/example-founder.png',
+    who: 'Maya · salon owner, two locations',
+    confession: "I'm fully booked but flat broke. Sixty-hour weeks, my team keeps churning, and I can't take a day off without revenue dropping. I want a third location but I'm scared it'll just multiply the chaos.",
+    diagnosis: "You don't have a growth problem — you have a leverage problem. The business runs on you. Before a third location, the first two need to run without you.",
+    moves: [
+      { t: 'An AI front desk', l: 'Handles bookings, reminders and rebooking no-shows automatically — recovers the ~15% of revenue currently walking out the door.' },
+      { t: 'Your operation, in Claude', l: 'Every process documented once, with an assistant that trains new staff to your standard — so onboarding and churn stop bleeding you.' },
+      { t: 'A Sunday-night numbers brief', l: 'AI pulls bookings, revenue and retention into one weekly read, so you stop flying blind and start deciding on data.' },
+    ],
+    path: 'Stabilise → systemise → then replicate. Location three opens only once one and two run themselves — so you scale the system, not the chaos.',
+    first: 'The AI front desk. Fastest payback, least change for your team, and it buys you back the time to build the rest.',
+  },
+  {
+    id: 'idea', tab: 'The Idea', img: '/section-rooms/example-idea.png',
+    who: 'Daniel · has an idea, hasn’t started',
+    confession: "I've got an idea — a meal-prep service for shift workers — but I've never started a business. I don't know if it's real, I've got no money to waste, and honestly I'm scared of looking stupid.",
+    diagnosis: "You don't need a business yet — you need evidence. The cheapest thing you can build this week is proof that ten people will actually pay.",
+    moves: [
+      { t: 'A one-page offer, live in a day', l: 'An AI-built landing page and a single sharp offer — no code, no logo agonising, up before the doubt sets in.' },
+      { t: 'An AI outreach engine', l: 'Find fifty shift workers near you, message them in your voice, and book five conversations — done in an afternoon.' },
+      { t: 'Pre-sell, don’t launch', l: 'Take deposits before you cook a single meal. If ten people pay, it’s real. If they don’t, you’ve lost a week, not a year.' },
+    ],
+    path: 'Validate with $0 inventory → pre-sell to real demand → then build the operation around the people already paying.',
+    first: 'The landing page and the pre-sell offer. Evidence before effort — always.',
+  },
+  {
+    id: 'operator', tab: 'The Operator', img: '/section-rooms/example-operator.png',
+    who: 'Priya · ops manager, 40-person company',
+    confession: "Leadership wants 'an AI strategy' but everyone's just pasting into ChatGPT. I'm meant to lead it, I'm not technical, and I really don't want to roll out something that flops and burns my credibility.",
+    diagnosis: "You don't need a strategy deck — you need one undeniable win. Pick the most painful, repetitive workflow, make it ten times faster, and let credibility compound from there.",
+    moves: [
+      { t: 'Map the five worst workflows', l: 'An AI-assisted audit of where your team loses hours — then pick the one with the clearest, measurable payback.' },
+      { t: 'One Claude Project owns it', l: 'Bake your team’s context in once so the workflow runs the same way every time — no prompt roulette.' },
+      { t: 'Measure, then expand', l: 'Show leadership the hours saved, before and after. Take the proof, then roll it out one workflow at a time.' },
+    ],
+    path: 'One win → measured → expanded. Bottom-up adoption with receipts beats a top-down mandate nobody uses.',
+    first: 'The workflow audit. You can’t improve what you haven’t mapped — and the map is where the easy wins hide.',
+  },
+];
+---
+
+<ConfessionalLayout title="Example report · The Confessional">
+  <div class="ex">
+    <header class="ex-nav">
+      <a class="ex-back" href="/services/"><span aria-hidden="true">←</span> Back to The Confessional</a>
+      <span class="ex-tag">Sample report</span>
+    </header>
+
+    <div class="ex-intro">
+      <div class="ex-eyebrow">Example · The Confessional</div>
+      <h1 class="ex-h1">What you <em>walk out with</em>.</h1>
+      <p class="ex-lead">A real one is built around your exact confession. Here are three, for the three people who confess the most. Pick the one that sounds like you.</p>
+      <div class="ex-tabs" role="tablist">
+        {reports.map((r, i) => (
+          <button class:list={['ex-tab', { 'is-active': i === 0 }]} data-tab={r.id} type="button">{r.tab}</button>
+        ))}
+      </div>
+    </div>
+
+    {reports.map((r, i) => (
+      <article class:list={['ex-report', { 'is-active': i === 0 }]} data-report={r.id}>
+        <div class="ex-cover" style={`background-image:url('${r.img}')`}>
+          <div class="ex-cover-veil"></div>
+          <div class="ex-cover-who">{r.who}</div>
+        </div>
+        <div class="ex-doc">
+          <blockquote class="ex-confession">
+            <span class="ex-confession-mark">"</span>{r.confession}
+          </blockquote>
+
+          <section class="ex-block">
+            <div class="ex-block-label">The diagnosis</div>
+            <p class="ex-diagnosis">{r.diagnosis}</p>
+          </section>
+
+          <section class="ex-block">
+            <div class="ex-block-label">The AI roadmap</div>
+            <ol class="ex-moves">
+              {r.moves.map((m, mi) => (
+                <li>
+                  <div class="ex-move-n">{String(mi + 1).padStart(2, '0')}</div>
+                  <div>
+                    <div class="ex-move-t">{m.t}</div>
+                    <div class="ex-move-l">{m.l}</div>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          <div class="ex-twocol">
+            <section class="ex-block">
+              <div class="ex-block-label">The path</div>
+              <p>{r.path}</p>
+            </section>
+            <section class="ex-block ex-first">
+              <div class="ex-block-label">Build this first</div>
+              <p>{r.first}</p>
+            </section>
+          </div>
+        </div>
+      </article>
+    ))}
+
+    <div class="ex-foot-cta">
+      <h2 class="ex-h2">Yours is built around <em>your</em> confession.</h2>
+      <a class="ex-btn" href="/services/#confess">Step into the booth →</a>
+    </div>
+
+    <footer class="ex-footer">
+      <a href="/services/">← The Confessional</a>
+      <span>melis.ai · 2026</span>
+    </footer>
+  </div>
+
+  <style>
+    .ex { --acc: #a855f7; --acc-deep: #7c3aed; }
+
+    .ex-nav { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; padding: 16px clamp(20px, 5vw, 64px); background: rgba(5,5,5,0.78); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-2); }
+    .ex-back { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; color: var(--text-2); }
+    .ex-back:hover { color: var(--acc); }
+    .ex-back span { color: var(--acc); margin-right: 4px; }
+    .ex-tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--acc); padding: 4px 10px; border-radius: 999px; background: rgba(168,85,247,0.14); border: 1px solid rgba(168,85,247,0.4); }
+
+    .ex-intro { max-width: 860px; margin: 0 auto; padding: clamp(40px, 7vh, 72px) clamp(20px, 5vw, 64px) 0; text-align: center; }
+    .ex-eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--acc); margin-bottom: 16px; }
+    .ex-h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(34px, 5vw, 60px); line-height: 1.05; letter-spacing: -0.02em; margin: 0 0 18px; }
+    .ex-h1 em { font-style: italic; color: var(--acc); }
+    .ex-lead { font-size: 16px; line-height: 1.7; color: var(--text-2); max-width: 32em; margin: 0 auto 32px; }
+
+    .ex-tabs { display: inline-flex; gap: 6px; padding: 6px; border-radius: 999px; border: 1px solid var(--border-2); background: rgba(20,20,24,0.5); }
+    .ex-tab { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; color: var(--text-2); padding: 9px 18px; border: none; background: none; border-radius: 999px; cursor: pointer; transition: background 0.2s ease, color 0.2s ease; }
+    .ex-tab:hover { color: var(--text-1); }
+    .ex-tab.is-active { background: var(--acc-deep); color: #fff; }
+
+    .ex-report { display: none; max-width: 920px; margin: 0 auto; padding: 40px clamp(20px, 5vw, 64px) 0; }
+    .ex-report.is-active { display: block; }
+
+    .ex-cover { position: relative; border-radius: 18px; overflow: hidden; aspect-ratio: 16/7; display: flex; align-items: flex-end; border: 1px solid var(--border-2); background-size: cover; background-position: center; }
+    .ex-cover-veil { position: absolute; inset: 0; background: linear-gradient(to top, rgba(5,5,5,0.85), transparent 60%); }
+    .ex-cover-who { position: relative; z-index: 1; padding: 22px 26px; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-1); }
+
+    .ex-doc { padding-top: 8px; }
+    .ex-confession { margin: 32px 0; padding: 0 0 0 26px; border-left: 2px solid var(--acc); font-family: var(--font-display); font-style: italic; font-size: clamp(20px, 2.4vw, 28px); line-height: 1.4; color: var(--text-1); position: relative; }
+    .ex-confession-mark { color: var(--acc); margin-right: 2px; }
+
+    .ex-block { margin: 36px 0; }
+    .ex-block-label { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--acc); margin-bottom: 12px; }
+    .ex-block p { font-size: 16px; line-height: 1.75; color: var(--text-2); margin: 0; }
+    .ex-diagnosis { font-size: 17px !important; color: var(--text-1) !important; }
+
+    .ex-moves { list-style: none; padding: 0; margin: 0; display: grid; gap: 16px; }
+    .ex-moves li { display: flex; gap: 18px; padding: 20px 22px; border: 1px solid var(--border-2); border-radius: 14px; background: rgba(20,20,24,0.4); }
+    .ex-move-n { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.1em; color: var(--acc); padding-top: 2px; }
+    .ex-move-t { font-family: var(--font-display); font-size: 20px; color: var(--text-1); margin-bottom: 5px; }
+    .ex-move-l { font-size: 14.5px; line-height: 1.6; color: var(--text-2); }
+
+    .ex-twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    .ex-first { padding: 24px 26px; border: 1px solid rgba(168,85,247,0.35); border-radius: 14px; background: rgba(168,85,247,0.05); margin: 36px 0; }
+
+    .ex-foot-cta { max-width: 920px; margin: 24px auto 0; padding: 56px clamp(20px, 5vw, 64px); text-align: center; }
+    .ex-h2 { font-family: var(--font-display); font-weight: 400; font-size: clamp(26px, 3.4vw, 40px); margin: 0 0 24px; }
+    .ex-h2 em { font-style: italic; color: var(--acc); }
+    .ex-btn { display: inline-block; font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.03em; padding: 15px 28px; border-radius: 999px; background: var(--acc-deep); color: #fff; }
+    .ex-btn:hover { background: var(--acc); }
+
+    .ex-footer { display: flex; justify-content: space-between; gap: 12px; padding: 30px clamp(20px,5vw,64px); border-top: 1px solid var(--border-2); font-family: var(--font-mono); font-size: 11px; color: var(--text-3); }
+    .ex-footer a:hover { color: var(--acc); }
+
+    @media (min-width: 1600px) { .ex { zoom: 1.1; } }
+    @media (min-width: 1900px) { .ex { zoom: 1.2; } }
+    @media (min-width: 2300px) { .ex { zoom: 1.32; } }
+    @media (min-width: 2560px) { .ex { zoom: 1.4; } }
+
+    @media (max-width: 720px) {
+      .ex-twocol { grid-template-columns: 1fr; }
+      .ex-moves li { flex-direction: column; gap: 6px; }
+    }
+  </style>
+
+  <script is:inline>
+    (function () {
+      function wire() {
+        var tabs = document.querySelectorAll('.ex-tab');
+        if (!tabs.length) return;
+        tabs.forEach(function (t) {
+          t.addEventListener('click', function () {
+            var id = t.getAttribute('data-tab');
+            document.querySelectorAll('.ex-tab').forEach(function (x) { x.classList.toggle('is-active', x === t); });
+            document.querySelectorAll('.ex-report').forEach(function (r) { r.classList.toggle('is-active', r.getAttribute('data-report') === id); });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        });
+      }
+      if (document.readyState !== 'loading') wire(); else document.addEventListener('DOMContentLoaded', wire);
+      document.addEventListener('astro:page-load', wire);
+    })();
+  </script>
+</ConfessionalLayout>

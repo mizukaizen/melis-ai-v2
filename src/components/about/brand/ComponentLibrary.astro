@@ -1,9 +1,66 @@
 ---
-// Section 19 · Component library. Placeholder per Sean's plan: not
-// packaged for distribution. Single eyebrow + title + intent + note.
+// Section 19 · Component library. The page-level summary (16 curated
+// specimen tiles) stays public; the full 81-component asset library
+// from brand-guidelines.html sits behind the password gate, mounted
+// as a verbatim HTML embed inside .bg-port so its bespoke CSS resolves
+// via src/styles/brand-port.css.
+
+import LockedSection from './LockedSection.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+type Intent = string;
+type Specimen = {
+  name: string;
+  intent: Intent;
+  kind:
+    | 'tier1-card'
+    | 'tier2-obsidian'
+    | 'surface-inventory'
+    | 'sigil-wall'
+    | 'blur-overlay'
+    | 'palette-row'
+    | 'type-stack'
+    | 'button-form'
+    | 'chart'
+    | 'tactile-card'
+    | 'cinematic-card'
+    | 'papercraft-scene'
+    | 'wordmark'
+    | 'pill-row'
+    | 'quote-block'
+    | 'section-eyebrow';
+};
+
+const SPECIMENS: Specimen[] = [
+  { name: 'Tier 1 · Solid card',       intent: 'Default body card — tables, panels, rows',     kind: 'tier1-card' },
+  { name: 'Tier 2 · Heavy obsidian',   intent: 'Quotes, North Stars, key callouts',            kind: 'tier2-obsidian' },
+  { name: 'Surface inventory grid',     intent: '10 named surfaces — at-a-glance system map',  kind: 'surface-inventory' },
+  { name: 'Sigil mark wall',            intent: 'Hand-coded SVG glyphs for ritual surfaces',   kind: 'sigil-wall' },
+  { name: 'Blur + text overlay',        intent: 'Hero text on papercraft imagery',             kind: 'blur-overlay' },
+  { name: 'Palette swatch row',         intent: 'Token-tied colour reference',                 kind: 'palette-row' },
+  { name: 'Type stack',                 intent: 'Cormorant display + Inter body + IBM mono',   kind: 'type-stack' },
+  { name: 'Button + form pair',         intent: 'Primary affordance + accent input',           kind: 'button-form' },
+  { name: 'Inline sparkline',           intent: 'Numeric trend without chart-chrome',          kind: 'chart' },
+  { name: 'Tactile library card',       intent: 'Editorial reference — image + caption',       kind: 'tactile-card' },
+  { name: 'Cinematic library card',     intent: 'Mood-led tile for atmospheric collections',   kind: 'cinematic-card' },
+  { name: 'Papercraft scene tile',      intent: 'Treatment for cover and section heroes',      kind: 'papercraft-scene' },
+  { name: 'Wordmark variants',          intent: 'Default · italic · light-mode',               kind: 'wordmark' },
+  { name: 'Status pill row',            intent: 'Live, in-flight, planned signal pills',       kind: 'pill-row' },
+  { name: 'Quote callout',              intent: 'North Star and edge-quote treatment',         kind: 'quote-block' },
+  { name: 'Numbered section eyebrow',   intent: 'Anchor row used by every brand section',      kind: 'section-eyebrow' },
+];
+
+// Full 81-component library — verbatim brand-guidelines body
+// (lines 6986-8216) vendored to _bg-library-body.html so this
+// component file stays readable.
+const libraryHtml = fs.readFileSync(
+  path.resolve(process.cwd(), 'src/components/about/brand/_bg-library-body.html'),
+  'utf8',
+);
 ---
 
-<section id="library" data-brand-section class="melis-section">
+<section id="library" data-brand-section class="melis-section melis-section-wide">
   <div class="melis-section-eyebrow-row">
     <span class="num">19</span>
     <span class="name">Toolkit · Component library</span>
@@ -12,8 +69,516 @@
   <h2 class="melis-section-title">81 components, hand-coded. <em>All in brand language.</em></h2>
 
   <div class="melis-prose">
-    <p>The melis.ai component library is 81 hand-coded UI patterns covering the full surface system — landing rooms, dossier cards, prompt cards, course shelves, dispatch banners, command palette, callouts, quote blocks, palette swatches, type specimens, scroll-spy sb2s, room grids, the lot. Each one fits the canonical chrome — same tokens, same typography stack, same spacing rhythm, same restraint.</p>
+    <p>The library is the working layer — UI patterns, editorial blocks, surface tiers, sigils, callouts, charts — every one in the canonical chrome. Below is a curated specimen wall; the full 81-asset catalogue lives behind the password.</p>
   </div>
 
-  <p class="brand-stub-lede">The component library is <em>visible in product, not packaged for distribution</em>. Living source available to collaborators on request.</p>
+  <div class="lib-gallery">
+    {SPECIMENS.map((s) => (
+      <article class="lib-tile">
+        <div class="lib-stage">
+          {s.kind === 'tier1-card' && (
+            <div class="spec-tier1">
+              <div class="spec-tier1-eyebrow">Default body</div>
+              <div class="spec-tier1-title">A solid card.</div>
+              <div class="spec-tier1-body">One token, one border. Most cards on the site are this tier.</div>
+            </div>
+          )}
+          {s.kind === 'tier2-obsidian' && (
+            <div class="spec-tier2">
+              <div class="spec-tier2-rule"></div>
+              <div class="spec-tier2-quote">"Honest before impressive."</div>
+              <div class="spec-tier2-cite">Promise · 03</div>
+            </div>
+          )}
+          {s.kind === 'surface-inventory' && (
+            <div class="spec-inventory">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <div class={`spec-inv-cell spec-inv-cell-${i % 5}`}>
+                  <span class="spec-inv-num">{String(i + 1).padStart(2, '0')}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          {s.kind === 'sigil-wall' && (
+            <div class="spec-sigils">
+              <span class="spec-sigil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M 12 4 Q 7 11 7 14 A 5 5 0 0 0 17 14 Q 17 11 12 4 Z"/><circle cx="12" cy="13" r="1.25" fill="currentColor" stroke="none"/></svg></span>
+              <span class="spec-sigil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M 8 11 H 16 A 3 3 0 0 1 16 17 H 8 A 3 3 0 0 1 8 11 Z"/><path d="M 11 11 V 17"/><path d="M 14 11 V 17"/></svg></span>
+              <span class="spec-sigil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="1.5" fill="currentColor" stroke="none"/><circle cx="7" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="17" cy="16" r="1.5" fill="currentColor" stroke="none"/></svg></span>
+              <span class="spec-sigil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M 12 5 L 18 8.5 L 18 15.5 L 12 19 L 6 15.5 L 6 8.5 Z"/></svg></span>
+              <span class="spec-sigil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg></span>
+              <span class="spec-sigil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M 5 7 L 19 7 L 12 19 Z"/></svg></span>
+            </div>
+          )}
+          {s.kind === 'blur-overlay' && (
+            <div class="spec-blur">
+              <div class="spec-blur-bg"></div>
+              <div class="spec-blur-veil"></div>
+              <div class="spec-blur-text">
+                <div class="spec-blur-eyebrow">Hero · cover</div>
+                <div class="spec-blur-title">Built by hand.</div>
+              </div>
+            </div>
+          )}
+          {s.kind === 'palette-row' && (
+            <div class="spec-palette">
+              <span class="spec-pal" style="background:#0F0F0F"></span>
+              <span class="spec-pal" style="background:#1A1A1A"></span>
+              <span class="spec-pal" style="background:#E5E7EB"></span>
+              <span class="spec-pal spec-pal-glow" style="background:#7C3AED"></span>
+              <span class="spec-pal" style="background:#5EEAD4"></span>
+              <span class="spec-pal" style="background:#F5B342"></span>
+            </div>
+          )}
+          {s.kind === 'type-stack' && (
+            <div class="spec-type">
+              <div class="spec-type-display">Cormorant</div>
+              <div class="spec-type-body">Inter, the workhorse body face.</div>
+              <div class="spec-type-mono">IBM_PLEX_MONO · 11px · 0.18em</div>
+            </div>
+          )}
+          {s.kind === 'button-form' && (
+            <div class="spec-form">
+              <input class="spec-input" placeholder="you@email.com" readonly />
+              <button class="spec-btn" type="button">Subscribe →</button>
+            </div>
+          )}
+          {s.kind === 'chart' && (
+            <div class="spec-chart">
+              <svg viewBox="0 0 200 80" preserveAspectRatio="none">
+                <polyline
+                  points="0,62 20,55 40,58 60,46 80,49 100,38 120,32 140,38 160,22 180,16 200,12"
+                  fill="none"
+                  stroke="var(--accent)"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <line x1="0" y1="74" x2="200" y2="74" stroke="rgba(232,227,216,0.12)" stroke-width="1" />
+              </svg>
+              <div class="spec-chart-meta"><span>WK 01</span><span>WK 26</span></div>
+            </div>
+          )}
+          {s.kind === 'tactile-card' && (
+            <div class="spec-tactile">
+              <div class="spec-tactile-img"></div>
+              <div class="spec-tactile-meta">
+                <div class="spec-tactile-eyebrow">Reference · 04</div>
+                <div class="spec-tactile-title">Paper grain.</div>
+              </div>
+            </div>
+          )}
+          {s.kind === 'cinematic-card' && (
+            <div class="spec-cinematic">
+              <div class="spec-cinematic-grad"></div>
+              <div class="spec-cinematic-text">
+                <div class="spec-cinematic-eyebrow">Mood · twilight</div>
+                <div class="spec-cinematic-title">A small lamp, lit.</div>
+              </div>
+            </div>
+          )}
+          {s.kind === 'papercraft-scene' && (
+            <div class="spec-paper">
+              <div class="spec-paper-bg"></div>
+              <div class="spec-paper-figure"></div>
+              <div class="spec-paper-lotus"></div>
+            </div>
+          )}
+          {s.kind === 'wordmark' && (
+            <div class="spec-wordmark">
+              <span class="spec-wm">melis.ai</span>
+              <span class="spec-wm spec-wm-italic">melis<em>.</em>ai</span>
+            </div>
+          )}
+          {s.kind === 'pill-row' && (
+            <div class="spec-pills">
+              <span class="spec-pill spec-pill-live"><span class="spec-pill-dot"></span>Live</span>
+              <span class="spec-pill spec-pill-flight">In flight</span>
+              <span class="spec-pill spec-pill-plan">Planned</span>
+            </div>
+          )}
+          {s.kind === 'quote-block' && (
+            <div class="spec-quote">
+              <div class="spec-quote-text">"Technology should feel lighter, not heavier."</div>
+              <div class="spec-quote-cite">North Star</div>
+            </div>
+          )}
+          {s.kind === 'section-eyebrow' && (
+            <div class="spec-eyebrow">
+              <span class="spec-eyebrow-num">07</span>
+              <span class="spec-eyebrow-name">How we appear · Typography</span>
+              <span class="spec-eyebrow-line"></span>
+            </div>
+          )}
+        </div>
+        <div class="lib-caption">
+          <div class="lib-name">{s.name}</div>
+          <div class="lib-intent">{s.intent}</div>
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <LockedSection slug="library-full" title="Full 81-component asset catalogue · loaders, inputs, cards, overlays, data UI, motion, process, matrices, hierarchy, timeline, concepts, callouts">
+    <div class="bg-port bg-port-locked" set:html={libraryHtml} />
+  </LockedSection>
 </section>
+
+<style is:global>
+  /* ─── Gallery frame ─── */
+  .lib-gallery {
+    margin-top: 56px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .lib-tile {
+    display: flex; flex-direction: column;
+    border: 1px solid var(--border-2, rgba(232,227,216,0.08));
+    background: rgba(255,255,255,0.015);
+  }
+  .lib-stage {
+    position: relative;
+    min-height: 160px;
+    padding: 22px;
+    display: flex; align-items: center; justify-content: center;
+    border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.06));
+    overflow: hidden;
+  }
+  .lib-caption {
+    padding: 14px 18px 16px;
+  }
+  .lib-name {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 16px;
+    letter-spacing: -0.01em;
+    color: var(--text-1, var(--text));
+    margin-bottom: 4px;
+  }
+  .lib-intent {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--text-3);
+    line-height: 1.5;
+  }
+
+  /* ─── Specimens ─── */
+  /* tier 1 — solid */
+  .spec-tier1 {
+    width: 100%;
+    padding: 18px 20px;
+    border: 1px solid var(--border-2, rgba(232,227,216,0.10));
+    background: #1a1a1a;
+  }
+  .spec-tier1-eyebrow {
+    font-family: var(--font-mono); font-size: 8.5px;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--text-3); margin-bottom: 8px;
+  }
+  .spec-tier1-title {
+    font-family: var(--font-display); font-weight: 400; font-size: 18px;
+    color: var(--text-1, var(--text)); margin-bottom: 8px;
+  }
+  .spec-tier1-body { font-size: 11px; line-height: 1.55; color: var(--text-2); }
+
+  /* tier 2 — heavy obsidian */
+  .spec-tier2 {
+    width: 100%;
+    padding: 18px 20px;
+    background: #0a0a0a;
+    border-left: 2px solid var(--accent);
+  }
+  .spec-tier2-rule { width: 24px; height: 1px; background: var(--accent); margin-bottom: 12px; }
+  .spec-tier2-quote {
+    font-family: var(--font-display); font-style: italic; font-weight: 400;
+    font-size: 16px; line-height: 1.35; color: var(--text-1, var(--text));
+    margin-bottom: 8px;
+  }
+  .spec-tier2-cite {
+    font-family: var(--font-mono); font-size: 8.5px;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-3);
+  }
+
+  /* surface inventory */
+  .spec-inventory {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    width: 100%;
+  }
+  .spec-inv-cell {
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--border-2, rgba(232,227,216,0.10));
+    background: rgba(255,255,255,0.02);
+  }
+  .spec-inv-cell-0 { background: #1a1a1a; }
+  .spec-inv-cell-1 { background: #0a0a0a; border-left: 1px solid var(--accent); }
+  .spec-inv-cell-2 { background: rgba(124,58,237,0.06); }
+  .spec-inv-cell-3 { background: rgba(94,234,212,0.05); }
+  .spec-inv-cell-4 { background: rgba(245,179,66,0.05); }
+  .spec-inv-num {
+    font-family: var(--font-mono); font-size: 8.5px;
+    letter-spacing: 0.12em; color: var(--text-3);
+  }
+
+  /* sigil wall */
+  .spec-sigils {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    width: 100%; max-width: 200px;
+  }
+  .spec-sigil {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 100%; aspect-ratio: 1;
+    color: var(--text-2);
+    border: 1px solid var(--border-2, rgba(232,227,216,0.06));
+    background: rgba(255,255,255,0.015);
+  }
+  .spec-sigil svg { width: 60%; height: 60%; }
+
+  /* blur overlay */
+  .spec-blur {
+    position: relative;
+    width: 100%; height: 130px;
+    overflow: hidden;
+    border-radius: 2px;
+  }
+  .spec-blur-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 30% 35%, rgba(245,179,66,0.55), transparent 45%),
+      radial-gradient(circle at 75% 70%, rgba(94,234,212,0.30), transparent 50%),
+      linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    filter: blur(8px) saturate(0.9);
+    transform: scale(1.1);
+  }
+  .spec-blur-veil {
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, rgba(15,15,15,0.20) 0%, rgba(15,15,15,0.78) 100%);
+  }
+  .spec-blur-text {
+    position: absolute; left: 16px; bottom: 14px; right: 16px;
+  }
+  .spec-blur-eyebrow {
+    font-family: var(--font-mono); font-size: 8.5px;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 4px;
+  }
+  .spec-blur-title {
+    font-family: var(--font-display); font-weight: 300; font-size: 22px;
+    letter-spacing: -0.02em; color: var(--text-1, var(--text));
+  }
+
+  /* palette row */
+  .spec-palette {
+    display: flex; gap: 10px; align-items: center;
+  }
+  .spec-pal {
+    width: 34px; height: 34px;
+    border-radius: 4px;
+    border: 1px solid var(--border-2, rgba(232,227,216,0.10));
+  }
+  .spec-pal.spec-pal-glow { box-shadow: 0 0 18px rgba(124,58,237,0.50); }
+
+  /* type stack */
+  .spec-type {
+    width: 100%; text-align: left;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .spec-type-display {
+    font-family: var(--font-display); font-weight: 300; font-size: 30px;
+    letter-spacing: -0.02em; line-height: 1; color: var(--text-1, var(--text));
+  }
+  .spec-type-body { font-size: 13px; line-height: 1.5; color: var(--text-2); }
+  .spec-type-mono {
+    font-family: var(--font-mono); font-size: 9px;
+    letter-spacing: 0.18em; color: var(--text-3);
+  }
+
+  /* button + form */
+  .spec-form {
+    display: flex; gap: 8px; width: 100%; align-items: stretch;
+  }
+  .spec-input {
+    flex: 1; min-width: 0;
+    padding: 9px 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border-2, rgba(232,227,216,0.12));
+    color: var(--text-2);
+    font-family: var(--font-mono); font-size: 11px;
+    border-radius: 2px;
+  }
+  .spec-btn {
+    padding: 9px 14px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+
+  /* chart — inline sparkline */
+  .spec-chart {
+    width: 100%;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .spec-chart svg { width: 100%; height: 60px; }
+  .spec-chart-meta {
+    display: flex; justify-content: space-between;
+    font-family: var(--font-mono); font-size: 8.5px;
+    letter-spacing: 0.18em; color: var(--text-3);
+  }
+
+  /* tactile card */
+  .spec-tactile {
+    width: 100%;
+    border: 1px solid var(--border-2, rgba(232,227,216,0.08));
+    display: flex; flex-direction: column;
+  }
+  .spec-tactile-img {
+    height: 64px;
+    background:
+      repeating-linear-gradient(45deg, rgba(245,179,66,0.10) 0 2px, transparent 2px 6px),
+      linear-gradient(135deg, #2a2118 0%, #1a1410 100%);
+    border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.08));
+  }
+  .spec-tactile-meta { padding: 10px 12px; }
+  .spec-tactile-eyebrow {
+    font-family: var(--font-mono); font-size: 8.5px;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--text-3); margin-bottom: 3px;
+  }
+  .spec-tactile-title {
+    font-family: var(--font-display); font-size: 15px; font-weight: 400;
+    color: var(--text-1, var(--text));
+  }
+
+  /* cinematic card */
+  .spec-cinematic {
+    position: relative;
+    width: 100%; height: 130px;
+    overflow: hidden;
+    border-radius: 2px;
+  }
+  .spec-cinematic-grad {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 80% 20%, rgba(94,234,212,0.35), transparent 55%),
+      radial-gradient(circle at 20% 80%, rgba(124,58,237,0.40), transparent 55%),
+      linear-gradient(180deg, #0a1428 0%, #0f0f0f 100%);
+  }
+  .spec-cinematic-text {
+    position: absolute; left: 14px; bottom: 12px; right: 14px;
+  }
+  .spec-cinematic-eyebrow {
+    font-family: var(--font-mono); font-size: 8.5px;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: #5eead4; margin-bottom: 4px;
+  }
+  .spec-cinematic-title {
+    font-family: var(--font-display); font-style: italic; font-weight: 400;
+    font-size: 17px; line-height: 1.2;
+    color: var(--text-1, var(--text));
+  }
+
+  /* papercraft scene tile */
+  .spec-paper {
+    position: relative;
+    width: 100%; height: 130px;
+    overflow: hidden;
+    border-radius: 2px;
+  }
+  .spec-paper-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 50% 70%, rgba(245,179,66,0.45), transparent 40%),
+      radial-gradient(ellipse at 80% 10%, rgba(94,234,212,0.32), transparent 55%),
+      linear-gradient(180deg, #2a2034 0%, #0f0f0f 100%);
+    filter: blur(1.2px);
+  }
+  .spec-paper-figure {
+    position: absolute; left: 50%; bottom: 28px;
+    width: 14px; height: 28px;
+    transform: translateX(-50%);
+    background: linear-gradient(180deg, #e5d7b8 0%, #b8a785 100%);
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+  .spec-paper-lotus {
+    position: absolute; left: 50%; bottom: 18px;
+    width: 8px; height: 8px;
+    transform: translateX(-50%);
+    background: #7c3aed;
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(124,58,237,0.85);
+  }
+
+  /* wordmark */
+  .spec-wordmark {
+    display: flex; flex-direction: column; gap: 14px;
+    align-items: flex-start; width: 100%;
+  }
+  .spec-wm {
+    font-family: var(--font-display); font-weight: 300; font-size: 30px;
+    letter-spacing: -0.03em; color: var(--text-1, var(--text));
+  }
+  .spec-wm-italic { font-style: italic; font-weight: 400; }
+  .spec-wm-italic em { font-style: italic; color: var(--accent); }
+
+  /* pill row */
+  .spec-pills {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  }
+  .spec-pill {
+    font-family: var(--font-mono); font-size: 9px;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 999px;
+    border: 1px solid transparent;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .spec-pill-live { color: #5eead4; background: rgba(94,234,212,0.08); border-color: rgba(94,234,212,0.32); }
+  .spec-pill-flight { color: #f5d076; background: rgba(245,208,118,0.08); border-color: rgba(245,208,118,0.28); }
+  .spec-pill-plan { color: var(--text-3); background: rgba(232,227,216,0.04); border-color: var(--border-2, rgba(232,227,216,0.14)); }
+  .spec-pill-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #5eead4; box-shadow: 0 0 6px #5eead4;
+  }
+
+  /* quote block */
+  .spec-quote {
+    width: 100%;
+    padding: 14px 16px;
+    border-left: 2px solid var(--accent);
+    background: rgba(124,58,237,0.04);
+  }
+  .spec-quote-text {
+    font-family: var(--font-display); font-style: italic; font-weight: 400;
+    font-size: 14px; line-height: 1.4;
+    color: var(--text-1, var(--text)); margin-bottom: 6px;
+  }
+  .spec-quote-cite {
+    font-family: var(--font-mono); font-size: 8.5px;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-3);
+  }
+
+  /* section eyebrow */
+  .spec-eyebrow {
+    display: flex; align-items: center; gap: 12px; width: 100%;
+    font-family: var(--font-mono); font-size: 9.5px;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-3);
+  }
+  .spec-eyebrow-num { color: var(--accent); }
+  .spec-eyebrow-line { flex: 1; height: 1px; background: var(--border-2, rgba(232,227,216,0.10)); }
+
+  @media (max-width: 1100px) {
+    .lib-gallery { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .lib-gallery { grid-template-columns: 1fr; }
+  }
+</style>

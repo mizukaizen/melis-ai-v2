@@ -1214,6 +1214,75 @@
     color: var(--text);
     filter: none;
   }
+  /* Bottom CTA row — primary buy button + bundle upsell side by side.
+     Stretches each child to fill its column so the heights match. */
+  .pane[data-pane="products"] .pd-buy-cta-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: auto;          /* pin to the bottom of the .pd-buy-v2 flex column */
+    padding-top: 4px;
+  }
+  .pane[data-pane="products"] .pd-buy-cta-row .pd-buy-cta-primary,
+  .pane[data-pane="products"] .pd-buy-cta-row .stripe-buy-form,
+  .pane[data-pane="products"] .pd-buy-cta-row .stripe-buy-button {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+  .pane[data-pane="products"] .pd-buy-cta-row .stripe-buy-button {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.2;
+    padding: 14px 16px;
+    border-radius: 10px;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .pane[data-pane="products"] .pd-buy-cta-bundle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 14px 14px;
+    border-radius: 10px;
+    background: transparent;
+    border: 1px solid rgba(168, 85, 247, 0.32);
+    color: var(--text);
+    text-decoration: none;
+    text-align: center;
+    transition: background 180ms ease, border-color 180ms ease, transform 120ms ease;
+  }
+  .pane[data-pane="products"] .pd-buy-cta-bundle:hover,
+  .pane[data-pane="products"] .pd-buy-cta-bundle:focus-visible {
+    background: rgba(168, 85, 247, 0.08);
+    border-color: rgba(168, 85, 247, 0.55);
+  }
+  .pane[data-pane="products"] .pd-buy-cta-bundle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .pane[data-pane="products"] .pd-buy-cta-bundle-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .pane[data-pane="products"] .pd-buy-cta-bundle-meta {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  @media (max-width: 720px) {
+    .pane[data-pane="products"] .pd-buy-cta-row { grid-template-columns: 1fr; }
+  }
   .pane[data-pane="products"] .pd-buy-note {
     display: flex;
     align-items: center;
@@ -3005,21 +3074,23 @@
     border-color: rgba(251, 191, 36, 0.4);
     background: rgba(251, 191, 36, 0.14);
   }
+  .pane .room-card-group-pill.is-research {
+    color: #a78bfa;
+    border-color: rgba(167, 139, 250, 0.4);
+    background: rgba(167, 139, 250, 0.12);
+  }
 
   /* ── Dossiers category landing (dossier-card grid + key-concept-table) ── */
   .pane[data-pane="library"] .kct-headstrip { max-width: 1100px; margin: 0 auto 32px; }
   .pane[data-pane="library"] .dossier-card-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+    gap: 14px;
     max-width: 1100px;
     margin: 0 auto 3em;
   }
-  @media (max-width: 880px) {
-    .pane[data-pane="library"] .dossier-card-grid { grid-template-columns: repeat(2, 1fr); }
-  }
   @media (max-width: 560px) {
-    .pane[data-pane="library"] .dossier-card-grid { grid-template-columns: 1fr; }
+    .pane[data-pane="library"] .dossier-card-grid { grid-template-columns: repeat(2, 1fr); }
   }
   .pane[data-pane="library"] .dossier-card {
     position: relative;
@@ -3051,18 +3122,18 @@
       rgba(5, 5, 5, 0.92) 100%);
     z-index: 1;
   }
-  .pane[data-pane="library"] .dc-meta { position: absolute; left: 18px; right: 18px; bottom: 18px; z-index: 2; }
+  .pane[data-pane="library"] .dc-meta { position: absolute; left: 13px; right: 13px; bottom: 13px; z-index: 2; }
   .pane[data-pane="library"] .dc-title {
     font-family: var(--font-display);
-    font-size: clamp(18px, 1.7vw, 22px);
+    font-size: 15px;
     font-weight: 500;
     line-height: 1.2;
     color: var(--text-1);
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
   .pane[data-pane="library"] .dc-byline {
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 0.06em;
     color: var(--text-3);
     text-transform: uppercase;
@@ -3337,7 +3408,7 @@
   }
 
   /* ── v6-detail extension: course-detail ── */
-  .v6-detail.course-detail .course-subtitle { max-width: 920px; margin: 0 auto 2em; text-align: center; }
+  .v6-detail.course-detail .course-subtitle { max-width: 920px; margin: 0 0 2em; text-align: left; }
   .v6-detail.course-detail .cs-eyebrow {
     font-family: var(--font-mono);
     font-size: 10px;
@@ -3359,7 +3430,7 @@
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 16px;
     max-width: 920px;
-    margin: 0 auto 3em;
+    margin: 0 0 3em;
     padding: 24px;
     background: rgba(20, 20, 24, 0.45);
     border: 1px solid var(--border-2);
@@ -3376,7 +3447,7 @@
   }
   .v6-detail.course-detail .course-problem,
   .v6-detail.course-detail .course-outcomes,
-  .v6-detail.course-detail .course-fit { max-width: 920px; margin: 0 auto 3em; }
+  .v6-detail.course-detail .course-fit { max-width: 920px; margin: 0 0 3em; }
   .v6-detail.course-detail .course-bullets {
     list-style: none; padding: 0; margin: 0;
     display: grid; gap: 10px;
@@ -3444,7 +3515,7 @@
   }
   .v6-detail.course-detail .course-soon {
     max-width: 720px;
-    margin: 0 auto 3em;
+    margin: 0 0 3em;
     padding: 22px 26px;
     background: rgba(168, 85, 247, 0.08);
     border: 1px solid rgba(168, 85, 247, 0.2);
@@ -3478,7 +3549,7 @@
     color: var(--accent);
     margin-bottom: 10px;
   }
-  .v6-detail.course-detail .course-cta { margin: 0 auto 3em; max-width: 540px; text-align: center; }
+  .v6-detail.course-detail .course-cta { margin: 0 0 3em; max-width: 540px; text-align: left; }
   .v6-detail.course-detail .course-waitlist h3 {
     font-family: var(--font-display);
     font-size: 22px;
@@ -3835,9 +3906,10 @@
     /* svh = small-viewport-height — accounts for mobile/desktop browser chrome
        (URL bar, bookmarks, tab bar) where 100vh would overflow. Stays sharp
        at 1440×900 in Chrome with bookmarks visible. Falls back to vh in
-       older browsers. */
-    height: 100vh;
-    height: 100svh;
+       older browsers. Divided by --app-zoom so the big-monitor zoom keeps the
+       single-screen home (hero + ticker + cards) on one screen, not clipped. */
+    height: calc(100vh / var(--app-zoom, 1));
+    height: calc(100svh / var(--app-zoom, 1));
     overflow: hidden;
   }
   .pane[data-pane="home"] .hero {
@@ -4424,7 +4496,7 @@
     top: 0 !important;
     left: 0 !important;
     width: var(--sidebar-w) !important;
-    height: 100vh !important;
+    height: calc(100vh / var(--app-zoom, 1)) !important;
     overflow-y: auto !important;
     z-index: 20 !important;
   }
@@ -4433,7 +4505,7 @@
     top: 0 !important;
     left: var(--sidebar-w) !important;
     width: var(--sidebar-w2) !important;
-    height: 100vh !important;
+    height: calc(100vh / var(--app-zoom, 1)) !important;
     overflow-y: auto !important;
     z-index: 19 !important;
   }
@@ -4442,7 +4514,7 @@
      sidebars). */
   .app > main.content {
     margin-left: var(--sidebar-w) !important;
-    min-height: 100vh;
+    min-height: calc(100vh / var(--app-zoom, 1));
   }
   .app:has(.pane.active.in-room) > main.content,
   .app:has(.pane.active.is-direct-view) > main.content {
@@ -5134,7 +5206,7 @@
     right: 0;
     width: 440px;
     max-width: 100vw;
-    height: 100vh;
+    height: calc(100vh / var(--app-zoom, 1));
     background: rgba(8, 8, 10, 0.94);
     backdrop-filter: blur(28px) saturate(160%);
     -webkit-backdrop-filter: blur(28px) saturate(160%);
@@ -7108,7 +7180,7 @@
     display: none;
     align-items: flex-start;
     justify-content: center;
-    padding-top: 14vh;
+    padding-top: calc(14vh / var(--app-zoom, 1));
   }
   #cmdk-backdrop.is-open { display: flex; }
   #cmdk-panel {
@@ -7121,7 +7193,7 @@
       0 0 0 1px rgba(255,255,255,0.04);
     overflow: hidden;
     display: flex; flex-direction: column;
-    max-height: 70vh;
+    max-height: calc(70vh / var(--app-zoom, 1));
     animation: cmdk-in 160ms ease-out;
   }
   @keyframes cmdk-in {

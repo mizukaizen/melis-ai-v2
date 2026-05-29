@@ -1,9 +1,7 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro';
 import SectionHero from '../../components/SectionHero.astro';
-import FeaturedProductCard from '../../components/FeaturedProductCard.astro';
 import { getCollection } from 'astro:content';
-import { PRODUCTS_HERO } from '../../data/products-hero';
 import { PRODUCTS_CATEGORIES } from '../../data/products-categories';
 import { landingHero, itemHero } from '../../lib/hero-image';
 
@@ -12,7 +10,8 @@ export const prerender = true;
 // Curated mockup order: featured Complete Arsenal first, then by
 // PRODUCTS_CATEGORIES declaration order (mockup-canonical priority).
 const all = (await getCollection('products')).filter((p) => !p.data.draft);
-const arsenal = all.find((p) => p.slug === 'complete-arsenal');
+// The Complete Arsenal bundle is surfaced in the second sidebar, so it's
+// excluded here rather than featured a second time on the grid.
 const others = all
   .filter((p) => p.slug !== 'complete-arsenal')
   .sort((a, b) => {
@@ -26,6 +25,11 @@ function coverFor(p: { data: { title: string; cover?: string }; slug: string }) 
   return itemHero('products', p.data.title.replace(/<[^>]+>/g, ''), p.slug);
 }
 function priceLabel(cents: number) { return `$${(cents / 100).toFixed(0)}`; }
+
+// Stat line — derived live so it always matches the grid and grows toward
+// the full catalogue as products are fleshed out before launch.
+const totalProducts = others.length;
+const totalCategories = PRODUCTS_CATEGORIES.length;
 ---
 
 <AppLayout
@@ -42,14 +46,13 @@ function priceLabel(cents: number) { return `$${(cents / 100).toFixed(0)}`; }
 
   <section class="section-body">
     <div class="landing-intro">
+      <div class="section-eyebrow-small">{totalProducts} products · {totalCategories} categories · built for real client work</div>
       <h2 class="h2">Things I made because I needed them — <em>then</em> packaged so you can use them too.</h2>
       <p class="body-lead">Every product started as a tool I built for real client work, then refined enough times that it became reusable. Nothing here is theoretical.</p>
     </div>
 
-    <FeaturedProductCard slug={PRODUCTS_HERO.id} hero={PRODUCTS_HERO} />
-
-    {/* Uniform paper-craft image-card grid below the featured Arsenal —
-        no per-category sections (mockup pattern, restored in scorecard pass). */}
+    {/* Uniform paper-craft image-card grid. The Complete Arsenal bundle
+        lives in the second sidebar, so it isn't featured here too. */}
     <div class="room-grid">
       {others.map((p) => (
         <a class="room-card" href={`/products/${p.slug}/`}>

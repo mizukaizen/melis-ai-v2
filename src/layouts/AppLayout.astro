@@ -4,6 +4,7 @@ import Sidebar1 from '../components/Sidebar1.astro';
 import Sidebar2 from '../components/Sidebar2.astro';
 import CommandPalette from '../components/CommandPalette.astro';
 import FillInBlankController from '../components/FillInBlankController.astro';
+import Cart from '../components/Cart.astro';
 // Order matters: mockup.css first (it's the design source-of-truth),
 // global.css last (its post-mockup overrides win). recos.css imports
 // after global because its rules scope under .reco-detail-v7 and the
@@ -95,6 +96,7 @@ const appClass = [
 
     <CommandPalette />
     <FillInBlankController />
+    <Cart />
 
 
     <script>

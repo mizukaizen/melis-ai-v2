@@ -5,6 +5,67 @@
 // references /brand/cover-image.png (copied in Part 4); six-quality
 // tiles render as labelled placeholders if assets aren't shipped yet.
 
+import UpsellCard from './UpsellCard.astro';
+import LockedSection from './LockedSection.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+// Surface application — 10 canonical surfaces rendered INSIDE realistic
+// platform mockups (Instagram phone frame with handle + caption,
+// YouTube thumbnail + channel banner with subscribe button, LinkedIn
+// post chrome, Email banner with subject line, Website hero strip,
+// X/Twitter post, Course hero, Product card). Verbatim markup from
+// brand-guidelines.html lines 5429–5687 with image paths rewritten
+// to /brand/surfaces/*.webp.
+const surfacesHtml = fs.readFileSync(
+  path.resolve(process.cwd(), 'src/components/about/brand/_bg-surfaces-body.html'),
+  'utf8',
+);
+
+// Cinematic library — 87 reference images across 7 categories
+// (angle, atmosphere, composition, lens, light, setting, treatment).
+// Tactile library — 30 diagrammatic patterns across 7 categories.
+// File discovery is via import.meta.glob (build-time) so adding new
+// reference images is a drop-in operation — no code change needed.
+const CINEMATIC_CATEGORIES: { key: string; label: string }[] = [
+  { key: 'angle',       label: 'Camera angles'        },
+  { key: 'atmosphere',  label: 'Atmospherics'         },
+  { key: 'composition', label: 'Compositions'         },
+  { key: 'lens',        label: 'Lens treatments'      },
+  { key: 'light',       label: 'Lighting moods'       },
+  { key: 'setting',     label: 'Settings'             },
+  { key: 'treatment',   label: 'Stylistic treatments' },
+];
+
+const TACTILE_CATEGORIES: { key: string; label: string }[] = [
+  { key: 'chart',       label: 'Chart treatments'  },
+  { key: 'comparison',  label: 'Comparisons'       },
+  { key: 'flow',        label: 'Flows'             },
+  { key: 'hierarchy',   label: 'Hierarchies'       },
+  { key: 'layered',     label: 'Layered diagrams'  },
+  { key: 'matrix',      label: 'Matrices'          },
+  { key: 'process',     label: 'Processes'         },
+];
+
+// Read the libraries directly from /public at build time — public
+// assets aren't processed by Vite so import.meta.glob is the wrong
+// tool and triggers an ENFILE on 100+ files. fs.readdirSync is a
+// straight directory read.
+const PUBLIC_ROOT = path.resolve(process.cwd(), 'public/brand');
+function listLibrary(dir: string): string[] {
+  const full = path.join(PUBLIC_ROOT, dir);
+  if (!fs.existsSync(full)) return [];
+  return fs.readdirSync(full)
+    .filter((f) => f.endsWith('.webp'))
+    .sort()
+    .map((f) => `/brand/${dir}/${f}`);
+}
+const CINEMATIC_FILES = listLibrary('cinematic-library');
+const TACTILE_FILES   = listLibrary('tactile-library');
+function filesByCat(files: string[], key: string) {
+  return files.filter((p) => p.includes(`/${key}-`));
+}
+
 type Quality = { num: string; title: string; body: string; img: string };
 const QUALITIES: Quality[] = [
   { num: '01 · Aesthetic', title: 'Tilt-shift miniature world.',  img: '/brand/six-qualities/01-tilt-shift-miniature-world.png',  body: 'Strong, visible tilt-shift blur. <em>The figure sits at the focal plane</em> — sharp band in the centre, soft Gaussian blur above and below, bokeh halos where the lamplight catches. The optical effect is what creates the miniature feeling, not any visible frame.' },
@@ -24,7 +85,7 @@ const CEILING = [
 ];
 ---
 
-<section id="imagery" data-brand-section class="melis-section">
+<section id="imagery" data-brand-section class="melis-section melis-section-wide">
   <div class="melis-section-eyebrow-row">
     <span class="num">10</span>
     <span class="name">Imagery · tilt-shift papercraft world</span>
@@ -64,6 +125,90 @@ const CEILING = [
   <ul class="melis-ul">
     {CEILING.map((c) => <li set:html={c} />)}
   </ul>
+
+  <h3 class="imagery-subhead">Surface application. <em>Ten surfaces, one language.</em></h3>
+  <p class="melis-prose"><span>The visual language has to land cleanly on every surface the brand reaches — feed posts, headers, hero strips, product cards, email banners, course covers. Same papercraft world, ten different framings.</span></p>
+
+  <LockedSection slug="surfaces" title="10 surface mockups · Instagram · YouTube · LinkedIn · Email · Web">
+    <div class="bg-port bg-port-locked imagery-surfaces-port" set:html={surfacesHtml} />
+  </LockedSection>
+
+  <h3 class="imagery-subhead">Cinematic library. <em>87 references, seven categories.</em></h3>
+  <p class="melis-prose"><span>The reference shelf for image direction — camera angles, atmospherics, compositions, lens treatments, lighting moods, settings, and stylistic treatments. When a brief calls for "low heroic angle, dust motes, warm interior," this catalogue is what we point at.</span></p>
+
+  <LockedSection slug="cinematic-library" title="87 cinematic reference images · 7 categories">
+    <div class="imagery-cat-stack">
+      {CINEMATIC_CATEGORIES.map((cat) => {
+        const files = filesByCat(CINEMATIC_FILES, cat.key);
+        return (
+          <div class="imagery-cat-block">
+            <div class="imagery-cat-head">
+              <span class="imagery-cat-label">{cat.label}</span>
+              <span class="imagery-cat-count">{files.length}</span>
+            </div>
+            <div class="imagery-thumb-grid">
+              {files.map((src) => {
+                const name = src.split('/').pop()!.replace(/\.webp$/, '').replace(/^[a-z]+-\d+-/, '').replace(/-/g, ' ');
+                return (
+                  <figure
+                    class="imagery-thumb"
+                    data-lightbox-src={src}
+                    data-lightbox-caption={`${cat.label} · ${name}`}
+                    tabindex="0"
+                  >
+                    <img src={src} alt={name} loading="lazy" />
+                    <figcaption>{name}</figcaption>
+                  </figure>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </LockedSection>
+
+  <h3 class="imagery-subhead">Tactile library. <em>30 diagrammatic patterns.</em></h3>
+  <p class="melis-prose"><span>Reference shelf for diagrams — how we communicate structure, sequence, hierarchy, and comparison without falling into generic infographic territory. Every one rendered in the canonical papercraft language.</span></p>
+
+  <LockedSection slug="tactile-library" title="30 diagrammatic references · 7 categories">
+    <div class="imagery-cat-stack">
+      {TACTILE_CATEGORIES.map((cat) => {
+        const files = filesByCat(TACTILE_FILES, cat.key);
+        return (
+          <div class="imagery-cat-block">
+            <div class="imagery-cat-head">
+              <span class="imagery-cat-label">{cat.label}</span>
+              <span class="imagery-cat-count">{files.length}</span>
+            </div>
+            <div class="imagery-thumb-grid">
+              {files.map((src) => {
+                const name = src.split('/').pop()!.replace(/\.webp$/, '').replace(/^[a-z]+-\d+-/, '').replace(/-/g, ' ');
+                return (
+                  <figure
+                    class="imagery-thumb"
+                    data-lightbox-src={src}
+                    data-lightbox-caption={`${cat.label} · ${name}`}
+                    tabindex="0"
+                  >
+                    <img src={src} alt={name} loading="lazy" />
+                    <figcaption>{name}</figcaption>
+                  </figure>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </LockedSection>
+
+  <UpsellCard
+    eyebrow="Skill · Claw Mart"
+    body="Want this in your own work? The <em>melis-ai-paper-craft</em> skill is the canonical prompt formula — published on Claw Mart for any operator."
+    cta="Request early access"
+    href="mailto:sean@melis.ai?subject=melis-ai%20paper-craft%20skill"
+  />
 </section>
 
 <style is:global>
@@ -125,5 +270,83 @@ const CEILING = [
   .imagery-quality-body em { font-style: italic; color: var(--accent); }
   @media (max-width: 1100px) {
     .imagery-quality-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Surface application — renders inside .bg-port via the verbatim
+     brand-guidelines markup (Instagram phone frame, YouTube thumbnail,
+     LinkedIn post, Email banner, etc). Spacing tweak: the brand-port
+     surface block is wide; constrain it to the section frame. */
+  .imagery-surfaces-port { margin-top: 8px; }
+
+  /* Cinematic + tactile library — stacked categories of thumbnails */
+  .imagery-cat-stack {
+    display: flex; flex-direction: column;
+    gap: 32px;
+  }
+  .imagery-cat-block { display: flex; flex-direction: column; gap: 12px; }
+  .imagery-cat-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.08));
+  }
+  .imagery-cat-label {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 18px;
+    color: var(--text-1, var(--text));
+  }
+  .imagery-cat-count {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .imagery-thumb-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .imagery-thumb {
+    margin: 0;
+    border: 1px solid var(--border-2, rgba(232,227,216,0.06));
+    background: rgba(255,255,255,0.01);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    cursor: zoom-in;
+    transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1), border-color 250ms ease;
+  }
+  .imagery-thumb:hover,
+  .imagery-thumb:focus-visible {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+  }
+  .imagery-thumb:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .imagery-thumb img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background: #0a0a0a;
+  }
+  .imagery-thumb figcaption {
+    padding: 8px 10px 10px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.04em;
+    color: var(--text-3);
+    text-transform: capitalize;
+    line-height: 1.4;
+  }
+
+  @media (max-width: 1100px) {
+    .imagery-thumb-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .imagery-thumb-grid { grid-template-columns: repeat(2, 1fr); }
   }
 </style>

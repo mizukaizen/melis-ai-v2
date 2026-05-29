@@ -1,15 +1,72 @@
 ---
-// Section 18 · Sub-brands. Placeholder per Sean's plan: list of 6
-// sub-brand names + 1-line descriptions. No full identity guides.
+// Section 18 · Sub-brands. Full registry — 6 cards in a 3×2 grid.
+// Each card: hand-coded sigil, name (Cormorant), one-line positioning,
+// status pill, arrow link. Positioning copy lifted from
+// brand-guidelines.html lines 6935-6976 (active sub-brand registry).
+//
+// Links default to # where no in-site detail page exists yet. External
+// homepages are linked directly where they're live.
 
-const SUBBRANDS = [
-  { name: 'Lighthouse',    role: 'Strategic foresight + reports' },
-  { name: 'Holy Signal',   role: 'AI alignment for solo operators' },
-  { name: 'Phantom Ink',   role: 'Ghostwritten dispatches + reports' },
-  { name: 'Nightglass',    role: 'Premium ops dashboards' },
-  { name: 'Motif',         role: 'Brand systems for AI-first studios' },
-  { name: 'Hive Doctrine', role: 'Operator philosophy + ritual surfaces' },
+type Status = 'live' | 'in-flight' | 'planned';
+
+type SubBrand = {
+  name: string;
+  positioning: string;
+  status: Status;
+  href: string;
+  sigil: string;
+};
+
+const SUBBRANDS: SubBrand[] = [
+  {
+    name: 'Lighthouse',
+    positioning: 'AI intelligence briefing platform. Users create beacons; the system scans, analyses, and delivers structured briefings on what changed.',
+    status: 'live',
+    href: '#',
+    sigil: '<path d="M 12 9 V 20"/><path d="M 8 9 H 16"/><circle cx="12" cy="6" r="1.75" fill="currentColor" stroke="none"/>',
+  },
+  {
+    name: 'Holy Signal',
+    positioning: 'SEO + AEO + agent-discoverability auditor. Three signals, one audit — for indie builders and boutique agencies that want to be found by both humans and machines.',
+    status: 'live',
+    href: '#',
+    sigil: '<circle cx="12" cy="19" r="1.25" fill="currentColor" stroke="none"/><path d="M 9 16 A 3 3 0 0 1 15 16"/><path d="M 6 16 A 6 6 0 0 1 18 16"/><path d="M 3 16 A 9 9 0 0 1 21 16"/>',
+  },
+  {
+    name: 'Phantom Ink',
+    positioning: 'The unseen mark — content and design tooling for ghostwritten dispatches. SaaS in flight; checkout flow under repair.',
+    status: 'in-flight',
+    href: '#',
+    sigil: '<path d="M 5 7 Q 12 14 17 11"/><circle cx="18" cy="11" r="1.5" fill="currentColor" stroke="none"/>',
+  },
+  {
+    name: 'Nightglass',
+    positioning: 'The lens that captures. Web capture and screenshot tool built on Playwright + headless Chromium.',
+    status: 'live',
+    href: '#',
+    sigil: '<path d="M 3 9 H 21 V 15 H 3 Z"/><circle cx="6" cy="12" r="1" fill="currentColor" stroke="none"/>',
+  },
+  {
+    name: 'Motif',
+    positioning: 'Aesthetic vocabulary OS. 500+ named visual styles, mixable. <em>Pantone for the agentic web.</em>',
+    status: 'live',
+    href: '#',
+    sigil: '<circle cx="9" cy="9" r="1.75" fill="currentColor" stroke="none"/><circle cx="15" cy="9" r="1.75" fill="currentColor" stroke="none"/><circle cx="9" cy="15" r="1.75" fill="currentColor" stroke="none"/><circle cx="15" cy="15" r="1.75" fill="currentColor" stroke="none"/>',
+  },
+  {
+    name: 'Hive Doctrine',
+    positioning: 'Marketplace and philosophy of multi-agent AI. Bee, Melissae, hexagon — editorial, ritual-tinged.',
+    status: 'live',
+    href: '#',
+    sigil: '<path d="M 12 5 L 18 8.5 L 18 15.5 L 12 19 L 6 15.5 L 6 8.5 Z"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/>',
+  },
 ];
+
+const STATUS_LABEL: Record<Status, string> = {
+  'live':      'Live',
+  'in-flight': 'In flight',
+  'planned':   'Planned',
+};
 ---
 
 <section id="subbrands" data-brand-section class="melis-section">
@@ -20,45 +77,130 @@ const SUBBRANDS = [
   </div>
   <h2 class="melis-section-title">Six sub-brands in flight. <em>One family.</em></h2>
 
-  <p class="brand-stub-lede">Each sub-brand shares the canonical melis.ai design tokens. <em>Full identity guidelines for each available to collaborators.</em></p>
+  <div class="melis-prose">
+    <p>melis.ai is the parent. Each sub-brand below inherits the foundations — typography, spacing, dark canvas, motion, voice attributes — and earns its own accent and tonal slant. The family stays recognisable even when the colour shifts. <em>No two active sub-brands share the same accent.</em></p>
+  </div>
 
-  <div class="subbrand-list">
+  <div class="subbrand-grid">
     {SUBBRANDS.map((s) => (
-      <div class="subbrand-row">
-        <div class="subbrand-name">{s.name}</div>
-        <div class="subbrand-role">{s.role}</div>
-      </div>
+      <a href={s.href} class="subbrand-card" data-status={s.status}>
+        <span class="subbrand-sigil">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" set:html={s.sigil} />
+        </span>
+        <div class="subbrand-row-top">
+          <h3 class="subbrand-name">{s.name}</h3>
+          <span class={`subbrand-pill subbrand-pill-${s.status}`}>{STATUS_LABEL[s.status]}</span>
+        </div>
+        <p class="subbrand-positioning" set:html={s.positioning} />
+        <span class="subbrand-arrow" aria-hidden="true">→</span>
+      </a>
     ))}
   </div>
 </section>
 
 <style is:global>
-  .subbrand-list {
-    margin-top: 40px;
-    border-top: 1px solid var(--border-2, rgba(232,227,216,0.08));
-  }
-  .subbrand-row {
+  .subbrand-grid {
+    margin-top: 48px;
     display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 24px;
-    align-items: baseline;
-    padding: 18px 0;
-    border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.06));
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .subbrand-card {
+    position: relative;
+    display: flex; flex-direction: column;
+    padding: 28px 28px 64px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border-2, rgba(232,227,216,0.08));
+    color: inherit;
+    text-decoration: none;
+    transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+    min-height: 240px;
+  }
+  .subbrand-card:hover,
+  .subbrand-card:focus-visible {
+    background: rgba(124, 58, 237, 0.04);
+    border-color: rgba(124, 58, 237, 0.32);
+  }
+  .subbrand-card:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .subbrand-sigil {
+    display: inline-flex;
+    width: 28px; height: 28px;
+    color: var(--text-2);
+    margin-bottom: 22px;
+  }
+  .subbrand-sigil svg { width: 100%; height: 100%; }
+  .subbrand-row-top {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
   }
   .subbrand-name {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: 22px;
-    letter-spacing: -0.01em;
+    font-size: 24px;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    margin: 0;
     color: var(--text-1, var(--text));
   }
-  .subbrand-role {
+  .subbrand-pill {
+    flex-shrink: 0;
     font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+  }
+  .subbrand-pill-live {
+    color: #5eead4;
+    background: rgba(94, 234, 212, 0.08);
+    border-color: rgba(94, 234, 212, 0.32);
+  }
+  .subbrand-pill-in-flight {
+    color: #f5d076;
+    background: rgba(245, 208, 118, 0.08);
+    border-color: rgba(245, 208, 118, 0.28);
+  }
+  .subbrand-pill-planned {
+    color: var(--text-3);
+    background: rgba(232, 227, 216, 0.04);
+    border-color: var(--border-2, rgba(232,227,216,0.14));
+  }
+  .subbrand-positioning {
+    font-size: 13.5px;
+    line-height: 1.65;
     color: var(--text-2);
+    margin: 0;
+  }
+  .subbrand-positioning em {
+    font-style: italic;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 15px;
+  }
+  .subbrand-arrow {
+    position: absolute;
+    bottom: 22px; right: 26px;
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--text-3);
+    transition: color 180ms ease, transform 180ms ease;
+  }
+  .subbrand-card:hover .subbrand-arrow,
+  .subbrand-card:focus-visible .subbrand-arrow {
+    color: var(--accent);
+    transform: translateX(4px);
+  }
+
+  @media (max-width: 1100px) {
+    .subbrand-grid { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 720px) {
-    .subbrand-row { grid-template-columns: 1fr; gap: 4px; padding: 14px 0; }
+    .subbrand-grid { grid-template-columns: 1fr; }
   }
 </style>

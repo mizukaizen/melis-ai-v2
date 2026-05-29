@@ -1,10 +1,16 @@
 ---
-// Placeholder sections — Spacing & layout · Motion · Data viz ·
-// Accessibility. Per Sean's plan: detailed specs are internal,
-// available to collaborators. Renders one stub at a time so callers
-// can interleave with neighbouring fully-ported sections in source
-// order (Spacing sits between Typography and Voice; Motion / DataViz /
-// Accessibility sit between Imagery and Influences).
+// Principle stubs for Spacing & layout · Motion · Data viz ·
+// Accessibility. Each renders with the canonical section chrome
+// (eyebrow row + Cormorant title + 2–3 sentence prose body). Voice
+// lifted from Manifesto/Promise — short, declarative, principle-first.
+//
+// Below the principle, sections marked as having locked content reveal
+// the FULL brand-guidelines.html content for that section, gated by
+// the page-level unlock. The embedded HTML is the verbatim markup
+// from brand-guidelines.html scoped under .bg-port so its CSS doesn't
+// leak into the rest of the site (see src/styles/brand-port.css).
+
+import LockedSection from './LockedSection.astro';
 
 interface Props {
   slug: 'spacing' | 'motion' | 'dataviz' | 'accessibility';
@@ -12,51 +18,396 @@ interface Props {
 
 const { slug } = Astro.props;
 
-const STUBS = {
+type Stub = {
+  num: string;
+  group: string;
+  name: string;
+  title: string;
+  body: string;
+};
+
+const STUBS: Record<Props['slug'], Stub> = {
   spacing: {
     num: '08', group: 'How we appear', name: 'Spacing & layout',
-    lede: 'Detailed spacing tokens (4 / 8 / 16 / 24 / 44 / 64 / 96 px) and the 720 px / 1100 px reading-column widths are part of the internal layout grid. <em>Available to collaborators on request.</em>',
+    title: 'Generous, considered, never tight.',
+    body: 'Whitespace earns its place. The page breathes because every block has room to be what it is — body copy at a comfortable reading column, sections separated by air, chrome that frames without crowding. <em>Density is not depth.</em> When a layout feels crowded, the answer is almost never another column.',
   },
   motion: {
     num: '11', group: 'How we appear', name: 'Motion',
-    lede: 'Restrained, intentional, reverent of attention. Easing curves, durations, motion-reduction defaults — all internal. <em>Available to collaborators on request.</em>',
+    title: 'Restrained, purposeful, never decorative.',
+    body: 'Things move when meaning requires it — a state change, a transition between rooms, a focus shift that draws the eye to where the work is now. We don\'t animate to signal effort. A still page that holds attention is worth more than a page that performs liveliness. <em>Honest before impressive.</em>',
   },
   dataviz: {
     num: '12', group: 'How we appear', name: 'Data viz',
-    lede: 'One chart, one primary colour. Maximise data-ink, minimise chart-junk. Token-tied palettes for sequential / diverging / categorical scales. <em>Internal — available to collaborators on request.</em>',
+    title: 'Honest before impressive.',
+    body: 'Charts that tell the truth even when the truth is messy. One chart, one primary colour. Maximise data, minimise chrome. If a chart needs decoration to be interesting, the underlying data isn\'t the point — and we should be writing prose instead.',
   },
   accessibility: {
     num: '13', group: 'How we appear', name: 'Accessibility',
-    lede: 'Accessibility is a brand decision, not a compliance afterthought. WCAG AA contrast targets, keyboard-first interaction, motion-reduction honoured, prose-clarity standards. <em>Internal accessibility spec available to collaborators on request.</em>',
+    title: 'WCAG AA is the floor, not the goal.',
+    body: 'Contrast targets hit. Focus states visible. Motion-reduction honoured. Keyboard-first interaction across every surface. Accessibility is a brand decision, not a compliance afterthought — <em>the surface tells you what we think of the audience.</em>',
   },
-} as const;
+};
 
 const s = STUBS[slug];
+
+// Verbatim HTML from brand-guidelines.html (lines 5116-5141 / 6318-6376
+// / 6390-6635), with the outer <section id="…"> stripped to avoid
+// duplicate IDs. All class names are intact — the .bg-port wrapper
+// scopes them via brand-port.css.
+const SPACING_HTML = `
+<div class="container">
+  <div class="spacing-grid">
+    <div class="spacing-card">
+      <h4>Spacing scale · 8px base</h4>
+      <div class="spacing-bars">
+        <div class="spacing-bar-row"><span class="label">xs</span><span class="bar" style="width: 4px;"></span><span class="px">4 px</span></div>
+        <div class="spacing-bar-row"><span class="label">sm</span><span class="bar" style="width: 8px;"></span><span class="px">8 px</span></div>
+        <div class="spacing-bar-row"><span class="label">md</span><span class="bar" style="width: 16px;"></span><span class="px">16 px</span></div>
+        <div class="spacing-bar-row"><span class="label">lg</span><span class="bar" style="width: 24px;"></span><span class="px">24 px</span></div>
+        <div class="spacing-bar-row"><span class="label">xl</span><span class="bar" style="width: 44px;"></span><span class="px">44 px · section gap</span></div>
+        <div class="spacing-bar-row"><span class="label">2xl</span><span class="bar" style="width: 64px;"></span><span class="px">64 px</span></div>
+        <div class="spacing-bar-row"><span class="label">3xl</span><span class="bar" style="width: 96px;"></span><span class="px">96 px</span></div>
+      </div>
+    </div>
+    <div class="spacing-card">
+      <h4>Layout columns · reading widths</h4>
+      <div class="layout-viz">
+        <div class="col" style="width: 35%;">720 px<br>standard</div>
+        <div class="col" style="width: 50%;">1100 px<br>wide</div>
+        <div class="col" style="width: 15%;">232 px<br>sidebar</div>
+      </div>
+      <p style="font-family: var(--font-body); font-size: 12px; color: var(--text-2); line-height: 1.6; margin-top: 20px;">720 px is the standard reading pane — wider than this, comfort drops. 1100 px is the wide pane for grids and dashboards. The sidebar is a fixed 232 px on desktop.</p>
+    </div>
+  </div>
+</div>
+`;
+
+const MOTION_HTML = `
+<div class="container">
+  <div class="demo-card" style="margin-bottom: 24px;">
+    <div class="demo-meta"><span class="lhs">Easings</span><span class="rhs">three curves</span></div>
+    <div class="demo-canvas" style="padding: 28px 36px; align-items: stretch;">
+      <div class="motion-row">
+        <div class="label">--ease-out</div>
+        <div class="motion-track"><span class="motion-dot ease-out"></span></div>
+        <div class="spec">cubic-bezier(0.16, 1, 0.3, 1)</div>
+      </div>
+      <div class="motion-row">
+        <div class="label">--ease-in-out</div>
+        <div class="motion-track"><span class="motion-dot ease-in-out"></span></div>
+        <div class="spec">cubic-bezier(0.4, 0, 0.2, 1)</div>
+      </div>
+      <div class="motion-row">
+        <div class="label">--ease-linear</div>
+        <div class="motion-track"><span class="motion-dot ease-linear"></span></div>
+        <div class="spec">linear · loaders only</div>
+      </div>
+    </div>
+    <div class="demo-caption"><strong style="color: var(--text); font-weight: 500;">Default is <span class="a-code">--ease-out</span></strong> — quick start, slow settle. <span class="a-code">--ease-in-out</span> for two-way (drawer open/close). <span class="a-code">--ease-linear</span> only for continuous motion (loaders, progress bars).</div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px;">
+    <div class="demo-card">
+      <div class="demo-meta"><span class="lhs">Live indicator</span><span class="rhs">pulse 2s</span></div>
+      <div class="demo-canvas">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span class="live-dot-demo"></span>
+          <span style="font-family: var(--font-mono); font-size: 11px; color: var(--text-2); letter-spacing: 0.08em; text-transform: uppercase;">Live · syncing</span>
+        </div>
+      </div>
+      <div class="demo-caption">Box-shadow pulse 0 → 12px, opacity fade. Used on real-time data and live agent status.</div>
+    </div>
+    <div class="demo-card">
+      <div class="demo-meta"><span class="lhs">Skeleton loader</span><span class="rhs">1500ms ease</span></div>
+      <div class="demo-canvas" style="padding: 24px; align-items: stretch; gap: 8px;">
+        <div class="skeleton-line w-third" style="width: 30%;"></div>
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line w-half"></div>
+      </div>
+      <div class="demo-caption">Opacity pulse 0.4 → 0.8 → 0.4. Restrained — no shimmer-sweep effect.</div>
+    </div>
+    <div class="demo-card">
+      <div class="demo-meta"><span class="lhs">Progress · indeterminate</span><span class="rhs">1.6s loop</span></div>
+      <div class="demo-canvas" style="padding: 32px 28px; align-items: stretch;">
+        <div class="progress-shell"><div class="indeterminate"></div></div>
+      </div>
+      <div class="demo-caption">Linear, no spinner. Spinners signal "stuck" — bars signal "working".</div>
+    </div>
+  </div>
+</div>
+`;
+
+const DATAVIZ_HTML = `
+<div class="container">
+  <!-- KPI row -->
+  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+    <div class="stat-card">
+      <div class="stat-eyebrow">Last 7 days</div>
+      <div class="stat-value">A$12,400</div>
+      <div class="stat-delta up">↑ 8.2% · vs prior 7d</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-eyebrow">Active students</div>
+      <div class="stat-value">20,114</div>
+      <div class="stat-delta up">↑ 142 · this week</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-eyebrow">Bot win rate</div>
+      <div class="stat-value">68.4<span style="font-size: 22px; color: var(--text-2);">%</span></div>
+      <div class="stat-delta down">↓ 1.1% · last 30d</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-eyebrow">Open agents</div>
+      <div class="stat-value">9 / 11</div>
+      <div class="stat-delta" style="color: var(--text-3);">·  steady</div>
+    </div>
+  </div>
+
+  <!-- Line + bar -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start;">
+    <div class="chart-card">
+      <div class="chart-eyebrow">Weekly bot P&amp;L · YTD</div>
+      <h3 class="chart-headline">Crossed <em>A$5K</em> for the first time in March.</h3>
+      <svg class="chart-svg" viewBox="0 0 480 200" xmlns="http://www.w3.org/2000/svg">
+        <line x1="0" y1="40" x2="480" y2="40" stroke="#252525" stroke-width="1" stroke-dasharray="2,3"/>
+        <line x1="0" y1="100" x2="480" y2="100" stroke="#252525" stroke-width="1" stroke-dasharray="2,3"/>
+        <line x1="0" y1="160" x2="480" y2="160" stroke="#252525" stroke-width="1"/>
+        <text x="0" y="36" font-family="JetBrains Mono" font-size="9" fill="#6B7280" letter-spacing="0.05em">5K</text>
+        <text x="0" y="96" font-family="JetBrains Mono" font-size="9" fill="#6B7280" letter-spacing="0.05em">2.5K</text>
+        <text x="0" y="174" font-family="JetBrains Mono" font-size="9" fill="#6B7280" letter-spacing="0.05em">0</text>
+        <path d="M 30 150 L 70 145 L 110 130 L 150 135 L 190 115 L 230 110 L 270 95 L 310 80 L 350 65 L 390 50 L 430 35 L 470 28 L 470 160 L 30 160 Z" fill="url(#area-gradient)" opacity="0.4"/>
+        <defs>
+          <linearGradient id="area-gradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#7C3AED" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#7C3AED" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path d="M 30 150 L 70 145 L 110 130 L 150 135 L 190 115 L 230 110 L 270 95 L 310 80 L 350 65 L 390 50 L 430 35 L 470 28" stroke="#7C3AED" stroke-width="2" fill="none"/>
+        <circle cx="350" cy="65" r="4" fill="#7C3AED"/>
+        <circle cx="350" cy="65" r="9" fill="#7C3AED" opacity="0.2"/>
+        <text x="350" y="48" font-family="JetBrains Mono" font-size="9" fill="#7C3AED" letter-spacing="0.06em" text-anchor="middle">5K crossed</text>
+        <text x="30" y="180" font-family="JetBrains Mono" font-size="9" fill="#6B7280" letter-spacing="0.05em">JAN</text>
+        <text x="150" y="180" font-family="JetBrains Mono" font-size="9" fill="#6B7280" letter-spacing="0.05em">FEB</text>
+        <text x="270" y="180" font-family="JetBrains Mono" font-size="9" fill="#6B7280" letter-spacing="0.05em">MAR</text>
+        <text x="390" y="180" font-family="JetBrains Mono" font-size="9" fill="#6B7280" letter-spacing="0.05em">APR</text>
+      </svg>
+      <div class="chart-caption">
+        <span>n = 17 weeks</span>
+        <span>Source · internal</span>
+        <span>Updated 2026-04-26</span>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-eyebrow">Course revenue · last 4 quarters</div>
+      <h3 class="chart-headline">Q1 was the strongest quarter on record.</h3>
+      <svg class="chart-svg" viewBox="0 0 480 200" xmlns="http://www.w3.org/2000/svg">
+        <line x1="0" y1="40" x2="480" y2="40" stroke="#252525" stroke-width="1" stroke-dasharray="2,3"/>
+        <line x1="0" y1="100" x2="480" y2="100" stroke="#252525" stroke-width="1" stroke-dasharray="2,3"/>
+        <line x1="0" y1="160" x2="480" y2="160" stroke="#252525" stroke-width="1"/>
+        <text x="0" y="36" font-family="JetBrains Mono" font-size="9" fill="#6B7280">60K</text>
+        <text x="0" y="96" font-family="JetBrains Mono" font-size="9" fill="#6B7280">30K</text>
+        <text x="0" y="174" font-family="JetBrains Mono" font-size="9" fill="#6B7280">0</text>
+        <rect x="60" y="100" width="60" height="60" fill="#6B7280" opacity="0.6"/>
+        <rect x="160" y="80" width="60" height="80" fill="#6B7280" opacity="0.6"/>
+        <rect x="260" y="60" width="60" height="100" fill="#6B7280" opacity="0.6"/>
+        <rect x="360" y="20" width="60" height="140" fill="#7C3AED"/>
+        <text x="90" y="180" font-family="JetBrains Mono" font-size="9" fill="#6B7280" text-anchor="middle">Q2'25</text>
+        <text x="190" y="180" font-family="JetBrains Mono" font-size="9" fill="#6B7280" text-anchor="middle">Q3'25</text>
+        <text x="290" y="180" font-family="JetBrains Mono" font-size="9" fill="#6B7280" text-anchor="middle">Q4'25</text>
+        <text x="390" y="180" font-family="JetBrains Mono" font-size="9" fill="#7C3AED" text-anchor="middle">Q1'26</text>
+        <text x="90" y="95" font-family="JetBrains Mono" font-size="10" fill="#A1A5B0" text-anchor="middle">A$24K</text>
+        <text x="190" y="75" font-family="JetBrains Mono" font-size="10" fill="#A1A5B0" text-anchor="middle">A$32K</text>
+        <text x="290" y="55" font-family="JetBrains Mono" font-size="10" fill="#A1A5B0" text-anchor="middle">A$40K</text>
+        <text x="390" y="15" font-family="JetBrains Mono" font-size="11" fill="#7C3AED" text-anchor="middle" font-weight="500">A$56K</text>
+      </svg>
+      <div class="chart-caption">
+        <span>n = 4 quarters</span>
+        <span>Source · Stripe + Udemy</span>
+        <span>YTD as of 2026-Q1</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sparkline + table -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
+    <div class="chart-card">
+      <div class="chart-eyebrow">Inline sparkline pattern</div>
+      <h3 class="chart-headline" style="font-size: 18px; line-height: 1.5; margin-bottom: 0;">
+        The bot's win rate has been climbing —
+        <svg class="sparkline" viewBox="0 0 80 18" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <path d="M 0 14 L 10 12 L 20 13 L 30 11 L 40 9 L 50 8 L 60 5 L 70 4 L 80 2" stroke="#5EEAD4" stroke-width="1.5" fill="none"/>
+        </svg>
+        — for the last 30 days, with the strongest day landing this Tuesday.
+      </h3>
+      <p style="font-family: var(--font-body); font-size: 13px; color: var(--text-2); line-height: 1.65; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border-light);">A sparkline is a chart at the size of a word. Used inline within prose, never in isolation. 60–100px wide, height matches the line-height.</p>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-eyebrow">Brand-styled table</div>
+      <h3 class="chart-headline" style="font-size: 18px; margin-bottom: 18px;">No striping. No vertical borders. Mono numerics.</h3>
+      <table class="brand-table">
+        <thead>
+          <tr>
+            <th>Bot</th>
+            <th>Status</th>
+            <th style="text-align:right;">Trades · 7d</th>
+            <th style="text-align:right;">Win rate</th>
+            <th style="text-align:right;">P&amp;L</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>weather-bot</td>
+            <td><span class="a-pill signal" style="font-size: 9px; padding: 2px 8px;"><span class="live-dot pulse"></span>Live</span></td>
+            <td class="num">142</td>
+            <td class="num">71%</td>
+            <td class="num" style="color: var(--signal);">+A$2,180</td>
+          </tr>
+          <tr>
+            <td>crypto-bot</td>
+            <td><span class="a-pill signal" style="font-size: 9px; padding: 2px 8px;"><span class="live-dot pulse"></span>Live</span></td>
+            <td class="num">88</td>
+            <td class="num">64%</td>
+            <td class="num" style="color: var(--signal);">+A$1,440</td>
+          </tr>
+          <tr>
+            <td>maker-bot</td>
+            <td><span class="a-pill amber" style="font-size: 9px; padding: 2px 8px;">Paper</span></td>
+            <td class="num">62</td>
+            <td class="num">58%</td>
+            <td class="num" style="color: var(--text-3);">— ·  dry-run</td>
+          </tr>
+          <tr>
+            <td>sports-bot</td>
+            <td><span class="a-pill amber" style="font-size: 9px; padding: 2px 8px;">Paper</span></td>
+            <td class="num">211</td>
+            <td class="num">52%</td>
+            <td class="num" style="color: var(--text-3);">— ·  dry-run</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+`;
+
+const ACCESSIBILITY_HTML = `
+<div class="container">
+  <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; align-items: start;">
+    <div class="demo-card">
+      <div class="demo-meta"><span class="lhs">Contrast matrix</span><span class="rhs">on var(--bg)</span></div>
+      <div class="demo-canvas" style="padding: 20px 24px; align-items: stretch; gap: 0;">
+        <div class="a11y-pair">
+          <div class="swatch" style="background: #0F0F0F; color: #E5E7EB;">Aa</div>
+          <div class="label">--text on --bg</div>
+          <div class="ratio">15.6 : 1</div>
+          <div class="verdict pass">AAA</div>
+        </div>
+        <div class="a11y-pair">
+          <div class="swatch" style="background: #0F0F0F; color: #A1A5B0;">Aa</div>
+          <div class="label">--text-2 on --bg</div>
+          <div class="ratio">8.4 : 1</div>
+          <div class="verdict pass">AAA</div>
+        </div>
+        <div class="a11y-pair">
+          <div class="swatch" style="background: #0F0F0F; color: #6B7280;">Aa</div>
+          <div class="label">--text-3 on --bg</div>
+          <div class="ratio">4.7 : 1</div>
+          <div class="verdict pass">AA</div>
+        </div>
+        <div class="a11y-pair">
+          <div class="swatch" style="background: #0F0F0F; color: #7C3AED;">Aa</div>
+          <div class="label">--accent on --bg</div>
+          <div class="ratio">5.4 : 1</div>
+          <div class="verdict pass">AA</div>
+        </div>
+        <div class="a11y-pair">
+          <div class="swatch" style="background: #0F0F0F; color: #5EEAD4;">Aa</div>
+          <div class="label">--signal on --bg</div>
+          <div class="ratio">11.3 : 1</div>
+          <div class="verdict pass">AAA</div>
+        </div>
+        <div class="a11y-pair">
+          <div class="swatch" style="background: #0F0F0F; color: #F5B342;">Aa</div>
+          <div class="label">--amber on --bg</div>
+          <div class="ratio">9.7 : 1</div>
+          <div class="verdict pass">AAA</div>
+        </div>
+        <div class="a11y-pair">
+          <div class="swatch" style="background: #1A1A1A; color: #6B7280;">Aa</div>
+          <div class="label">--text-3 on --surface</div>
+          <div class="ratio">4.0 : 1</div>
+          <div class="verdict large">LARGE TEXT ONLY</div>
+        </div>
+      </div>
+      <div class="demo-caption">Every default pair passes AA. The one fail-mode for normal text is <span class="a-code">--text-3</span> on <span class="a-code">--surface</span> — fine for ≥18px or ≥14px-bold, fails for body copy.</div>
+    </div>
+
+    <div class="demo-card">
+      <div class="demo-meta"><span class="lhs">Focus state</span><span class="rhs">tab to focus</span></div>
+      <div class="demo-canvas" style="gap: 24px;">
+        <button class="focus-demo-btn">Tab here</button>
+        <button class="focus-demo-btn is-focused">Focused state</button>
+        <p style="font-family: var(--font-mono); font-size: 10px; color: var(--text-3); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 4px;">2px outline · 3px offset · signal teal on accent</p>
+      </div>
+      <div class="demo-caption">Focus rings are 2px solid + 3px offset. On accent-coloured buttons we switch the ring to teal so it contrasts.</div>
+    </div>
+  </div>
+</div>
+`;
+
+const LOCKED_TITLE: Record<Props['slug'], string> = {
+  spacing:       'Detailed spacing tokens · reading widths',
+  motion:        'Easings, durations, motion demos · live indicator · skeleton · progress',
+  dataviz:       'KPI cards · line chart · bar chart · sparkline · brand table',
+  accessibility: 'Contrast matrix · focus-state demo · WCAG 2.2 AA audit',
+};
+
+const LOCKED_HTML: Record<Props['slug'], string> = {
+  spacing:       SPACING_HTML,
+  motion:        MOTION_HTML,
+  dataviz:       DATAVIZ_HTML,
+  accessibility: ACCESSIBILITY_HTML,
+};
 ---
 
-<section id={slug} data-brand-section class="melis-section">
+<section id={slug} data-brand-section class="melis-section melis-section-wide">
   <div class="melis-section-eyebrow-row">
     <span class="num">{s.num}</span>
     <span class="name">{s.group} · {s.name}</span>
     <span class="line"></span>
   </div>
-  <h2 class="melis-section-title">{s.name}</h2>
-  <p class="brand-stub-lede" set:html={s.lede} />
+  <h2 class="melis-section-title">{s.title}</h2>
+
+  <div class="melis-prose">
+    <p set:html={s.body} />
+  </div>
+
+  <LockedSection slug={`${slug}-full`} title={LOCKED_TITLE[slug]}>
+    <div class="bg-port bg-port-locked" set:html={LOCKED_HTML[slug]} />
+  </LockedSection>
 </section>
 
 <style is:global>
-  .brand-stub-lede {
-    max-width: 720px;
-    font-size: 16px;
-    line-height: 1.7;
-    color: var(--text-2);
-    margin: 0;
+  /* Constrain ported chunks to the LockedSection width so the
+     brand-guidelines container helpers don't break out of the
+     surrounding prose column. */
+  .bg-port-locked .container,
+  .bg-port-locked .container-narrow {
+    max-width: 100%;
+    padding: 0;
   }
-  .brand-stub-lede em {
-    font-style: italic;
-    color: var(--accent);
-    font-family: var(--font-display);
-    font-size: 18px;
-    font-weight: 400;
+  .bg-port-locked {
+    margin-top: 8px;
+  }
+  @media (max-width: 900px) {
+    .bg-port-locked [style*="grid-template-columns: repeat(4, 1fr)"],
+    .bg-port-locked [style*="grid-template-columns: 1fr 1fr 1fr"],
+    .bg-port-locked [style*="grid-template-columns: 1fr 1fr"],
+    .bg-port-locked [style*="grid-template-columns: 1.4fr 1fr"] {
+      grid-template-columns: 1fr !important;
+    }
   }
 </style>

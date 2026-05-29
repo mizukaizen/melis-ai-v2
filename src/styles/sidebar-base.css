@@ -16,7 +16,7 @@
   top: 0;
   left: 0;
   width: var(--sidebar-w, 192px);
-  height: 100vh;
+  height: calc(100vh / var(--app-zoom, 1));
   display: flex;
   flex-direction: column;
   background: rgba(8, 8, 10, 0.82);
@@ -235,7 +235,7 @@
   top: 0;
   left: var(--sidebar-w, 192px);
   width: var(--sidebar-w2, 280px);
-  height: 100vh;
+  height: calc(100vh / var(--app-zoom, 1));
   background: rgba(12, 12, 14, 0.72);
   backdrop-filter: blur(14px) saturate(115%);
   -webkit-backdrop-filter: blur(14px) saturate(115%);
@@ -460,7 +460,7 @@
 }
 .app > main.content {
   margin-left: var(--sidebar-w, 192px);
-  min-height: 100vh;
+  min-height: calc(100vh / var(--app-zoom, 1));
 }
 /* When sb2 is shown, push content past it too. We force sb2 visible
    on every route per Sean's spec — so always reserve space for it. */

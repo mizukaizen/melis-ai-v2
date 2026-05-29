@@ -41,22 +41,13 @@ function iconFor(cat: string) {
   return CAT_ICON[cat] || { i: 'ph-circle', c: '#94a3b8' };
 }
 
-// Detail view = flat list of all products with current highlighted.
-// Landing view = panel groups by category.
-const isDetail = Boolean(currentSlug);
-
-// Mockup uses source order, not alphabetical — Complete Arsenal first
-// (the flagship bundle), then everything else by category in PRODUCTS_CATEGORIES
-// declaration order. Alphabetical loses the editorial priority.
-const arsenal = all.find((p) => p.slug === 'complete-arsenal');
-const others = all
-  .filter((p) => p.slug !== 'complete-arsenal')
-  .sort((a, b) => {
-    const ai = PRODUCTS_CATEGORIES.findIndex((c) => c.title === (a.data.category || ''));
-    const bi = PRODUCTS_CATEGORIES.findIndex((c) => c.title === (b.data.category || ''));
-    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
-  });
-const flatSorted = arsenal ? [arsenal, ...others] : others;
+// Single render mode for both /products landing and /products/<slug>
+// detail pages — All Products + Complete Arsenal pinned at top, then
+// collapsible category groups. The current product's category is
+// auto-opened so the active item is visible. Previously the detail
+// page swapped to a flat list which made the chevron groups appear
+// to "disappear" once you clicked into a product.
+const isLanding = !currentSlug;
 ---
 
 <aside class="sidebar-2" transition:persist="sb2-products">
@@ -65,84 +56,58 @@ const flatSorted = arsenal ? [arsenal, ...others] : others;
       <div class="sb2-title"><em>Products</em></div>
     </div>
 
-    {isDetail ? (
-      <div class="panel-list">
-        <a class="panel-item" href="/products/">
-          <i class={`ph ${ALL_ICON.i} pi-icon`} style={`color:${ALL_ICON.c};opacity:0.85`}></i>
-          <div class="pi-body">
-            <div class="pi-title">All Products</div>
-            <div class="pi-meta">{all.length} items</div>
-          </div>
-          <div class="pi-dot" style={`background:${hexToRgba(ALL_ICON.c, 0.15)};color:${ALL_ICON.c}`}>{all.length}</div>
-        </a>
-        {flatSorted.map((p) => {
-          const ic = iconFor(p.data.category || '');
-          return (
-            <a class="panel-item" class:list={[{ active: p.slug === currentSlug }]} href={`/products/${p.slug}/`}>
-              <i class={`ph ${ic.i} pi-icon`} style={`color:${ic.c};opacity:0.85`}></i>
-              <div class="pi-body">
-                <div class="pi-title">{p.data.title.replace(/<[^>]+>/g, '')}</div>
-                <div class="pi-meta">{p.data.category}</div>
-              </div>
-              <div class="pi-dot">${(p.data.price / 100).toFixed(0)}</div>
-            </a>
-          );
-        })}
-      </div>
-    ) : (
-      <div class="panel-list">
-        <a class="panel-item active" href="/products/">
-          <i class={`ph ${ALL_ICON.i} pi-icon`} style={`color:${ALL_ICON.c};opacity:0.85`}></i>
-          <div class="pi-body">
-            <div class="pi-title">All Products</div>
-            <div class="pi-meta">{all.length} items · {byCategory.size} categories</div>
-          </div>
-          <div class="pi-dot" style={`background:${hexToRgba(ALL_ICON.c, 0.15)};color:${ALL_ICON.c}`}>{all.length}</div>
-        </a>
-        <a class="panel-item" href="/products/complete-arsenal/">
-          <i class={`ph ${BUNDLE_ICON.i} pi-icon`} style={`color:${BUNDLE_ICON.c};opacity:0.85`}></i>
-          <div class="pi-body">
-            <div class="pi-title">The Complete Arsenal</div>
-            <div class="pi-meta">Premium bundle · $197</div>
-          </div>
-          <div class="pi-dot" style={`background:${hexToRgba(BUNDLE_ICON.c, 0.15)};color:${BUNDLE_ICON.c}`}>bundle</div>
-        </a>
-        {PRODUCTS_CATEGORIES.map((cat) => {
-          const items = byCategory.get(cat.title) ?? [];
-          const isOpen = currentCategory === cat.title;
-          const ic = iconFor(cat.title);
-          return (
-            <div class:list={['panel-group', { open: isOpen }]}>
-              <div class="panel-group-header">
-                <span class="pgh-label">{cat.title}</span>
-                <svg class="pgh-chevron" viewBox="0 0 10 6" fill="none">
-                  <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-              </div>
-              <div class="panel-group-items">
-                {items.map((p) => (
-                  <a class="panel-item" class:list={[{ active: p.slug === currentSlug }]} href={`/products/${p.slug}/`}>
-                    <i class={`ph ${ic.i} pi-icon`} style={`color:${ic.c};opacity:0.85`}></i>
-                    <div class="pi-body">
-                      <div class="pi-title">{p.data.title.replace(/<[^>]+>/g, '')}</div>
-                      <div class="pi-meta">${(p.data.price / 100).toFixed(0)}</div>
-                    </div>
-                    <div class="pi-dot">${(p.data.price / 100).toFixed(0)}</div>
-                  </a>
-                ))}
-                {items.length === 0 && (
-                  <div class="panel-item" style="opacity:0.4;cursor:default;">
-                    <i class={`ph ${ic.i} pi-icon`} style={`color:${ic.c};opacity:0.5`}></i>
-                    <div class="pi-body">
-                      <div class="pi-title" style="font-style:italic;">Coming soon</div>
-                    </div>
-                  </div>
-                )}
-              </div>
+    <div class="panel-list">
+      <a class:list={['panel-item', { active: isLanding }]} href="/products/">
+        <i class={`ph ${ALL_ICON.i} pi-icon`} style={`color:${ALL_ICON.c};opacity:0.85`}></i>
+        <div class="pi-body">
+          <div class="pi-title">All Products</div>
+          <div class="pi-meta">{all.length} items · {byCategory.size} categories</div>
+        </div>
+        <div class="pi-dot" style={`background:${hexToRgba(ALL_ICON.c, 0.15)};color:${ALL_ICON.c}`}>{all.length}</div>
+      </a>
+      <a class:list={['panel-item', { active: currentSlug === 'complete-arsenal' }]} href="/products/complete-arsenal/">
+        <i class={`ph ${BUNDLE_ICON.i} pi-icon`} style={`color:${BUNDLE_ICON.c};opacity:0.85`}></i>
+        <div class="pi-body">
+          <div class="pi-title">The Complete Arsenal</div>
+          <div class="pi-meta">Premium bundle · $197</div>
+        </div>
+        <div class="pi-dot" style={`background:${hexToRgba(BUNDLE_ICON.c, 0.15)};color:${BUNDLE_ICON.c}`}>bundle</div>
+      </a>
+      {PRODUCTS_CATEGORIES.map((cat) => {
+        const items = byCategory.get(cat.title) ?? [];
+        const isOpen = currentCategory === cat.title;
+        const ic = iconFor(cat.title);
+        return (
+          <div class:list={['panel-group', { open: isOpen }]}>
+            <div class="panel-group-header">
+              <span class="pgh-label">{cat.title}</span>
+              <svg class="pgh-chevron" viewBox="0 0 10 6" fill="none">
+                <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
             </div>
-          );
-        })}
-      </div>
-    )}
+            <div class="panel-group-items">
+              {items.map((p) => (
+                <a class="panel-item" class:list={[{ active: p.slug === currentSlug }]} href={`/products/${p.slug}/`}>
+                  <i class={`ph ${ic.i} pi-icon`} style={`color:${ic.c};opacity:0.85`}></i>
+                  <div class="pi-body">
+                    <div class="pi-title">{p.data.title.replace(/<[^>]+>/g, '')}</div>
+                    <div class="pi-meta">${(p.data.price / 100).toFixed(0)}</div>
+                  </div>
+                  <div class="pi-dot">${(p.data.price / 100).toFixed(0)}</div>
+                </a>
+              ))}
+              {items.length === 0 && (
+                <div class="panel-item" style="opacity:0.4;cursor:default;">
+                  <i class={`ph ${ic.i} pi-icon`} style={`color:${ic.c};opacity:0.5`}></i>
+                  <div class="pi-body">
+                    <div class="pi-title" style="font-style:italic;">Coming soon</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
   </div>
 </aside>

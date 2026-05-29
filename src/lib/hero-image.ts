@@ -12,16 +12,16 @@ const overrides = ROOM_IMAGE_OVERRIDES as Record<string, SectionMap>;
 /** Section → landing-hero image. Verified against the mockup. */
 const LANDING_FALLBACKS: Record<string, string> = {
   home: '/hero-v1.png',
-  courses: '/card-courses-v1.png',       // warm cozy reader scene
+  courses: '/section-rooms/courses-landing.png',
   articles: '/section-rooms/articles-landing.png',     // paper-craft library — pass 7 forensic
   newsletter: '/section-rooms/news-landing.png',       // paper-craft writer's desk — pass 7 forensic
-  products: '/card-products-v1.png',     // warm wood-workshop with tools
+  products: '/section-rooms/products-landing.png',
   prompts: '/section-rooms/prompts-landing.png',
-  recos: '/card-services-v1.png',
-  services: '/card-services-v1.png',
-  ventures: '/card-projects-v1.png',
-  projects: '/card-projects-v1.png',
-  exhibits: '/card-projects-v1.png',
+  recos: '/section-rooms/recos-landing.png',
+  services: '/section-rooms/services-landing.png',
+  ventures: '/section-rooms/ventures-landing.png',
+  projects: '/section-rooms/ventures-landing.png',
+  exhibits: '/section-rooms/exhibits-landing.png',
   about: '/hero-about.png',
   'about-studio': '/about-bg.png',
   library: '/library-rooms/lib-landing.png',

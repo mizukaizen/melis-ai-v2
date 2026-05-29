@@ -35,13 +35,14 @@ function coverFor(entry: { slug: string; data: { cover?: string } }): string {
 >
   <SectionHero
     cover={landingHero('exhibits')}
-    eyebrow="The Lab · Exhibits"
+    eyebrow="The Lab · Step inside"
     title="Exhibits"
     titleHtml="<em>Exhibits</em>"
   />
 
   <section class="section-body">
     <div class="landing-intro">
+      <div class="section-eyebrow-small">{ordered.length} immersive exhibits · best full-screen, sound on</div>
       <h2 class="h2">Immersive paper-craft <em>exhibitions</em>.</h2>
       <p class="body-lead">Ten scroll-experiences. Each one a self-contained world — bees, hives, keepers, thresholds, arcs of a life. Best experienced full-screen with sound on.</p>
     </div>
@@ -50,9 +51,6 @@ function coverFor(entry: { slug: string; data: { cover?: string } }): string {
         <a class="room-card" href={`/lab/exhibits/${ex.slug}/`}>
           <div class="room-card-img" style={`background-image: url('${coverFor(ex)}');`}></div>
           <div class="room-card-veil"></div>
-          {ex.data.status === 'live' && (
-            <div class="room-card-group-pill is-signal">LIVE</div>
-          )}
           <div class="room-card-arrow">↗</div>
           <div class="room-card-meta">
             <div class="room-card-eyebrow">No. {String(i + 1).padStart(2, '0')} · Exhibit</div>

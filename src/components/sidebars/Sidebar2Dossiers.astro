@@ -75,9 +75,9 @@ const categories = ORDER.map((slug) => ({
           <i class={`ph ${ic.i} pi-icon`} style={`color:${ic.c};opacity:0.85`}></i>
           <div class="pi-body">
             <div class="pi-title">{cat.title}</div>
-            <div class="pi-meta">{cat.count}</div>
+            <div class="pi-meta">{cat.line}</div>
           </div>
-          <div class="pi-dot" style={`background:${hexToRgba(ic.c, 0.15)};color:${ic.c}`}>{items.length}</div>
+          <div class="pi-dot" style={`background:${hexToRgba(ic.c, 0.15)};color:${ic.c}`}>{parseInt(cat.count, 10)}</div>
         </a>
       ))}
     </div>

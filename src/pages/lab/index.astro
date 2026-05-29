@@ -2,22 +2,27 @@
 import AppLayout from '../../layouts/AppLayout.astro';
 import SectionHero from '../../components/SectionHero.astro';
 import { landingHero } from '../../lib/hero-image';
+import { getCollection } from 'astro:content';
 
 export const prerender = true;
+
+// Live counts so the pillar cards never drift from the actual catalogue.
+const ventureCount = (await getCollection('ventures')).filter((v) => !v.data.draft).length;
+const exhibitCount = (await getCollection('exhibits')).filter((e) => !e.data.draft).length;
 ---
 
 <AppLayout title="The Lab" pane="exhibits" description="Live builds, exhibits, and experiments from melis.ai.">
   <SectionHero
     cover={landingHero('exhibits')}
-    eyebrow="The Lab"
+    eyebrow="Work in progress"
     title="The Lab"
     titleHtml="The <em>Lab</em>"
   />
 
   <section class="section-body">
     <div class="landing-intro">
-      <h2 class="h2">Things being made — in public, in flight, <em>sometimes parked</em>.</h2>
-      <p class="body-lead">Sub-brands and ventures that started as side projects and grew into something worth shipping. Status is honest: live, in flight, or parked.</p>
+      <h2 class="h2">Live builds, immersive pieces, <em>experiments in the open</em>.</h2>
+      <p class="body-lead">The workshop floor — sub-brands and ventures in flight, immersive paper-craft exhibits, and the experiments that don't have names yet. Some ship, some get parked. All of it built in public.</p>
     </div>
     <div class="lab-pillars room-grid">
       <a class="room-card" href="/ventures/lighthouse/">
@@ -54,12 +59,12 @@ export const prerender = true;
 
     <div class="lab-grid">
       <a class="lab-card" href="/ventures/">
-        <div class="lc-eyebrow">42 in flight</div>
+        <div class="lc-eyebrow">{ventureCount} in flight</div>
         <h3 class="lc-title">Ventures</h3>
         <p class="lc-lede">Live builds and sub-brands — what's being shipped this season.</p>
       </a>
       <a class="lab-card" href="/lab/exhibits/">
-        <div class="lc-eyebrow">10 assembled</div>
+        <div class="lc-eyebrow">{exhibitCount} assembled</div>
         <h3 class="lc-title">Exhibits</h3>
         <p class="lc-lede">Paper-craft cinematography, immersive scroll stories, one-off pieces.</p>
       </a>

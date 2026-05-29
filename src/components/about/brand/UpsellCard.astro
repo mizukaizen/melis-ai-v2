@@ -1,0 +1,91 @@
+---
+// Subtle in-context upsell card — small footprint, no banner energy.
+// Eyebrow + one-line body + arrow link. Used at the end of select
+// brand-book sections to surface a relevant product or surface
+// without breaking the editorial flow.
+
+interface Props {
+  eyebrow: string;
+  body: string;        // may contain inline <em>
+  cta: string;
+  href: string;
+}
+
+const { eyebrow, body, cta, href } = Astro.props;
+const external = /^https?:/.test(href);
+---
+
+<a
+  class="upsell-card"
+  href={href}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noopener noreferrer' : undefined}
+>
+  <div class="upsell-eyebrow">{eyebrow}</div>
+  <p class="upsell-body" set:html={body} />
+  <span class="upsell-cta">
+    <span class="upsell-cta-text">{cta}</span>
+    <span class="upsell-arrow" aria-hidden="true">→</span>
+  </span>
+</a>
+
+<style is:global>
+  /* Editorial pull-quote chrome (matches .melis-quote in melis-ai.astro):
+     left accent rule + soft purple tint, no perimeter border. The card
+     reads as an inline aside, not a banner CTA. */
+  .upsell-card {
+    display: block;
+    margin: 56px 0 0;
+    max-width: 720px;
+    padding: 24px 32px;
+    background: rgba(124, 58, 237, 0.04);
+    border-left: 2px solid var(--accent);
+    text-decoration: none;
+    color: inherit;
+    transition: background 180ms ease;
+  }
+  .upsell-card:hover,
+  .upsell-card:focus-visible {
+    background: rgba(124, 58, 237, 0.07);
+  }
+  .upsell-card:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .upsell-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .upsell-body {
+    margin: 0 0 14px;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+  .upsell-body em {
+    font-style: italic;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 16px;
+  }
+  .upsell-cta {
+    display: inline-flex; align-items: baseline; gap: 8px;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 17px;
+    color: var(--accent);
+  }
+  .upsell-arrow {
+    color: var(--accent);
+    transition: transform 180ms ease;
+  }
+  .upsell-card:hover .upsell-arrow,
+  .upsell-card:focus-visible .upsell-arrow {
+    transform: translateX(4px);
+  }
+</style>

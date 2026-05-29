@@ -1,9 +1,11 @@
 ---
 interface Props {
   service: string;
+  messageLabel?: string;
+  submitLabel?: string;
 }
 
-const { service } = Astro.props;
+const { service, messageLabel = 'What are you trying to ship?', submitLabel = 'Send →' } = Astro.props;
 ---
 
 <form class="lead-form" id="lead-form" data-service={service} novalidate>
@@ -16,10 +18,10 @@ const { service } = Astro.props;
     <input id="lf-email" name="email" type="email" autocomplete="email" required />
   </div>
   <div class="lf-field">
-    <label for="lf-message">What are you trying to ship?</label>
+    <label for="lf-message">{messageLabel}</label>
     <textarea id="lf-message" name="message" rows="5" required></textarea>
   </div>
-  <button type="submit" class="lf-submit">Send →</button>
+  <button type="submit" class="lf-submit">{submitLabel}</button>
   <p class="lf-status" data-state="idle"></p>
 </form>
 

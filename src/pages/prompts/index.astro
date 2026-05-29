@@ -39,18 +39,8 @@ const cats = PROMPT_CATEGORY_ORDER
     <div class="prompts-landing">
       <div class="section-eyebrow-small">{totalPrompts} prompts · {totalCategories} categories · all tested in real work</div>
       <h2 class="h2">A working library of <em>operator prompts</em>.</h2>
-      <p class="body-lead">Variables in <span class="pv-var">[BRACKETS]</span> are your fill-in points. Pick a category below, or jump straight into <a href="/prompts/seans-edge/" style="color: var(--accent); border-bottom: 1px solid currentColor;">Sean's Edge</a> for the AI-first cognitive amplification set.</p>
-
-      <aside class="context-disclaimer" aria-label="How to use these prompts">
-        <div class="cd-col">
-          <div class="cd-eyebrow">How these work</div>
-          <p>Every prompt has <span class="pv-var">[BRACKETED PLACEHOLDERS]</span> where you fill in your context — your company, your customer, your offer, your specifics. Click any bracket to fill inline. Your values cascade across every prompt that needs them, and save across sessions — so most blanks fill themselves after the first one.</p>
-        </div>
-        <div class="cd-col">
-          <div class="cd-eyebrow">If you're already a pro</div>
-          <p>The deepest context — who you are, what you sell, who you serve — belongs in a Claude Project, ChatGPT Custom Instructions, or your Cursor rules. Set that up once, then these prompts just need the prompt-specific delta. The brackets remind you what context matters; the cascade keeps you out of copy-paste hell.</p>
-        </div>
-      </aside>
+      <p class="body-lead">Every prompt carries <span class="pv-var">[bracketed]</span> placeholders for your context — company, customer, offer. Fill them inline once and your answers cascade across prompts and persist between sessions, so the blanks fill themselves after the first. Browse a category below, or jump into <a class="prompts-edge-link" href="/prompts/seans-edge/">Sean's Edge</a> for the AI-first set.</p>
+      <p class="prompts-note"><span class="pn-label">Already fluent?</span> Keep your deep context in a Claude Project, ChatGPT Custom Instructions, or Cursor rules — then these prompts only need the prompt-specific delta.</p>
 
       <div class="room-grid">
         {cats.map((c) => (
@@ -77,46 +67,35 @@ const cats = PROMPT_CATEGORY_ORDER
   <style>
     .prompts-landing .section-eyebrow-small { margin-bottom: 8px; }
     .prompts-landing .h2 { margin-bottom: 10px; }
-    .prompts-landing .body-lead { margin-bottom: 20px; max-width: 60ch; }
+    .prompts-landing .body-lead { margin-bottom: 14px; max-width: 64ch; }
 
-    .prompts-landing .context-disclaimer {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 28px 40px;
-      max-width: 880px;
-      margin: 8px 0 36px;
-      padding: 20px 24px;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-left: 2px solid var(--accent);
-      border-radius: 4px;
-    }
-    .prompts-landing .context-disclaimer .cd-eyebrow {
+    /* Inline [bracket] tokens — subtle mono accent, not shouty caps. */
+    .prompts-landing .pv-var {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      font-weight: 500;
+      font-size: 0.9em;
+      color: var(--accent);
+    }
+    .prompts-landing .prompts-edge-link {
+      color: var(--accent);
+      border-bottom: 1px solid rgba(124, 58, 237, 0.4);
+    }
+    .prompts-landing .prompts-edge-link:hover { border-bottom-color: var(--accent); }
+
+    /* Pro tip — one quiet line, no box. */
+    .prompts-landing .prompts-note {
+      max-width: 64ch;
+      margin: 0 0 36px;
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: var(--text-3);
+    }
+    .prompts-landing .prompts-note .pn-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--accent);
-      margin-bottom: 8px;
-    }
-    .prompts-landing .context-disclaimer p {
-      margin: 0;
-      font-size: 14px;
-      line-height: 1.6;
-      color: var(--text-2, rgba(255,255,255,0.72));
-    }
-    .prompts-landing .context-disclaimer .pv-var {
-      color: var(--accent);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.92em;
-    }
-    @media (max-width: 720px) {
-      .prompts-landing .context-disclaimer {
-        grid-template-columns: 1fr;
-        gap: 20px;
-        padding: 16px 18px;
-      }
+      margin-right: 8px;
     }
   </style>
 </AppLayout>

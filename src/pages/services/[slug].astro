@@ -10,7 +10,10 @@ import { SERVICES_DETAIL } from '../../data/services';
 export const prerender = true;
 
 export async function getStaticPaths() {
-  const items = await getCollection('services');
+  // Archived (draft) services no longer build a detail route — the 5
+  // old tiers are kept in /content for a future return but pulled from
+  // the live site in favour of the single Confessional offer.
+  const items = (await getCollection('services')).filter((item) => !item.data.draft);
   return items.map((item) => ({
     params: { slug: item.slug },
     props: { item },

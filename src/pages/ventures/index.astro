@@ -3,19 +3,86 @@ import AppLayout from '../../layouts/AppLayout.astro';
 import SectionHero from '../../components/SectionHero.astro';
 import { getCollection } from 'astro:content';
 import { landingHero } from '../../lib/hero-image';
+import { VENTURES_DETAIL } from '../../data/ventures';
+import { PAST_VENTURES, PAST_VENTURES_INTRO, PAST_VENTURES_NOTE } from '../../data/past-ventures';
 
 export const prerender = true;
 
 const ventures = (await getCollection('ventures')).filter((v) => !v.data.draft);
 
+// Venture cover images available in /section-rooms/. Anything without a
+// dedicated image falls back to the generic ventures-landing scene.
+// Every venture has a dedicated paper-craft cover in /section-rooms/.
 const COVER_MAP: Record<string, string> = {
-  'lighthouse':  '/section-rooms/ventures-lighthouse.png',
-  'holy-signal': '/section-rooms/ventures-holy-signal.png',
-  'phantom-ink': '/section-rooms/ventures-phantom-ink.png',
+  'hive-doctrine':     '/section-rooms/ventures-hive-doctrine.png',
+  'holy-signal':       '/section-rooms/ventures-holy-signal.png',
+  'lighthouse':        '/section-rooms/ventures-lighthouse.png',
+  'phantom-ink':       '/section-rooms/ventures-phantom-ink.png',
+  'nightglass':        '/section-rooms/ventures-nightglass.png',
+  'motif':             '/section-rooms/ventures-motif.png',
+  'aetherboard':       '/section-rooms/ventures-aetherboard.png',
+  'agent-fleet':       '/section-rooms/ventures-agent-fleet.png',
+  'dossier':           '/section-rooms/ventures-dossier.png',
+  'prompt-bakery':     '/section-rooms/ventures-prompt-bakery.png',
+  'lila-park':         '/section-rooms/ventures-lila-park.png',
+  'miru':              '/section-rooms/ventures-miru.png',
+  'ai-usage-tracker':  '/section-rooms/ventures-ai-usage-tracker.png',
+  'screencast-studio': '/section-rooms/ventures-screencast-studio.png',
+  'sentinel':          '/section-rooms/ventures-sentinel.png',
+  'ai-sdr':            '/section-rooms/ventures-ai-sdr.png',
+  'consultantos':      '/section-rooms/ventures-consultantos.png',
+  'pantheon':          '/section-rooms/ventures-pantheon.png',
+  'spell-stories':     '/section-rooms/ventures-spell-stories.png',
+  'altar':             '/section-rooms/ventures-altar.png',
+  'nexusos':           '/section-rooms/ventures-nexusos.png',
 };
 function coverFor(slug: string) {
   return COVER_MAP[slug] || '/section-rooms/ventures-landing.png';
 }
+
+// ── Card model ────────────────────────────────────────────────
+// Every non-draft venture becomes a card. Pill (label + tone) comes
+// from VENTURES_DETAIL so the landing stays in sync with the detail
+// pages. Sorted live → building/launch-ready → research → parked,
+// alphabetical within each tone.
+type Card = {
+  slug: string;
+  href: string;
+  cover: string;
+  eyebrow: string;
+  titleHtml: string;
+  lede: string;
+  pillLabel: string;
+  pillCls: string;
+  rank: number;
+};
+
+const TONE_RANK: Record<string, number> = {
+  'is-signal': 0, 'is-orange': 1, 'is-research': 2, 'is-muted': 3,
+};
+
+function plainTitle(html: string): string {
+  return html.replace(/<[^>]+>/g, '').toLowerCase();
+}
+
+const cards: Card[] = ventures.map((v) => {
+  const detail = VENTURES_DETAIL[v.slug];
+  const pill = detail?.pill ?? { label: 'In flight', cls: 'is-orange' };
+  return {
+    slug: v.slug,
+    href: `/ventures/${v.slug}/`,
+    cover: coverFor(v.slug),
+    eyebrow: (detail?.eyebrow ?? v.data.eyebrow ?? 'The Lab').split('·')[0].trim(),
+    titleHtml: detail?.title || v.data.titleHtml || v.data.title,
+    lede: detail?.lede || v.data.lede || '',
+    pillLabel: pill.label,
+    pillCls: pill.cls,
+    rank: TONE_RANK[pill.cls] ?? 1,
+  };
+}).sort((a, b) => {
+  if (a.rank !== b.rank) return a.rank - b.rank;
+  return plainTitle(a.titleHtml).localeCompare(plainTitle(b.titleHtml));
+});
 ---
 
 <AppLayout
@@ -26,89 +93,55 @@ function coverFor(slug: string) {
   <SectionHero
     cover={landingHero('ventures')}
     eyebrow={`The Lab · ${ventures.length} · in flight`}
-    title="Projects"
-    titleHtml="<em>Projects</em>"
+    title="Ventures"
+    titleHtml="<em>Ventures</em>"
   />
 
   <section class="section-body">
     <div class="landing-intro">
+      <div class="section-eyebrow-small">{ventures.length} in flight · {PAST_VENTURES.length} in the archive</div>
       <h2 class="h2">Things being made — in public, in flight, <em>sometimes parked</em>.</h2>
       <p class="body-lead">Sub-brands and ventures that started as side projects and grew into something worth shipping. Status is honest: live, in flight, or parked.</p>
     </div>
     <div class="room-grid">
-      {ventures.map((v) => (
-        <a class="room-card" href={`/ventures/${v.slug}/`}>
-          <div class="room-card-img" style={`background-image: url('${coverFor(v.slug)}');`}></div>
+      {cards.map((c) => (
+        <a class="room-card" href={c.href}>
+          <div class="room-card-img" style={`background-image: url('${c.cover}');`}></div>
           <div class="room-card-veil"></div>
-          {v.data.pill && (
-            <div class={`room-card-group-pill ${v.data.pill.cls || ''}`}>{v.data.pill.label}</div>
-          )}
+          <div class={`room-card-group-pill ${c.pillCls}`}>{c.pillLabel}</div>
           <div class="room-card-arrow">↗</div>
           <div class="room-card-meta">
-            <div class="room-card-eyebrow">{v.data.eyebrow}</div>
-            <div class="room-card-title" set:html={v.data.titleHtml || v.data.title}></div>
-            <div class="room-card-line">{v.data.lede}</div>
+            <div class="room-card-eyebrow">{c.eyebrow}</div>
+            <div class="room-card-title" set:html={c.titleHtml}></div>
+            <div class="room-card-line">{c.lede}</div>
           </div>
         </a>
       ))}
-
-      {/* Three additional prominent ventures from the mockup. No detail
-          pages — these are display-only on the landing. Hrefs target
-          the landing itself (mockup pattern). */}
-      <a class="room-card" href="/ventures/">
-        <div class="room-card-img" style="background-image: url('/section-rooms/ventures-hive-doctrine.png');"></div>
-        <div class="room-card-veil"></div>
-        <div class="room-card-group-pill is-orange">In flight</div>
-        <div class="room-card-arrow">↗</div>
-        <div class="room-card-meta">
-          <div class="room-card-eyebrow">Sub-brand · In flight</div>
-          <div class="room-card-title">Hive Doctrine</div>
-          <div class="room-card-line">Marketplace + philosophy of multi-agent AI.</div>
-        </div>
-      </a>
-      <a class="room-card" href="/ventures/">
-        <div class="room-card-img" style="background-image: url('/section-rooms/ventures-openclaw.png');"></div>
-        <div class="room-card-veil"></div>
-        <div class="room-card-group-pill is-signal">Live</div>
-        <div class="room-card-arrow">↗</div>
-        <div class="room-card-meta">
-          <div class="room-card-eyebrow">Stack · Live</div>
-          <div class="room-card-title">OpenClaw Self-Host</div>
-          <div class="room-card-line">The Helsinki rig that runs everything quietly.</div>
-        </div>
-      </a>
-      <a class="room-card" href="/ventures/">
-        <div class="room-card-img" style="background-image: url('/section-rooms/ventures-polymarket.png');"></div>
-        <div class="room-card-veil"></div>
-        <div class="room-card-group-pill is-signal">Live</div>
-        <div class="room-card-arrow">↗</div>
-        <div class="room-card-meta">
-          <div class="room-card-eyebrow">Stack · Live</div>
-          <div class="room-card-title">Polymarket Bots</div>
-          <div class="room-card-line">Three Rust bots trading 30+ markets unattended.</div>
-        </div>
-      </a>
     </div>
 
+    {/* ── Past ventures — expandable archive, the arc 2007 → today ── */}
     <hr class="rule" />
+    <div class="pv-archive">
+      <div class="section-eyebrow-small">The arc · 2007 → today</div>
+      <h2 class="h2">Past <em>ventures</em>.</h2>
+      <p class="body-lead pv-intro">{PAST_VENTURES_INTRO}</p>
 
-    {/* Mockup-canonical closing section: 10-item "Other things" list. */}
-    <div class="landing-closing">
-      <div class="section-eyebrow-small">Ten more projects · research, paused, ongoing</div>
-      <h2 class="h2">Other things <em>in the studio</em>.</h2>
-      <p class="body-lead">Sub-brand status is earned, not assumed. These are projects in research, paused, or running quietly that haven't earned their own brand yet — but they're part of the work.</p>
-      <div class="item-list">
-        <a class="item-row" href="#"><div class="num">01</div><div class="col-main"><h4>Polymarket trading bots</h4></div><div class="col-meta">In the lab</div></a>
-        <a class="item-row" href="#"><div class="num">02</div><div class="col-main"><h4>OpenClaw multi-agent system</h4></div><div class="col-meta">In the lab</div></a>
-        <a class="item-row" href="#"><div class="num">03</div><div class="col-main"><h4>NexusOS dashboard</h4></div><div class="col-meta">In the lab</div></a>
-        <a class="item-row" href="#"><div class="num">04</div><div class="col-main"><h4>Persona Pantheon (12 sites)</h4></div><div class="col-meta">In the lab</div></a>
-        <a class="item-row" href="#"><div class="num">05</div><div class="col-main"><h4>AI SDR pipeline</h4></div><div class="col-meta">In the lab</div></a>
-        <a class="item-row" href="#"><div class="num">06</div><div class="col-main"><h4>Spell Stories (interactive fiction)</h4></div><div class="col-meta">In the lab</div></a>
-        <a class="item-row" href="#"><div class="num">07</div><div class="col-main"><h4>Pantheon Market (agent marketplace)</h4></div><div class="col-meta">In the lab</div></a>
-        <a class="item-row" href="#"><div class="num">08</div><div class="col-main"><h4>Saas Factory (project scaffold)</h4></div><div class="col-meta">In the lab</div></a>
-        <a class="item-row" href="#"><div class="num">09</div><div class="col-main"><h4>Consultant OS</h4></div><div class="col-meta">In the lab</div></a>
-        <a class="item-row" href="#"><div class="num">10</div><div class="col-main"><h4>Altar App</h4></div><div class="col-meta">In the lab</div></a>
+      <div class="pv-list">
+        {PAST_VENTURES.map((v) => (
+          <details class="pv-item">
+            <summary class="pv-summary">
+              <span class="pv-name">{v.name}</span>
+              <span class="pv-period">{v.period}</span>
+              <span class="pv-chev" aria-hidden="true">+</span>
+            </summary>
+            <div class="pv-body">
+              {v.body.map((p) => <p>{p}</p>)}
+            </div>
+          </details>
+        ))}
       </div>
+
+      <p class="pv-note">{PAST_VENTURES_NOTE}</p>
     </div>
   </section>
 
@@ -116,5 +149,73 @@ function coverFor(slug: string) {
     <div>melis.ai · 2026</div>
     <div>Operator-built · Australia</div>
   </div>
+
+  <style>
+    .pv-archive { max-width: 880px; margin: 8px auto 0; }
+    .pv-intro { margin-bottom: 28px; max-width: 720px; }
+    .pv-list {
+      border-top: 1px solid var(--border-2, rgba(232,227,216,0.08));
+    }
+    .pv-item {
+      border-bottom: 1px solid var(--border-2, rgba(232,227,216,0.08));
+    }
+    .pv-summary {
+      display: flex; align-items: baseline; gap: 16px;
+      padding: 18px 4px;
+      cursor: pointer;
+      list-style: none;
+      transition: color 160ms ease;
+    }
+    .pv-summary::-webkit-details-marker { display: none; }
+    .pv-summary:hover { color: var(--text-1, var(--text)); }
+    .pv-name {
+      flex: 1;
+      font-family: var(--font-display);
+      font-size: 21px;
+      letter-spacing: -0.01em;
+      color: var(--text-1, var(--text));
+    }
+    .pv-period {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      white-space: nowrap;
+    }
+    .pv-chev {
+      font-family: var(--font-display);
+      font-size: 22px;
+      line-height: 1;
+      color: var(--accent);
+      transition: transform 200ms ease;
+      width: 18px; text-align: center;
+    }
+    .pv-item[open] .pv-chev { transform: rotate(45deg); }
+    .pv-body {
+      padding: 0 4px 24px;
+      max-width: 720px;
+    }
+    .pv-body p {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text-2);
+      margin: 0 0 14px;
+    }
+    .pv-body p:last-child { margin-bottom: 0; }
+    .pv-note {
+      margin-top: 28px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.6;
+      letter-spacing: 0.02em;
+      color: var(--text-3);
+      font-style: italic;
+    }
+    @media (max-width: 720px) {
+      .pv-summary { flex-wrap: wrap; gap: 4px 12px; }
+      .pv-name { flex-basis: 100%; }
+    }
+  </style>
 
 </AppLayout>

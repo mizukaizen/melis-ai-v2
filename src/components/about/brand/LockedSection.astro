@@ -1,0 +1,153 @@
+---
+// Soft password gate for IP-heavy brand book detail. The unlock state
+// lives in sessionStorage so it survives in-page navigation but not
+// new browser sessions. The actual password handling + reveal logic
+// is page-level (see melis-ai.astro), so one unlock reveals every
+// gated block at once.
+//
+// SECURITY NOTE: This is a soft gate — the locked content is present
+// in the rendered HTML, hidden by CSS / aria-hidden until unlocked.
+// Determined users can read the source. Good enough for "deters
+// casual visitors + makes the doc useful as a private reference"; not
+// good enough for true IP protection. If we need that we should
+// switch to build-time AES-GCM encryption of the slot content.
+
+interface Props {
+  slug: string;   // unique-on-page id (used for analytics + targeted unlocks later)
+  title: string;  // shown on the locked tile
+}
+const { slug, title } = Astro.props;
+---
+
+<div class="locked-section" data-locked-slug={slug}>
+  <button type="button" class="locked-trigger" data-locked-trigger aria-expanded="false">
+    <span class="locked-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4.5" y="11" width="15" height="9.5" rx="1.5"/>
+        <path d="M 8 11 V 7 A 4 4 0 0 1 16 7 V 11"/>
+        <circle cx="12" cy="15.5" r="1.1" fill="currentColor" stroke="none"/>
+      </svg>
+    </span>
+    <span class="locked-body">
+      <span class="locked-eyebrow">Locked · enter password to view</span>
+      <span class="locked-title">{title}</span>
+    </span>
+    <span class="locked-arrow" aria-hidden="true">→</span>
+  </button>
+  <div class="locked-content" data-locked-content hidden>
+    <slot />
+  </div>
+</div>
+
+<style is:global>
+  .locked-section {
+    margin-top: 32px;
+    /* Let the locked block fill the parent section. The trigger
+       tile (text-only) sits comfortably at section width; locked
+       content with grids/charts/tables uses the full canvas. */
+    max-width: 100%;
+  }
+  .locked-trigger {
+    /* Trigger stays a comfortable reading-tile width even when
+       the section frame is wider. */
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+    max-width: 720px;
+    padding: 20px 24px;
+    background: rgba(124, 58, 237, 0.04);
+    border: 1px dashed rgba(124, 58, 237, 0.32);
+    border-radius: 6px;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background 180ms ease, border-color 180ms ease;
+  }
+  .locked-trigger:hover,
+  .locked-trigger:focus-visible {
+    background: rgba(124, 58, 237, 0.08);
+    border-color: rgba(124, 58, 237, 0.55);
+    border-style: solid;
+  }
+  .locked-trigger:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .locked-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    width: 26px;
+    height: 26px;
+    color: var(--accent);
+  }
+  .locked-icon svg { width: 100%; height: 100%; }
+  .locked-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .locked-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .locked-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 18px;
+    letter-spacing: -0.01em;
+    color: var(--text-1, var(--text));
+  }
+  .locked-arrow {
+    flex-shrink: 0;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 22px;
+    transition: transform 180ms ease;
+  }
+  .locked-trigger:hover .locked-arrow {
+    transform: translateX(4px);
+  }
+
+  /* Unlocked state — trigger collapses to a discreet caption above
+     the now-revealed content. */
+  .locked-section.is-unlocked .locked-trigger {
+    border-style: none;
+    background: transparent;
+    padding: 4px 0 16px;
+    cursor: default;
+  }
+  .locked-section.is-unlocked .locked-trigger:hover {
+    background: transparent;
+    border-color: transparent;
+  }
+  .locked-section.is-unlocked .locked-eyebrow::before {
+    content: 'Unlocked · ';
+  }
+  .locked-section.is-unlocked .locked-eyebrow {
+    /* Hide the original "enter password to view" text by replacing it. */
+    font-size: 0;
+    letter-spacing: 0;
+  }
+  .locked-section.is-unlocked .locked-eyebrow::before {
+    font-size: 9.5px;
+    letter-spacing: 0.20em;
+  }
+  .locked-section.is-unlocked .locked-title {
+    font-size: 14px;
+    color: var(--text-3);
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+  .locked-section.is-unlocked .locked-arrow,
+  .locked-section.is-unlocked .locked-icon {
+    display: none;
+  }
+</style>
