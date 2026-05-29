@@ -3411,7 +3411,7 @@
   }
 
   /* ── v6-detail extension: course-detail ── */
-  .v6-detail.course-detail .course-subtitle { max-width: 920px; margin: 0 auto 2em; text-align: center; }
+  .v6-detail.course-detail .course-subtitle { max-width: 920px; margin: 0 0 2em; text-align: left; }
   .v6-detail.course-detail .cs-eyebrow {
     font-family: var(--font-mono);
     font-size: 10px;
@@ -3433,7 +3433,7 @@
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 16px;
     max-width: 920px;
-    margin: 0 auto 3em;
+    margin: 0 0 3em;
     padding: 24px;
     background: rgba(20, 20, 24, 0.45);
     border: 1px solid var(--border-2);
@@ -3450,7 +3450,7 @@
   }
   .v6-detail.course-detail .course-problem,
   .v6-detail.course-detail .course-outcomes,
-  .v6-detail.course-detail .course-fit { max-width: 920px; margin: 0 auto 3em; }
+  .v6-detail.course-detail .course-fit { max-width: 920px; margin: 0 0 3em; }
   .v6-detail.course-detail .course-bullets {
     list-style: none; padding: 0; margin: 0;
     display: grid; gap: 10px;
@@ -3518,7 +3518,7 @@
   }
   .v6-detail.course-detail .course-soon {
     max-width: 720px;
-    margin: 0 auto 3em;
+    margin: 0 0 3em;
     padding: 22px 26px;
     background: rgba(168, 85, 247, 0.08);
     border: 1px solid rgba(168, 85, 247, 0.2);
@@ -3552,7 +3552,7 @@
     color: var(--accent);
     margin-bottom: 10px;
   }
-  .v6-detail.course-detail .course-cta { margin: 0 auto 3em; max-width: 540px; text-align: center; }
+  .v6-detail.course-detail .course-cta { margin: 0 0 3em; max-width: 540px; text-align: left; }
   .v6-detail.course-detail .course-waitlist h3 {
     font-family: var(--font-display);
     font-size: 22px;
