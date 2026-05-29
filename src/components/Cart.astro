@@ -1,0 +1,270 @@
+---
+// Placeholder cart + checkout — ported from the v6 gold-standard mockup.
+// Floating FAB (bottom-right) → slide-in drawer with cart → checkout →
+// processing → success. No real payment; explicitly a placeholder.
+// Adaptations for v2: product data comes from the clicking button's
+// data-* attributes (no global PRODUCTS_INDEX), cart persists in
+// localStorage so it survives client-side navigation, and the markup is
+// transition:persist so the ClientRouter doesn't tear it down.
+import '../styles/cart.css';
+---
+
+<div id="melis-cart-root" transition:persist>
+  <button id="cart-fab" type="button" aria-label="Open cart">
+    <i class="ph ph-shopping-bag" aria-hidden="true"></i>
+    <span class="cart-fab-count" data-cart-count>0</span>
+  </button>
+
+  <div id="checkout-backdrop" aria-hidden="true"></div>
+
+  <aside id="checkout-drawer" role="dialog" aria-modal="true" aria-label="Cart and checkout" aria-hidden="true">
+    <div class="checkout-top">
+      <button class="checkout-close" type="button" aria-label="Close cart">×</button>
+      <div class="checkout-mode-title" data-checkout-title>CART</div>
+    </div>
+    <div class="checkout-body" data-checkout-body></div>
+    <div class="checkout-footer" data-checkout-footer></div>
+  </aside>
+
+  <div class="cart-toast" role="status" aria-live="polite">
+    <i class="ph ph-check-circle" aria-hidden="true"></i>
+    <div>
+      <div class="cart-toast-label">Added to cart</div>
+      <div class="cart-toast-text" data-toast-text>Item title</div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    if (window.__melisCart) return;
+    window.__melisCart = true;
+
+    var STORE = 'melis_cart_v1';
+    var cart = [];
+    try { cart = JSON.parse(localStorage.getItem(STORE) || '[]') || []; } catch (e) { cart = []; }
+    function saveCart() { try { localStorage.setItem(STORE, JSON.stringify(cart)); } catch (e) {} }
+
+    var mode = 'cart';
+    var buyNowItems = [];
+    var purchased = [];
+    var lastPurchasedItems = [];
+    var lastCheckoutEmail = '';
+    var paymentMethod = 'card';
+
+    function $(sel, root) { return (root || document).querySelector(sel); }
+    function handles() {
+      return {
+        fab: document.getElementById('cart-fab'),
+        fabCount: $('#cart-fab [data-cart-count]'),
+        drawer: document.getElementById('checkout-drawer'),
+        backdrop: document.getElementById('checkout-backdrop'),
+        titleEl: $('#checkout-drawer [data-checkout-title]'),
+        bodyEl: $('#checkout-drawer [data-checkout-body]'),
+        footerEl: $('#checkout-drawer [data-checkout-footer]'),
+        toast: $('.cart-toast'),
+        toastText: $('.cart-toast [data-toast-text]'),
+      };
+    }
+
+    function parsePrice(p) {
+      if (typeof p === 'number') return p;
+      if (!p) return 0;
+      var m = String(p).replace(/[,\s]/g, '').match(/-?\d+(\.\d+)?/);
+      return m ? parseFloat(m[0]) : 0;
+    }
+    function fmtMoney(n) { return '$' + (Math.round(n * 100) / 100).toFixed(2).replace(/\.00$/, ''); }
+    function cartSubtotal() { return cart.reduce(function (s, it) { return s + parsePrice(it.price); }, 0); }
+
+    function refreshFab() {
+      var h = handles(); if (!h.fab) return;
+      if (h.fabCount) h.fabCount.textContent = String(cart.length);
+      h.fab.classList.toggle('is-visible', cart.length > 0);
+      h.fab.classList.toggle('has-items', cart.length > 0);
+    }
+
+    var toastTimer = null;
+    function showToast(text) {
+      var h = handles(); if (!h.toast) return;
+      if (h.toastText) h.toastText.textContent = text;
+      h.toast.classList.add('is-visible');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { h.toast.classList.remove('is-visible'); }, 2500);
+    }
+
+    function openDrawer(next) {
+      var h = handles(); if (!h.drawer) return;
+      mode = next || 'cart';
+      render();
+      h.drawer.classList.add('is-open');
+      h.drawer.setAttribute('aria-hidden', 'false');
+      h.backdrop.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeDrawer() {
+      var h = handles(); if (!h.drawer) return;
+      h.drawer.classList.remove('is-open');
+      h.drawer.setAttribute('aria-hidden', 'true');
+      h.backdrop.classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
+
+    function addToCart(p) {
+      if (!p || !p.id) return;
+      if (cart.some(function (it) { return it.id === p.id; })) { showToast('Already in cart — ' + p.title); return; }
+      cart.push({ id: p.id, title: p.title, price: p.price, category: p.category || '', image: p.image || '' });
+      saveCart(); refreshFab(); showToast('Added — ' + p.title);
+    }
+    function removeFromCart(id) {
+      cart = cart.filter(function (it) { return it.id !== id; });
+      saveCart(); refreshFab(); if (mode === 'cart') render();
+    }
+    function buyNow(p) {
+      if (!p || !p.id) return;
+      buyNowItems = [{ id: p.id, title: p.title, price: p.price, category: p.category || '', image: p.image || '' }];
+      openDrawer('checkout');
+    }
+    function checkoutItems() { return buyNowItems.length ? buyNowItems : cart.slice(); }
+    function checkoutSubtotal() { return checkoutItems().reduce(function (s, it) { return s + parsePrice(it.price); }, 0); }
+
+    function setTitle(label, count) {
+      var h = handles(); if (!h.titleEl) return;
+      if (typeof count === 'number') h.titleEl.innerHTML = label + ' · <strong>' + count + ' item' + (count === 1 ? '' : 's') + '</strong>';
+      else h.titleEl.textContent = label;
+    }
+
+    function thumbStyle(image) {
+      return image
+        ? "background-image:url('" + image + "'), linear-gradient(135deg, rgba(168,85,247,0.18), rgba(168,85,247,0.04) 60%, rgba(255,255,255,0.02));"
+        : '';
+    }
+    function lineRow(item) {
+      var eyebrow = item.category ? '<div class="cart-line-eyebrow">' + item.category + '</div>' : '';
+      return '<div class="cart-line" data-line="' + item.id + '">'
+        + '<div class="cart-line-thumb" role="img" aria-label="' + item.title + ' cover" style="' + thumbStyle(item.image) + '"></div>'
+        + '<div class="cart-line-body">' + eyebrow + '<div class="cart-line-title">' + item.title + '</div></div>'
+        + '<div class="cart-line-price">' + item.price + '</div>'
+        + '<button class="cart-line-remove" type="button" data-remove="' + item.id + '" aria-label="Remove ' + item.title + '">×</button>'
+        + '</div>';
+    }
+
+    function render() {
+      var h = handles(); if (!h.bodyEl || !h.footerEl) return;
+      h.bodyEl.innerHTML = ''; h.footerEl.innerHTML = '';
+      if (mode === 'cart') return renderCart(h);
+      if (mode === 'checkout') return renderCheckout(h);
+      if (mode === 'processing') return renderProcessing(h);
+      if (mode === 'success') return renderSuccess(h);
+    }
+
+    function renderCart(h) {
+      setTitle('CART', cart.length);
+      if (cart.length === 0) {
+        h.bodyEl.innerHTML = '<div class="cart-empty"><i class="ph ph-shopping-bag" aria-hidden="true"></i><div>Your cart is empty</div><a class="cart-empty-link" href="/products/">Browse the catalogue →</a></div>';
+        return;
+      }
+      h.bodyEl.innerHTML = cart.map(lineRow).join('');
+      h.bodyEl.querySelectorAll('[data-remove]').forEach(function (b) {
+        b.addEventListener('click', function () { removeFromCart(b.dataset.remove); });
+      });
+      h.footerEl.innerHTML = '<div class="checkout-subtotal"><span>Subtotal</span><span class="checkout-subtotal-value">' + fmtMoney(cartSubtotal()) + '</span></div>'
+        + '<button class="checkout-cta" type="button" data-go-checkout>Checkout all — ' + fmtMoney(cartSubtotal()) + '</button>';
+      h.footerEl.querySelector('[data-go-checkout]').addEventListener('click', function () { buyNowItems = []; mode = 'checkout'; render(); });
+    }
+
+    function renderCheckout(h) {
+      setTitle('CHECKOUT');
+      var items = checkoutItems(); var total = checkoutSubtotal();
+      var summaryRows = items.map(function (it) {
+        var eyebrow = it.category ? '<div class="checkout-summary-eyebrow">' + it.category + '</div>' : '';
+        return '<div class="checkout-summary-item"><div class="checkout-summary-thumb" role="img" aria-label="' + it.title + ' cover" style="' + thumbStyle(it.image) + '"></div><div class="checkout-summary-body">' + eyebrow + '<div class="checkout-summary-title">' + it.title + '</div></div><div class="checkout-summary-price">' + it.price + '</div></div>';
+      }).join('');
+      h.bodyEl.innerHTML =
+        (buyNowItems.length === 0 && cart.length > 0 ? '<button class="checkout-back" type="button" data-back-to-cart>← back to cart</button>' : '')
+        + '<div><div class="checkout-section-label">Order summary</div><div class="checkout-summary">' + summaryRows
+        + '<div class="checkout-summary-row" style="border-top:1px solid rgba(255,255,255,0.06);padding-top:8px;margin-top:4px;"><strong>Subtotal</strong><strong>' + fmtMoney(total) + '</strong></div></div></div>'
+        + '<div class="checkout-secure" aria-hidden="true"><i class="ph ph-lock-simple"></i> Secure checkout</div>'
+        + '<div class="checkout-field"><label class="checkout-field-label" for="ck-email">Email address</label><input class="checkout-input" id="ck-email" type="email" placeholder="you@domain.com" value="' + lastCheckoutEmail + '"></div>'
+        + '<div class="checkout-field"><span class="checkout-field-label">Payment method</span><div class="checkout-pm-row" role="radiogroup">'
+        + '<button type="button" class="checkout-pm ' + (paymentMethod === 'card' ? 'is-active' : '') + '" data-pm="card">Card</button>'
+        + '<button type="button" class="checkout-pm ' + (paymentMethod === 'apple' ? 'is-active' : '') + '" data-pm="apple">Apple Pay</button>'
+        + '<button type="button" class="checkout-pm ' + (paymentMethod === 'link' ? 'is-active' : '') + '" data-pm="link">Stripe Link</button></div></div>'
+        + '<div data-card-fields ' + (paymentMethod === 'card' ? '' : 'style="display:none"') + '>'
+        + '<div class="checkout-field" style="margin-bottom:14px;"><label class="checkout-field-label" for="ck-card">Card number</label><div class="checkout-card-input"><input class="checkout-input" id="ck-card" type="text" placeholder="1234 1234 1234 1234" inputmode="numeric"><div class="checkout-card-marks" aria-hidden="true"><span class="checkout-card-mark">VISA</span><span class="checkout-card-mark">MC</span><span class="checkout-card-mark">AMEX</span></div></div></div>'
+        + '<div class="checkout-row"><div class="checkout-field"><label class="checkout-field-label" for="ck-exp">Expiry</label><input class="checkout-input" id="ck-exp" type="text" placeholder="MM / YY" inputmode="numeric"></div><div class="checkout-field"><label class="checkout-field-label" for="ck-cvc">CVC</label><input class="checkout-input" id="ck-cvc" type="text" placeholder="123" inputmode="numeric"></div></div>'
+        + '<div class="checkout-stripe-line"><i class="ph ph-lock-key" aria-hidden="true"></i> Encrypted by Stripe · We never see your card details.</div></div>'
+        + '<ul class="checkout-trust"><li><i class="ph ph-check"></i> 30-day money-back guarantee</li><li><i class="ph ph-check"></i> Encrypted by Stripe</li><li><i class="ph ph-check"></i> Delivered instantly to your inbox</li><li><i class="ph ph-check"></i> Lifetime updates included</li></ul>';
+      h.footerEl.innerHTML = '<div class="checkout-subtotal"><span>Total</span><span class="checkout-subtotal-value">' + fmtMoney(total) + '</span></div>'
+        + '<button class="checkout-cta" type="button" data-complete>Complete purchase — ' + fmtMoney(total) + '</button>'
+        + '<div class="checkout-footer-microcopy">Powered by Stripe · SSL Encrypted · GDPR Compliant</div>';
+
+      var backBtn = h.bodyEl.querySelector('[data-back-to-cart]');
+      if (backBtn) backBtn.addEventListener('click', function () { mode = 'cart'; render(); });
+      h.bodyEl.querySelectorAll('[data-pm]').forEach(function (b) {
+        b.addEventListener('click', function () { paymentMethod = b.dataset.pm; render(); });
+      });
+      h.footerEl.querySelector('[data-complete]').addEventListener('click', function () {
+        var emailInput = h.bodyEl.querySelector('#ck-email');
+        if (emailInput && emailInput.value) lastCheckoutEmail = emailInput.value;
+        mode = 'processing'; render();
+        setTimeout(function () {
+          var completed = checkoutItems().slice();
+          lastPurchasedItems = completed;
+          completed.forEach(function (it) { if (purchased.indexOf(it.id) === -1) purchased.push(it.id); });
+          if (buyNowItems.length === 0) {
+            cart = cart.filter(function (it) { return !completed.some(function (c) { return c.id === it.id; }); });
+            saveCart();
+          }
+          buyNowItems = []; refreshFab();
+          mode = 'success'; render();
+        }, 1500);
+      });
+    }
+
+    function renderProcessing(h) {
+      setTitle('PROCESSING…');
+      h.bodyEl.innerHTML = '<div class="checkout-processing"><div class="checkout-spinner" aria-hidden="true"></div><div class="checkout-processing-text">Confirming your purchase…</div></div>';
+    }
+
+    function renderSuccess(h) {
+      setTitle('PURCHASE COMPLETE');
+      var itemsHtml = lastPurchasedItems.map(function (it) {
+        var eyebrow = it.category ? '<div class="cart-line-eyebrow">' + it.category + '</div>' : '';
+        return '<div class="checkout-success-item"><div class="cart-line-thumb" role="img" aria-label="' + it.title + ' cover" style="' + thumbStyle(it.image) + '"></div><div class="checkout-success-item-body">' + eyebrow + '<div class="checkout-success-item-title">' + it.title + '</div><div class="checkout-success-item-ctas"><button type="button" class="checkout-cta" data-download="' + it.id + '">Download →</button><button type="button" class="checkout-cta is-secondary" data-invoice="' + it.id + '">View invoice</button></div></div></div>';
+      }).join('');
+      h.bodyEl.innerHTML = '<div class="checkout-success-head"><i class="ph ph-check-circle" aria-hidden="true"></i><h2 class="checkout-success-title">Thanks, your purchase is ready</h2><div class="checkout-success-meta">Receipt sent to ' + (lastCheckoutEmail || 'your inbox') + '</div></div>' + itemsHtml + '<button class="checkout-keep-browsing" type="button" data-keep-browsing>Keep browsing →</button>';
+      h.bodyEl.querySelectorAll('[data-download]').forEach(function (b) { b.addEventListener('click', function () { showToast('Download starting…'); }); });
+      h.bodyEl.querySelectorAll('[data-invoice]').forEach(function (b) { b.addEventListener('click', function () { showToast('Invoice opened in new tab'); }); });
+      h.bodyEl.querySelector('[data-keep-browsing]').addEventListener('click', function () { closeDrawer(); window.location.href = '/products/'; });
+    }
+
+    function readProduct(el) {
+      var d = el.dataset;
+      return { id: d.productId, title: d.productTitle, price: d.productPrice, category: d.productCategory || '', image: d.productImage || '' };
+    }
+
+    // Delegated — survives ClientRouter swaps (document is never replaced).
+    document.addEventListener('click', function (e) {
+      var add = e.target.closest('[data-add-cart]');
+      var buy = e.target.closest('[data-buy-now]');
+      var fab = e.target.closest('#cart-fab');
+      var close = e.target.closest('.checkout-close');
+      var backdrop = e.target.closest('#checkout-backdrop');
+      if (add) { e.preventDefault(); addToCart(readProduct(add)); return; }
+      if (buy) { e.preventDefault(); buyNow(readProduct(buy)); return; }
+      if (fab) { openDrawer('cart'); return; }
+      if (close || backdrop) { closeDrawer(); return; }
+    });
+    document.addEventListener('keydown', function (e) {
+      var d = document.getElementById('checkout-drawer');
+      if (e.key === 'Escape' && d && d.classList.contains('is-open')) closeDrawer();
+    });
+
+    // Keep the FAB count correct on first load and after every navigation.
+    function sync() { refreshFab(); }
+    document.addEventListener('astro:page-load', sync);
+    if (document.readyState !== 'loading') sync(); else document.addEventListener('DOMContentLoaded', sync);
+
+    window.melisCart = { add: addToCart, buyNow: buyNow, open: openDrawer, close: closeDrawer, state: function () { return { cart: cart.slice(), mode: mode }; } };
+  })();
+</script>

@@ -3,8 +3,8 @@
 // Renders chip row, About + 3 mini blocks + pull-quote, Take-a-look gallery,
 // Buy aside, Why-it-works grid, and More-kits siblings.
 
-import StripeBuyButton from './StripeBuyButton.astro';
 import { PRODUCT_INCLUDES, PRODUCT_ABOUT_BLOCKS, PD_THUMBS, PD_WHY_TILES, fallbackAboutModel } from '../data/products';
+import { itemHero } from '../lib/hero-image';
 import type { CollectionEntry } from 'astro:content';
 
 interface Props {
@@ -19,6 +19,11 @@ const priceLabel = (() => {
   const sym = data.currency === 'USD' ? '$' : data.currency === 'AUD' ? 'A$' : data.currency === 'EUR' ? '€' : '£';
   return `${sym}${(data.price / 100).toFixed(0)}`;
 })();
+// Cart product payload — fed to the placeholder cart via data-* attrs.
+const plainTitle = (data.title || '').replace(/<[^>]+>/g, '');
+const cartCover = (data.cover && data.cover.startsWith('/'))
+  ? data.cover
+  : (itemHero('products', plainTitle, slug) || '');
 const wasPrice = data.price > 1500 ? '$44' : null;
 const saveLabel = wasPrice ? 'Save 33%' : null;
 
@@ -89,9 +94,26 @@ const siblingsDisplay = siblings.slice(0, 4);
         <span>Limited launch pricing</span>
       </div>
       <div class="pd-buy-cta-row">
-        <div class="pd-buy-cta pd-buy-cta-primary">
-          <StripeBuyButton productSlug={slug} label={`Get for ${priceLabel}`} />
-        </div>
+        <button
+          class="pd-cta-v2"
+          type="button"
+          data-buy-now
+          data-product-id={slug}
+          data-product-title={plainTitle}
+          data-product-price={priceLabel}
+          data-product-category={data.category}
+          data-product-image={cartCover}
+        >Buy now — {priceLabel}</button>
+        <button
+          class="pd-cta-v2 is-secondary"
+          type="button"
+          data-add-cart
+          data-product-id={slug}
+          data-product-title={plainTitle}
+          data-product-price={priceLabel}
+          data-product-category={data.category}
+          data-product-image={cartCover}
+        >Add to cart</button>
         {slug !== 'complete-arsenal' && (
           <a class="pd-buy-cta-bundle" href="/products/complete-arsenal/">
             <span class="pd-buy-cta-bundle-label">Get everything</span>
