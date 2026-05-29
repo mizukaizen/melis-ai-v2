@@ -163,6 +163,11 @@ import '../styles/cart.css';
       setTitle('CART', cart.length);
       if (cart.length === 0) {
         h.bodyEl.innerHTML = '<div class="cart-empty"><i class="ph ph-shopping-bag" aria-hidden="true"></i><div>Your cart is empty</div><a class="cart-empty-link" href="/products/">Browse the catalogue →</a></div>';
+        // Close the drawer on the way out so it slides back as the
+        // products page loads (the root is transition:persist, so the
+        // link's navigation alone would leave it open).
+        var browse = h.bodyEl.querySelector('.cart-empty-link');
+        if (browse) browse.addEventListener('click', function () { closeDrawer(); });
         return;
       }
       h.bodyEl.innerHTML = cart.map(lineRow).join('');
