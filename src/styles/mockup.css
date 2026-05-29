@@ -3084,16 +3084,13 @@
   .pane[data-pane="library"] .kct-headstrip { max-width: 1100px; margin: 0 auto 32px; }
   .pane[data-pane="library"] .dossier-card-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+    gap: 14px;
     max-width: 1100px;
     margin: 0 auto 3em;
   }
-  @media (max-width: 880px) {
-    .pane[data-pane="library"] .dossier-card-grid { grid-template-columns: repeat(2, 1fr); }
-  }
   @media (max-width: 560px) {
-    .pane[data-pane="library"] .dossier-card-grid { grid-template-columns: 1fr; }
+    .pane[data-pane="library"] .dossier-card-grid { grid-template-columns: repeat(2, 1fr); }
   }
   .pane[data-pane="library"] .dossier-card {
     position: relative;
@@ -3125,18 +3122,18 @@
       rgba(5, 5, 5, 0.92) 100%);
     z-index: 1;
   }
-  .pane[data-pane="library"] .dc-meta { position: absolute; left: 18px; right: 18px; bottom: 18px; z-index: 2; }
+  .pane[data-pane="library"] .dc-meta { position: absolute; left: 13px; right: 13px; bottom: 13px; z-index: 2; }
   .pane[data-pane="library"] .dc-title {
     font-family: var(--font-display);
-    font-size: clamp(18px, 1.7vw, 22px);
+    font-size: 15px;
     font-weight: 500;
     line-height: 1.2;
     color: var(--text-1);
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
   .pane[data-pane="library"] .dc-byline {
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 0.06em;
     color: var(--text-3);
     text-transform: uppercase;
