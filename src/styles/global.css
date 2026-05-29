@@ -12,13 +12,20 @@
    and the sidebar footer fall off the screen. So every viewport-height in
    the shell is written as calc(100vh / var(--app-zoom, 1)): the division
    cancels the zoom's multiplication, landing the layout back at exactly one
-   screen, just bigger. The `, 1` fallback makes it a no-op below 1600px. */
-.app { --app-zoom: 1; }
-@media (min-width: 1600px) { .app { --app-zoom: 1.08; zoom: var(--app-zoom); } }
-@media (min-width: 1800px) { .app { --app-zoom: 1.16; zoom: var(--app-zoom); } }
-@media (min-width: 2000px) { .app { --app-zoom: 1.24; zoom: var(--app-zoom); } }
-@media (min-width: 2200px) { .app { --app-zoom: 1.30; zoom: var(--app-zoom); } }
-@media (min-width: 2560px) { .app { --app-zoom: 1.40; zoom: var(--app-zoom); } }
+   screen, just bigger. The `, 1` fallback makes it a no-op below 1600px.
+
+   The search palette, cart/checkout drawer and toasts render at body level
+   (siblings of .app, so they layer above everything), which means the .app
+   zoom never reaches them — their text stayed laptop-sized on a big monitor.
+   They get the same --app-zoom here so they scale in step with the app. Their
+   internal viewport-based caps (palette max-height, drawer full height) use
+   the same calc(… / var(--app-zoom, 1)) so they still fit one screen. */
+.app, #cmdk-root, #melis-cart-root, #fillin-root { --app-zoom: 1; }
+@media (min-width: 1600px) { .app, #cmdk-root, #melis-cart-root, #fillin-root { --app-zoom: 1.08; zoom: var(--app-zoom); } }
+@media (min-width: 1800px) { .app, #cmdk-root, #melis-cart-root, #fillin-root { --app-zoom: 1.16; zoom: var(--app-zoom); } }
+@media (min-width: 2000px) { .app, #cmdk-root, #melis-cart-root, #fillin-root { --app-zoom: 1.24; zoom: var(--app-zoom); } }
+@media (min-width: 2200px) { .app, #cmdk-root, #melis-cart-root, #fillin-root { --app-zoom: 1.30; zoom: var(--app-zoom); } }
+@media (min-width: 2560px) { .app, #cmdk-root, #melis-cart-root, #fillin-root { --app-zoom: 1.40; zoom: var(--app-zoom); } }
 @import "./sidebar-base.css";
 @import "./section-hero-base.css";
 

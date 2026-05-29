@@ -7180,7 +7180,7 @@
     display: none;
     align-items: flex-start;
     justify-content: center;
-    padding-top: 14vh;
+    padding-top: calc(14vh / var(--app-zoom, 1));
   }
   #cmdk-backdrop.is-open { display: flex; }
   #cmdk-panel {
@@ -7193,7 +7193,7 @@
       0 0 0 1px rgba(255,255,255,0.04);
     overflow: hidden;
     display: flex; flex-direction: column;
-    max-height: 70vh;
+    max-height: calc(70vh / var(--app-zoom, 1));
     animation: cmdk-in 160ms ease-out;
   }
   @keyframes cmdk-in {
