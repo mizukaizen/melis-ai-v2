@@ -412,15 +412,17 @@ import '../../styles/brand-port.css';
   .melis-hero-inner {
     position: relative;
     z-index: 2;
-    /* Mirror .section-header-inner: content anchored to the bottom of the
-       hero box, centred to the .melis-main 1280 column so the wordmark
-       holds its position even though the cover full-bleeds. */
+    /* Content anchored to the bottom of the hero box and centred to the
+       same 880 reading column as the body sections (.melis-section), so
+       the wordmark, the standfirst, and the Manifesto all share one left
+       edge. No side padding on wide — the centred 880 lines up with the
+       body column; side padding is added back on narrow via the query. */
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     min-height: var(--hero-min-h-landing);
-    padding: 48px clamp(24px, 3vw, 56px) 56px;
-    max-width: 1280px;
+    padding: 48px 0 56px;
+    max-width: 880px;
     margin: 0 auto;
     width: 100%;
   }
@@ -471,9 +473,9 @@ import '../../styles/brand-port.css';
      cover matches the My Story hero height. Sits just below where the
      image dissolves into the felt, aligned to the wordmark column. */
   .melis-hero-deck {
-    max-width: 1280px;
+    max-width: 880px;
     margin: 8px auto 72px;
-    padding: 0 clamp(24px, 3vw, 56px);
+    padding: 0;
   }
   .melis-hero-deck p {
     margin: 0;
