@@ -583,10 +583,10 @@ main.content .pane.in-room .section-header {
 .section-body .chapter-cover {
   position: relative;
   width: 100%;
-  height: clamp(170px, 22vh, 220px);
+  height: clamp(185px, 24vh, 240px);
   border-radius: 12px;
   overflow: hidden;
-  margin: 0 0 28px;
+  margin: 0 0 46px;
   background-size: cover;
   background-position: center;
   display: flex;
@@ -595,11 +595,16 @@ main.content .pane.in-room .section-header {
 .section-body .chapter-cover-veil {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top,
-    rgba(8, 7, 6, 0.92) 0%,
-    rgba(8, 7, 6, 0.58) 32%,
-    rgba(8, 7, 6, 0.14) 62%,
-    transparent 100%);
+  /* Top stays clear so the scene shows; the bottom dissolves into the
+     felt (#050505 = var(--bg)) so there's no hard image edge, and the
+     title/subtitle sit legibly on the darkened lower band. */
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    transparent 34%,
+    rgba(5, 5, 5, 0.35) 52%,
+    rgba(5, 5, 5, 0.78) 74%,
+    var(--bg) 96%,
+    var(--bg) 100%);
   pointer-events: none;
 }
 .section-body .chapter-cover-meta {
