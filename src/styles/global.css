@@ -589,7 +589,6 @@ main.content .pane.in-room .section-header {
   margin: 0 0 28px;
   background-size: cover;
   background-position: center;
-  border: 1px solid var(--border-2);
   display: flex;
   align-items: flex-end;
 }
