@@ -25,6 +25,11 @@ function coverFor(p: { data: { title: string; cover?: string }; slug: string }) 
   return itemHero('products', p.data.title.replace(/<[^>]+>/g, ''), p.slug);
 }
 function priceLabel(cents: number) { return `$${(cents / 100).toFixed(0)}`; }
+
+// Stat line — derived live so it always matches the grid and grows toward
+// the full catalogue as products are fleshed out before launch.
+const totalProducts = others.length;
+const totalCategories = PRODUCTS_CATEGORIES.length;
 ---
 
 <AppLayout
@@ -41,6 +46,7 @@ function priceLabel(cents: number) { return `$${(cents / 100).toFixed(0)}`; }
 
   <section class="section-body">
     <div class="landing-intro">
+      <div class="section-eyebrow-small">{totalProducts} products · {totalCategories} categories · built for real client work</div>
       <h2 class="h2">Things I made because I needed them — <em>then</em> packaged so you can use them too.</h2>
       <p class="body-lead">Every product started as a tool I built for real client work, then refined enough times that it became reusable. Nothing here is theoretical.</p>
     </div>
