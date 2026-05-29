@@ -587,29 +587,36 @@ main.content .pane.in-room .section-header {
   border-radius: 12px;
   overflow: hidden;
   margin: 0 0 46px;
-  background-size: cover;
-  background-position: center;
   display: flex;
   align-items: flex-end;
+}
+.section-body .chapter-cover-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  /* True dissolve into the felt: the image itself fades to transparent
+     toward the bottom (revealing the page felt + noise behind it) rather
+     than an overlay merely darkening it. Mirrors the page hero fade. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 52%, transparent 96%);
+          mask-image: linear-gradient(to bottom, #000 0%, #000 52%, transparent 96%);
 }
 .section-body .chapter-cover-veil {
   position: absolute;
   inset: 0;
-  /* Top stays clear so the scene shows; the bottom dissolves into the
-     felt (#050505 = var(--bg)) so there's no hard image edge, and the
-     title/subtitle sit legibly on the darkened lower band. */
+  z-index: 1;
+  /* Gentle darken behind the title band only — the felt dissolve above
+     is done by the masked image, not this overlay. */
   background: linear-gradient(to bottom,
-    transparent 0%,
-    transparent 34%,
-    rgba(5, 5, 5, 0.35) 52%,
-    rgba(5, 5, 5, 0.78) 74%,
-    var(--bg) 96%,
-    var(--bg) 100%);
+    transparent 58%,
+    rgba(5, 5, 5, 0.32) 82%,
+    rgba(5, 5, 5, 0.5) 100%);
   pointer-events: none;
 }
 .section-body .chapter-cover-meta {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
