@@ -1,72 +1,79 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro';
 import SectionHero from '../../components/SectionHero.astro';
-import { getCollection } from 'astro:content';
+import LeadForm from '../../components/LeadForm.astro';
 import { landingHero } from '../../lib/hero-image';
 
 export const prerender = true;
 
-const services = (await getCollection('services')).filter((s) => !s.data.draft);
+const steps = [
+  { num: '01', title: 'Confess.', line: "A short call, or just write it in. The real problem — not the tidy version. The business you can't scale, the idea you're scared to start, the bit you haven't told anyone." },
+  { num: '02', title: 'I build.', line: 'I map the exact path: where AI actually gives you leverage, what to build first, how it scales, how it makes money — plus a running head-start on the build itself.' },
+  { num: '03', title: 'You keep it.', line: 'It comes back as a beautiful paper-craft playbook — yours forever. Opt in and an anonymised, voice-only episode goes on the channel, so your problem quietly helps a thousand others too.' },
+];
 
-const COVER_MAP: Record<string, string> = {
-  'strategy-print-sprint': '/section-rooms/services-strategy.png',
-  'business-ai-blueprint': '/section-rooms/services-advisory.png',
-  'ai-builds-on-tap':      '/section-rooms/services-build.png',
-  'operator-coaching':     '/section-rooms/services-fractional.png',
-  'speaking':              '/section-rooms/services-speaking.png',
-};
-function coverFor(slug: string) {
-  return COVER_MAP[slug] || '/section-rooms/services-landing.png';
-}
+const tiers = [
+  {
+    price: '$11',
+    name: 'The Report',
+    line: 'AI builds you the roadmap. A bespoke, no-fluff plan generated straight from your confession — in your inbox, no waiting on me.',
+    flagship: false,
+  },
+  {
+    price: '$111',
+    name: 'The Presentation',
+    line: 'I build and present it personally — the full paper-craft playbook, walked through end to end, with a head-start on the actual build. Eligible to be featured, anonymised, on the channel.',
+    flagship: true,
+  },
+];
 ---
 
 <AppLayout
-  title="Services"
+  title="The Confessional"
   pane="services"
-  description="Work directly with Sean — strategy sprints, implementation, retainers."
+  description="Tell me one real business or life problem. I turn it into a bespoke AI roadmap and a head-start on the build — a paper-craft playbook you keep forever."
 >
   <SectionHero
     cover={landingHero('services')}
-    eyebrow="Work With Me · the offerings"
-    title="Services"
-    titleHtml="<em>Services</em>"
+    eyebrow="Work With Me · the confessional"
+    title="The Confessional"
+    titleHtml="The <em>Confessional</em>"
   />
 
   <section class="section-body">
     <div class="landing-intro">
-      <h2 class="h2">When you need an <em>operator</em> in the room.</h2>
-      <p class="body-lead">I work with three or four clients at a time. Bias toward depth, not volume. The work I take is what I'd want to teach later — which is the test that keeps it interesting on both sides.</p>
+      <h2 class="h2">Tell me what you're stuck on. <em>I'll build you the way out.</em></h2>
+      <p class="body-lead">Bring me one real problem — a business you can't scale, an idea you're scared to start, a life you'd change with AI if you knew where to begin. I turn it into a bespoke roadmap and a running head-start on the build, handed back as a paper-craft playbook you keep forever. With your blessing, some become anonymous episodes on the channel — voice only, name nowhere — so your problem quietly helps a thousand other people too.</p>
     </div>
-    <div class="room-grid">
-      {services.map((s) => (
-        <a class="room-card" href={`/services/${s.slug}/`}>
-          <div class="room-card-img" style={`background-image: url('${coverFor(s.slug)}');`}></div>
-          <div class="room-card-veil"></div>
-          <div class="room-card-arrow">↗</div>
-          <div class="room-card-meta">
-            <div class="room-card-eyebrow">{s.data.eyebrow}</div>
-            <div class="room-card-title" set:html={s.data.titleHtml || s.data.title}></div>
-            <div class="room-card-line">{s.data.lede}</div>
-          </div>
-        </a>
+
+    <div class="cf-steps">
+      {steps.map((s) => (
+        <div class="cf-step">
+          <div class="cf-step-num">{s.num}</div>
+          <h3 class="cf-step-title">{s.title}</h3>
+          <p class="cf-step-line">{s.line}</p>
+        </div>
       ))}
     </div>
 
-    <hr class="rule" />
-
-    {/* Mockup-canonical closing section: client list + CTA panel. */}
-    <div class="landing-closing">
-      <div class="section-eyebrow-small">Past clients · a sample</div>
-      <h2 class="h2">Trusted by operators who <em>build for a living</em>.</h2>
-      <p class="body-lead">Mercedes · Kiehl's · Brisbane Lions · Lyre's Spirits · Maybelline NY · Culture Amp · Snap Fitness · Jetts · JustDigitalPeople · JKL College — and a quiet list of solo founders, indie studios, and operators who'd rather not be named.</p>
-
-      <div class="cta-panel">
-        <div class="cta-panel-text">
-          <h3>Want to <em>talk first</em>?</h3>
-          <p>Twenty minutes, no slides. Just walk through what you're working on and what's stuck. I'll tell you whether I'm the right fit honestly.</p>
+    <div class="cf-tiers">
+      {tiers.map((t) => (
+        <div class:list={['cf-tier', { 'is-flagship': t.flagship }]}>
+          {t.flagship && <div class="cf-tier-flag">Flagship</div>}
+          <div class="cf-tier-price">{t.price}</div>
+          <div class="cf-tier-name">{t.name}</div>
+          <p class="cf-tier-line">{t.line}</p>
+          <a class="cf-tier-cta" href="#confess">{t.flagship ? 'Have it presented →' : 'Get the report →'}</a>
         </div>
-        <a class="btn" href="mailto:sean@melis.ai">Email me →</a>
-      </div>
+      ))}
+    </div>
+
+    <p class="cf-hardship">Genuinely can't afford it but really need this? <a href="#confess">Apply and tell me why</a> — I do a handful of these for free.</p>
+
+    <div class="cf-confess" id="confess">
+      <h3 class="h2">Step into <em>the booth</em>.</h3>
+      <p class="body-lead">Confess the real thing. The more honest you are, the better the way out I can build. Voice-only and anonymised if it's ever featured — flag anything you'd rather I keep private right in your message.</p>
+      <LeadForm service="The Confessional" messageLabel="Your business or life problem — confess away." submitLabel="Confess →" />
     </div>
   </section>
 
@@ -75,4 +82,92 @@ function coverFor(slug: string) {
     <div>Operator-built · Australia</div>
   </div>
 
+  <style>
+    .cf-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin: 8px 0 40px;
+    }
+    .cf-step {
+      padding: 24px 22px 26px;
+      border: 1px solid var(--border-2);
+      border-radius: 12px;
+      background: rgba(20, 20, 24, 0.4);
+    }
+    .cf-step-num {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .cf-step-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 400;
+      margin: 0 0 8px;
+      color: var(--text-1);
+    }
+    .cf-step-line { font-size: 14px; line-height: 1.65; color: var(--text-2); margin: 0; }
+
+    .cf-tiers {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      margin: 0 0 28px;
+    }
+    .cf-tier {
+      position: relative;
+      padding: 28px 26px 30px;
+      border: 1px solid var(--border-2);
+      border-radius: 12px;
+      background: rgba(20, 20, 24, 0.4);
+      display: flex;
+      flex-direction: column;
+    }
+    .cf-tier.is-flagship { border-color: rgba(168, 85, 247, 0.45); background: rgba(168, 85, 247, 0.06); }
+    .cf-tier-flag {
+      position: absolute; top: 16px; right: 16px;
+      font-family: var(--font-mono); font-size: 9.5px;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--accent);
+      padding: 3px 9px; border-radius: 999px;
+      background: rgba(168, 85, 247, 0.14);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+    }
+    .cf-tier-price {
+      font-family: var(--font-display);
+      font-size: 40px; font-weight: 300; letter-spacing: -0.02em;
+      color: var(--text-1); line-height: 1;
+    }
+    .cf-tier-name {
+      font-family: var(--font-display);
+      font-size: 19px; margin: 10px 0 8px; color: var(--text-1);
+    }
+    .cf-tier-line { font-size: 14px; line-height: 1.65; color: var(--text-2); margin: 0 0 20px; flex: 1; }
+    .cf-tier-cta {
+      align-self: flex-start;
+      font-family: var(--font-mono); font-size: 12px;
+      letter-spacing: 0.04em; color: var(--accent);
+      border-bottom: 1px solid rgba(124, 58, 237, 0.4);
+      padding-bottom: 2px;
+    }
+    .cf-tier-cta:hover { border-bottom-color: var(--accent); }
+
+    .cf-hardship {
+      font-size: 13.5px; line-height: 1.6; color: var(--text-3);
+      margin: 0 0 48px; max-width: 60ch;
+    }
+    .cf-hardship a { color: var(--accent); border-bottom: 1px solid rgba(124, 58, 237, 0.4); }
+
+    .cf-confess { max-width: 600px; scroll-margin-top: 80px; }
+    .cf-confess .h2 { margin-bottom: 10px; }
+    .cf-confess .body-lead { margin-bottom: 24px; }
+
+    @media (max-width: 860px) {
+      .cf-steps { grid-template-columns: 1fr; }
+      .cf-tiers { grid-template-columns: 1fr; }
+    }
+  </style>
 </AppLayout>

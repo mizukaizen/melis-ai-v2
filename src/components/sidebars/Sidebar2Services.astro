@@ -1,30 +1,24 @@
 ---
-// Mockup-canonical sb2 entries (lines 5311-5351 of melis-ai-spa-v6-astro-content.html).
-// Each mockup label maps to a real Astro detail page — 3 live services
-// (Strategy Session, Build Sprint, Advisory) keep their existing content
-// under the original slugs, the other 2 (Fractional Operator, Speaking)
-// are coming-soon stubs created in pass 10.
-
+// Services sb2 — the single Confessional offer. The five old service
+// tiers are archived in /content (draft) and removed from nav for now;
+// may return in future.
 const ENTRIES: { name: string; count: string; desc: string; href: string; icon: string }[] = [
-  { name: 'AI Strategy Sprint',     count: '1:1',     desc: 'Two weeks · opinionated print',           href: '/services/strategy-print-sprint/', icon: 'ph-lightning' },
-  { name: 'AI Builds on Tap',       count: 'sub',     desc: 'Monthly · ships, websites, automations',  href: '/services/ai-builds-on-tap/',       icon: 'ph-plug' },
-  { name: 'Business AI Blueprint',  count: 'SMB',     desc: 'Discovery → blueprint → build',           href: '/services/business-ai-blueprint/',  icon: 'ph-compass' },
-  { name: 'Operator Coaching',      count: '1:1',     desc: 'Monthly sessions + Slack',                href: '/services/operator-coaching/',      icon: 'ph-users-three' },
-  { name: 'Speaking & Workshops',   count: 'stage',   desc: 'Keynotes and workshops',                  href: '/services/speaking/',               icon: 'ph-microphone-stage' },
+  { name: 'The Report',       count: '$11',  desc: 'AI-built roadmap, in your inbox',    href: '/services/#confess', icon: 'ph-file-text' },
+  { name: 'The Presentation', count: '$111', desc: 'I build & present the playbook',      href: '/services/#confess', icon: 'ph-projector-screen' },
 ];
 ---
 
 <aside class="sidebar-2" transition:persist="sb2-services">
   <div class="sb2-pane active" data-pane="services">
     <div class="sb2-header">
-      <div class="sb2-title"><em>Services</em></div>
+      <div class="sb2-title"><em>The Confessional</em></div>
     </div>
     <div class="sb2-list">
       <a class="sb2-item" href="/services/">
-        <i class="ph ph-handshake sb2-icon"></i>
+        <i class="ph ph-microphone sb2-icon"></i>
         <div class="sb2-row">
-          <div class="sb2-name">All Services</div>
-          <div class="sb2-count">5</div>
+          <div class="sb2-name">The Confessional</div>
+          <div class="sb2-count">1:1</div>
         </div>
         <div class="sb2-desc">How to work with me</div>
       </a>
