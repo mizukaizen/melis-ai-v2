@@ -57,9 +57,12 @@ import '../../styles/brand-port.css';
         <h1 class="melis-hero-title">melis<em>.</em>ai</h1>
         <div class="melis-hero-rule"></div>
         <p class="melis-hero-lead"><em>The studio behind the work — its why, its look, its voice.</em></p>
-        <p class="melis-hero-intro">An AI studio run by Sean Melis from London. Courses, products, dispatches. What follows is everything that holds it together.</p>
       </div>
     </header>
+
+    <div class="melis-hero-deck">
+      <p>An AI studio run by Sean Melis from London. Courses, products, dispatches. What follows is everything that holds it together.</p>
+    </div>
 
     <Manifesto />
     <Promise />
@@ -368,11 +371,11 @@ import '../../styles/brand-port.css';
        bottom margin still pulls the Manifesto up into the felt fade. */
     --pane-w: calc(100vw - var(--sidebar-w) - var(--sidebar-w2));
     --bleed: calc(max(0px, (var(--pane-w) - 1280px) / 2) + clamp(24px, 3vw, 56px));
-    margin: -28px calc(-1 * var(--bleed)) -96px;
+    margin: -28px calc(-1 * var(--bleed)) 0;
     width: auto;
     min-height: var(--hero-min-h-landing);
     overflow: hidden;
-    display: flex; align-items: flex-start;
+    display: flex;
     isolation: isolate;
   }
   .melis-hero-bg {
@@ -412,10 +415,14 @@ import '../../styles/brand-port.css';
   .melis-hero-inner {
     position: relative;
     z-index: 2;
-    /* Centre to the .melis-main column (1280) so the wordmark holds its
-       position even though the cover now full-bleeds. Padding trimmed so
-       the content fits the shorter landing-hero height. */
-    padding: 48px clamp(24px, 3vw, 56px) 44px;
+    /* Mirror .section-header-inner: content anchored to the bottom of the
+       hero box, centred to the .melis-main 1280 column so the wordmark
+       holds its position even though the cover full-bleeds. */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: var(--hero-min-h-landing);
+    padding: 48px clamp(24px, 3vw, 56px) 56px;
     max-width: 1280px;
     margin: 0 auto;
     width: 100%;
@@ -459,20 +466,28 @@ import '../../styles/brand-port.css';
     font-size: 22px;
     line-height: 1.4;
     color: var(--accent);
-    margin: 0 0 22px;
+    margin: 0;
     max-width: 640px;
   }
   .melis-hero-lead em { font-style: italic; color: var(--accent); }
-  .melis-hero-intro {
+  /* Standfirst — the descriptive intro, moved out of the hero so the
+     cover matches the My Story hero height. Sits just below where the
+     image dissolves into the felt, aligned to the wordmark column. */
+  .melis-hero-deck {
+    max-width: 1280px;
+    margin: 26px auto 0;
+    padding: 0 clamp(24px, 3vw, 56px);
+  }
+  .melis-hero-deck p {
     margin: 0;
-    max-width: 640px;
-    font-size: 16px;
+    max-width: 680px;
+    font-size: 17px;
     line-height: 1.7;
     color: var(--text-2);
   }
   @media (max-width: 1100px) {
     .melis-hero-cover { margin-left: 0; margin-right: 0; min-height: var(--hero-min-h-landing); }
-    .melis-hero-inner { padding: 44px 24px 40px; }
+    .melis-hero-inner { padding: 40px 24px 44px; }
     .melis-hero-title { font-size: 64px; }
   }
 
