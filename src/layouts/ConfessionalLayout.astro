@@ -2,6 +2,9 @@
 // Standalone, full-screen layout for The Confessional landing — no app
 // shell (no sidebars, no cart), so /services reads like its own site
 // (destined for confessional.melis.ai). Brand tokens + fonts only.
+// ClientRouter so navigating in from the app cross-fades instead of a
+// hard reload.
+import { ClientRouter } from 'astro:transitions';
 import '../styles/tokens.css';
 
 interface Props {
@@ -37,6 +40,7 @@ const {
     />
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+    <ClientRouter />
   </head>
   <body>
     <slot />
