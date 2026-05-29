@@ -114,15 +114,21 @@ const siblingsDisplay = siblings.slice(0, 4);
           data-product-category={data.category}
           data-product-image={cartCover}
         >Add to cart</button>
-        {slug !== 'complete-arsenal' && (
-          <a class="pd-buy-cta-bundle" href="/products/complete-arsenal/">
-            <span class="pd-buy-cta-bundle-label">Get everything</span>
-            <span class="pd-buy-cta-bundle-meta">The Complete Arsenal · $197</span>
-          </a>
-        )}
       </div>
     </aside>
   </div>
+
+  {slug !== 'complete-arsenal' && (
+    <a class="pd-arsenal-cta" href="/products/complete-arsenal/">
+      <div class="pd-arsenal-icon"><i class="ph ph-stack" aria-hidden="true"></i></div>
+      <div class="pd-arsenal-text">
+        <div class="pd-arsenal-eyebrow">Best value · save big</div>
+        <div class="pd-arsenal-title">Get everything — The Complete Arsenal</div>
+        <div class="pd-arsenal-line">Every kit, skill, template and tool in one download.</div>
+      </div>
+      <span class="pd-arsenal-go">Get the lot · $197 →</span>
+    </a>
+  )}
 
   <div class="pd-section pd-take-look">
     <div class="pd-section-label">Take a look · {PD_THUMBS.length} previews</div>
@@ -172,3 +178,34 @@ const siblingsDisplay = siblings.slice(0, 4);
     </div>
   )}
 </div>
+
+<style>
+  /* "Get everything" — a full-width shiny-gold panel below the buy card. */
+  .pd-arsenal-cta {
+    display: flex; align-items: center; gap: 22px;
+    margin: 32px 0 8px; padding: 22px 28px; border-radius: 16px;
+    color: #1a1407; text-decoration: none; position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #f6dc92 0%, #e8b94e 46%, #c9962f 100%);
+    border: 1px solid rgba(255, 244, 214, 0.65);
+    box-shadow: 0 16px 50px rgba(201, 150, 47, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+  }
+  .pd-arsenal-cta:hover { transform: translateY(-2px); box-shadow: 0 24px 64px rgba(201, 150, 47, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.6); }
+  .pd-arsenal-cta::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(105deg, transparent 42%, rgba(255, 255, 255, 0.4) 50%, transparent 58%);
+    transform: translateX(-120%); transition: transform 0.8s ease;
+  }
+  .pd-arsenal-cta:hover::after { transform: translateX(120%); }
+  .pd-arsenal-icon { width: 50px; height: 50px; border-radius: 12px; display: grid; place-items: center; background: rgba(26, 20, 7, 0.12); flex-shrink: 0; }
+  .pd-arsenal-icon i { font-size: 26px; color: #3a2c0a; }
+  .pd-arsenal-text { flex: 1; min-width: 0; }
+  .pd-arsenal-eyebrow { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(26, 20, 7, 0.62); margin-bottom: 4px; }
+  .pd-arsenal-title { font-family: var(--font-display); font-size: 23px; font-weight: 500; line-height: 1.15; color: #1a1407; }
+  .pd-arsenal-line { font-size: 13.5px; color: rgba(26, 20, 7, 0.72); margin-top: 3px; }
+  .pd-arsenal-go { font-family: var(--font-mono); font-size: 12.5px; font-weight: 500; color: #1a1407; white-space: nowrap; padding: 11px 18px; border-radius: 999px; background: rgba(26, 20, 7, 0.16); flex-shrink: 0; }
+  @media (max-width: 640px) {
+    .pd-arsenal-cta { flex-wrap: wrap; }
+    .pd-arsenal-go { width: 100%; text-align: center; }
+  }
+</style>
