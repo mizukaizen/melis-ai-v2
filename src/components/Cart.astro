@@ -79,7 +79,9 @@ import '../styles/cart.css';
     function refreshFab() {
       var h = handles(); if (!h.fab) return;
       if (h.fabCount) h.fabCount.textContent = String(cart.length);
-      h.fab.classList.toggle('is-visible', cart.length > 0);
+      // Always visible — a permanent floating reminder. The count badge
+      // (.has-items) only appears once there's something in the cart.
+      h.fab.classList.add('is-visible');
       h.fab.classList.toggle('has-items', cart.length > 0);
     }
 
