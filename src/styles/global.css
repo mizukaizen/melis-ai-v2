@@ -640,6 +640,33 @@ main.content .pane.in-room .section-header {
   color: rgba(232, 227, 216, 0.8);
   max-width: 56ch;
 }
+
+/* Full-bleed cover banners — span the full content pane while the prose
+   column stays at 720px. Breakout each side = half of (pane − column)
+   plus the column's padding. Pane = viewport − the two sidebars. Title
+   meta is re-padded by the same amount so it stays aligned with the
+   narrow body text below. */
+.section-body.story-read .chapter-cover {
+  --pane-w: calc(100vw - var(--sidebar-w) - var(--sidebar-w2));
+  --bleed: calc((var(--pane-w) - 720px) / 2 + clamp(20px, 2vw, 24px));
+  width: auto;
+  margin-left: calc(-1 * var(--bleed));
+  margin-right: calc(-1 * var(--bleed));
+  border-radius: 0;
+}
+.section-body.story-read .chapter-cover-meta {
+  padding-left: var(--bleed);
+}
+/* Below the two-sidebar layout the pane math no longer holds — fall back
+   to the contained, rounded banner. */
+@media (max-width: 1100px) {
+  .section-body.story-read .chapter-cover {
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: 12px;
+  }
+  .section-body.story-read .chapter-cover-meta { padding-left: 24px; }
+}
 .section-body .chapter-title {
   font-family: var(--font-display);
   font-size: 32px;
