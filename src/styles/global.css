@@ -4,12 +4,21 @@
 /* Auto-scale the whole app up on large monitors — like a built-in browser
    zoom — so the site fills big displays and text stays readable instead of
    sitting tiny at 100%. 1x on laptops; ramps up by viewport width. Scoped
-   to .app so it never compounds with the Confessional landing's own zoom. */
-@media (min-width: 1600px) { .app { zoom: 1.08; } }
-@media (min-width: 1800px) { .app { zoom: 1.16; } }
-@media (min-width: 2000px) { .app { zoom: 1.24; } }
-@media (min-width: 2200px) { .app { zoom: 1.30; } }
-@media (min-width: 2560px) { .app { zoom: 1.40; } }
+   to .app so it never compounds with the Confessional landing's own zoom.
+
+   The app shell is a strict one-screen layout: the home pane and the
+   sidebars are locked to the viewport height. Plain zoom multiplies that
+   height (100vh × 1.4 = 140vh) and clips the bottom — the home ticker/cards
+   and the sidebar footer fall off the screen. So every viewport-height in
+   the shell is written as calc(100vh / var(--app-zoom, 1)): the division
+   cancels the zoom's multiplication, landing the layout back at exactly one
+   screen, just bigger. The `, 1` fallback makes it a no-op below 1600px. */
+.app { --app-zoom: 1; }
+@media (min-width: 1600px) { .app { --app-zoom: 1.08; zoom: var(--app-zoom); } }
+@media (min-width: 1800px) { .app { --app-zoom: 1.16; zoom: var(--app-zoom); } }
+@media (min-width: 2000px) { .app { --app-zoom: 1.24; zoom: var(--app-zoom); } }
+@media (min-width: 2200px) { .app { --app-zoom: 1.30; zoom: var(--app-zoom); } }
+@media (min-width: 2560px) { .app { --app-zoom: 1.40; zoom: var(--app-zoom); } }
 @import "./sidebar-base.css";
 @import "./section-hero-base.css";
 
