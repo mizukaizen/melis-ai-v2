@@ -1,20 +1,16 @@
 ---
 import AppLayout from '../../layouts/AppLayout.astro';
 import SectionHero from '../../components/SectionHero.astro';
-import FeaturedCourseCard from '../../components/FeaturedCourseCard.astro';
 import { getCollection } from 'astro:content';
 import { landingHero, itemHero } from '../../lib/hero-image';
 
 export const prerender = true;
 
 const courses = (await getCollection('courses')).filter((c) => !c.data.draft);
+// No flagship call-out — every course sits in the grid. Live first (LIVE
+// pill), then the coming-soon ones; the live status is shown on the card.
 const live = courses.filter((c) => c.data.status === 'live');
 const comingSoon = courses.filter((c) => c.data.status === 'coming-soon');
-// AI Mastery 2026 is the flagship per the mockup
-const flagship = live.find((c) => c.slug === 'ai-mastery-2026')
-  || live.find((c) => c.slug === 'claude-cowork-for-professionals')
-  || live[0];
-const otherLive = live.filter((c) => c !== flagship);
 ---
 
 <AppLayout
@@ -31,12 +27,10 @@ const otherLive = live.filter((c) => c !== flagship);
 
   <section class="section-body">
     <h2 class="h2">For operators already <em>in the work</em> — not beginners.</h2>
-    <p class="body-lead">One flagship live and recording right now. Seven more in the pipeline.</p>
-
-    {flagship && <FeaturedCourseCard item={flagship} />}
+    <p class="body-lead">One live and recording right now. Seven more in the pipeline.</p>
 
     <div class="room-grid">
-      {otherLive.map((c) => (
+      {live.map((c) => (
         <a class="room-card" href={`/courses/${c.slug}/`}>
           <div class="room-card-img" style={`background-image: url('${itemHero('courses', c.data.title.replace(/<[^>]+>/g, ''), c.slug)}');`}></div>
           <div class="room-card-veil"></div>
