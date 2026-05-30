@@ -39,7 +39,7 @@ const sortedCatalog = [...catalog].sort((a, b) => libraryNormalise(a).localeComp
 const fleshedList = Array.from(fleshedByTitle.entries())
   .map(([title, entry]) => ({ title, entry }))
   .sort((a, b) => libraryNormalise(a.title).localeCompare(libraryNormalise(b.title)));
-const featuredCards = fleshedList.slice(0, 6);
+const featuredCards = fleshedList.slice(0, 4);
 
 // Per-book paper-craft cover; falls back to the category cover if no
 // dedicated per-book image exists. Pattern matches mockup's
@@ -102,8 +102,8 @@ const categoryCover = dossierCategoryHero(category);
       </div>
       {sortedCatalog.map((title) => {
         const fleshed = fleshedByTitle.get(title);
-        return (
-          <div class:list={['kct-row', fleshed ? 'kct-row-live' : 'kct-row-stub']}>
+        const inner = (
+          <>
             <div class="kct-title-col">
               <h4 class="kct-title">{title}</h4>
               {fleshed?.data.byline && <div class="kct-byline">{fleshed.data.byline}</div>}
@@ -119,13 +119,17 @@ const categoryCover = dossierCategoryHero(category);
               )}
             </div>
             <div class="kct-cta-col">
-              {fleshed ? (
-                <a class="kct-cta" href={`/dossiers/${category}/${fleshed.slug}/`}>Read dossier →</a>
-              ) : (
-                <span class="kct-cta kct-cta-muted">Soon</span>
-              )}
+              <span class:list={['kct-cta', !fleshed && 'kct-cta-muted']}>
+                {fleshed ? 'Read' : 'Soon'}
+                {fleshed && <span class="kct-cta-arrow" aria-hidden="true">→</span>}
+              </span>
             </div>
-          </div>
+          </>
+        );
+        return fleshed ? (
+          <a class="kct-row kct-row-live" href={`/dossiers/${category}/${fleshed.slug}/`}>{inner}</a>
+        ) : (
+          <div class="kct-row kct-row-stub">{inner}</div>
         );
       })}
     </div>
